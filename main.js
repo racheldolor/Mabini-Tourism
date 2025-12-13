@@ -150,125 +150,81 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// --- Search Modal Logic ---
-    // Create search modal if not present
-    if (!document.getElementById('search-modal')) {
-        const searchModal = document.createElement('div');
-        searchModal.id = 'search-modal';
-        searchModal.className = 'modal';
-        searchModal.innerHTML = `
-            <div class="modal-content" style="max-width:400px;">
-                <span class="close-modal" id="close-search-modal">&times;</span>
-                <h2 style="margin-bottom:16px;">Search</h2>
-                <form id="search-form" autocomplete="off" style="display:flex;gap:8px;align-items:center;">
-                    <input type="text" id="search-input" placeholder="Type to search..." style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid #eee;font-size:15px;background:#f5f6fa;" required />
-                    <button type="submit" style="padding:10px 18px;border-radius:8px;background:#003d5c;color:#fff;border:none;font-weight:600;">Go</button>
-                </form>
-                <div id="search-results" style="margin-top:18px;"></div>
-            </div>
-        `;
-        document.body.appendChild(searchModal);
-    }
-    const searchBtn = document.getElementById('search-btn');
-    const searchModal = document.getElementById('search-modal');
-    const closeSearchModal = document.getElementById('close-search-modal');
-    const searchForm = document.getElementById('search-form');
-    const searchInput = document.getElementById('search-input');
-    const searchResults = document.getElementById('search-results');
+// --- Navbar Inline Search Logic ---
+    const navbarSearchForm = document.getElementById('navbar-search-form');
+    const navbarSearchInput = document.getElementById('navbar-search');
+    const navbarSearchClear = document.getElementById('navbar-search-clear');
 
-    if (searchBtn && searchModal) {
-        searchBtn.addEventListener('click', function(e) {
-            searchModal.style.display = 'flex';
-            if (searchInput) searchInput.value = '';
-            if (searchResults) searchResults.innerHTML = '';
-            if (searchInput) searchInput.focus();
-        });
-    }
-    if (closeSearchModal && searchModal) {
-        closeSearchModal.addEventListener('click', function() {
-            searchModal.style.display = 'none';
-        });
-    }
-    if (searchModal) {
-        searchModal.addEventListener('click', function(e) {
-            if (e.target === searchModal) {
-                searchModal.style.display = 'none';
-            }
-        });
-    }
-    // Search logic: highlight or scroll to matching content
-    if (searchForm && searchInput) {
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const query = searchInput.value.trim().toLowerCase();
-            if (!query) return;
-            // Remove previous highlights
-            document.querySelectorAll('.search-highlight').forEach(el => {
-                el.outerHTML = el.innerText;
-            });
-            // Search visible text nodes in main content
-            let found = false;
-            let firstMatch = null;
-            // You can adjust this selector to target main content
-            const contentSelectors = ['main', '.container', '.page-header', '.about-section', '.hero-section', 'body'];
-            let contentRoot = null;
-            for (let sel of contentSelectors) {
-                contentRoot = document.querySelector(sel);
-                if (contentRoot) break;
-            }
-            if (!contentRoot) contentRoot = document.body;
-            // Walk through text nodes
-            function walk(node) {
-                if (node.nodeType === 3) { // Text node
-                    const idx = node.data.toLowerCase().indexOf(query);
-                    if (idx !== -1 && node.data.trim() !== '') {
-                        const span = document.createElement('span');
-                        span.className = 'search-highlight';
-                        span.style.background = '#ffe066';
-                        span.style.color = '#002037';
-                        span.style.borderRadius = '4px';
-                        span.style.padding = '0 2px';
-                        span.textContent = node.data.substr(idx, query.length);
-                        const after = node.splitText(idx);
-                        after.splitText(query.length);
-                        node.parentNode.insertBefore(span, after);
-                        if (!firstMatch) firstMatch = span;
-                        found = true;
-                    }
-                } else if (node.nodeType === 1 && node.childNodes && !['SCRIPT','STYLE','NOSCRIPT','IFRAME'].includes(node.tagName)) {
-                    for (let child of node.childNodes) walk(child);
-                }
-            }
-            walk(contentRoot);
-            if (found && firstMatch) {
-                firstMatch.scrollIntoView({behavior:'smooth',block:'center'});
-                if (searchResults) searchResults.innerHTML = '<span style="color:#003d5c;font-weight:600;">Result found and highlighted.</span>';
-            } else {
-                if (searchResults) searchResults.innerHTML = '<span style="color:#e74c3c;font-weight:600;">No results found.</span>';
-            }
-        });
-    }
-    // Remove highlights when modal closes
     function removeHighlights() {
         document.querySelectorAll('.search-highlight').forEach(el => {
             el.outerHTML = el.innerText;
         });
     }
-    if (closeSearchModal && searchModal) {
-        closeSearchModal.addEventListener('click', removeHighlights);
-    }
-    if (searchModal) {
-        searchModal.addEventListener('click', function(e) {
-            if (e.target === searchModal) removeHighlights();
-        });
-    }
-    // Optional: ESC key closes modal
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && searchModal && searchModal.style.display === 'flex') {
-            searchModal.style.display = 'none';
-            removeHighlights();
+
+    function performSearch(query) {
+        const q = (query || '').trim().toLowerCase();
+        if (!q) return false;
+        removeHighlights();
+        let found = false;
+        let firstMatch = null;
+        const contentSelectors = ['main', '.container', '.page-header', '.about-section', '.hero-section', 'body'];
+        let contentRoot = null;
+        for (let sel of contentSelectors) {
+            contentRoot = document.querySelector(sel);
+            if (contentRoot) break;
         }
-    });
+        if (!contentRoot) contentRoot = document.body;
+        function walk(node) {
+            if (node.nodeType === 3) {
+                const idx = node.data.toLowerCase().indexOf(q);
+                if (idx !== -1 && node.data.trim() !== '') {
+                    const span = document.createElement('span');
+                    span.className = 'search-highlight';
+                    span.style.background = '#ffe066';
+                    span.style.color = '#002037';
+                    span.style.borderRadius = '4px';
+                    span.style.padding = '0 2px';
+                    span.textContent = node.data.substr(idx, q.length);
+                    const after = node.splitText(idx);
+                    after.splitText(q.length);
+                    node.parentNode.insertBefore(span, after);
+                    if (!firstMatch) firstMatch = span;
+                    found = true;
+                }
+            } else if (node.nodeType === 1 && node.childNodes && !['SCRIPT','STYLE','NOSCRIPT','IFRAME'].includes(node.tagName)) {
+                for (let child of node.childNodes) walk(child);
+            }
+        }
+        walk(contentRoot);
+        if (found && firstMatch) {
+            firstMatch.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+        return found;
+    }
+
+    if (navbarSearchForm && navbarSearchInput) {
+        navbarSearchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            performSearch(navbarSearchInput.value);
+        });
+        navbarSearchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                navbarSearchInput.value = '';
+                removeHighlights();
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch(navbarSearchInput.value);
+            }
+        });
+        if (navbarSearchClear) {
+            navbarSearchClear.addEventListener('click', function() {
+                navbarSearchInput.value = '';
+                removeHighlights();
+                navbarSearchInput.focus();
+            });
+        }
+    }
 
 const navbar = document.querySelector('.navbar');
 
