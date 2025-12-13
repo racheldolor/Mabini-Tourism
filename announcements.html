@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements & Events | Dive in Mabini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="service-pages.css" />
+    <style>
+        /* Additional styles for announcements page */
+        .event-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .event-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-header {
+            background: linear-gradient(135deg, #002037 0%, #003d5c 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .event-date {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .event-month {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 5px 0 0;
+        }
+
+        .event-badge {
+            display: inline-block;
+            background: #e6c200;
+            color: #002037;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .event-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #002037;
+            margin-bottom: 10px;
+        }
+
+        .event-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .event-details {
+            font-size: 13px;
+            color: #999;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .event-detail-item {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .event-detail-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            color: #e6c200;
+            font-weight: bold;
+        }
+
+        .calendar-section {
+            background: linear-gradient(135deg, rgba(0, 32, 55, 0.05) 0%, rgba(230, 194, 0, 0.05) 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 40px 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .month-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .month-box:hover {
+            border-color: #e6c200;
+            box-shadow: 0 4px 12px rgba(230, 194, 0, 0.15);
+        }
+
+        .month-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #002037;
+            margin-bottom: 8px;
+        }
+
+        .event-count {
+            background: linear-gradient(135deg, #002037 0%, #003d5c 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, #e6c200, #002037);
+        }
+
+        .timeline-item {
+            margin-bottom: 40px;
+            width: 45%;
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            text-align: right;
+            padding-right: 5%;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 55%;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-date {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e6c200;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #002037;
+            margin-bottom: 8px;
+        }
+
+        .timeline-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 4px solid #e6c200;
+            border-radius: 50%;
+            top: 0;
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                margin-left: 0 !important;
+                text-align: left;
+                padding-right: 0;
+                padding-left: 80px;
+            }
+
+            .timeline-dot {
+                left: 30px;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .badge-featured {
+            position: relative;
+        }
+
+        .featured-ribbon {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #e6c200 0%, #ff9800 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(230, 194, 0, 0.3);
+        }
+
+        .highlight-section {
+            background: linear-gradient(135deg, #002037 0%, #003d5c 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .highlight-section h2 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .highlight-section p {
+            font-size: 16px;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Unified Navbar (matches index.html) -->
+    <nav class="navbar">
+        <div class="navbar-flex">
+            <ul class="links-left">
+                <li class="link-item"><a href="index.html#about-section">About</a></li>
+                <li class="link-item"><a href="index.html#marine-life">Marine Life</a></li>
+                <li class="link-item"><a href="index.html#service-section">Services</a></li>
+                <li class="link-item"><a href="announcements.html">Announcements</a></li>
+            </ul>
+            <div class="logo-center"><a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a></div>
+            <ul class="links-right">
+                <li class="link-item"><a href="community.html">Community</a></li>
+                <li class="link-item"><a href="index.html#find-section">Find Us</a></li>
+                <li class="link-item navbar-search-item">
+                    <form id="navbar-search-form" autocomplete="off">
+                        <span class="search-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </span>
+                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search" />
+                        <button id="navbar-search-go" type="submit" tabindex="-1">Go</button>
+                    </form>
+                </li>
+                <li class="link-item user-btn-item">
+                    <button id="user-btn" title="Log in / Sign up" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;">
+                        <span style="display:inline-flex;width:32px;height:32px;border-radius:50%;background:#f5f6fa;justify-content:center;align-items:center;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                        </span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1>Events & Announcements</h1>
+        <p>Discover exciting festivals, events, and activities happening in Mabini throughout the year</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="content-section">
+            <a href="index.html" class="back-to-home">← Back to Home</a>
+
+            <!-- Upcoming Events -->
+            <h2 class="section-title" style="margin-top: 40px;">🎉 Upcoming Events</h2>
+            <p class="section-subtitle">Don't miss these exciting activities happening soon</p>
+
+            <div class="events-grid">
+                <!-- Araw ng Batangas -->
+                <div class="event-card badge-featured">
+                    <div class="featured-ribbon">Featured</div>
+                    <div class="event-header">
+                        <p class="event-date">18</p>
+                        <p class="event-month">December 2025</p>
+                        <span class="event-badge">FESTIVAL</span>
+                    </div>
+                    <div class="event-body">
+                        <h3 class="event-title">Araw ng Batangas</h3>
+                        <p class="event-description">
+                            Celebrate the founding of Batangas with colorful parades, cultural performances, 
+                            local food stalls, and community festivities. A great time to experience Batangueño culture.
+                        </p>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">📍</span>
+                                <span>Mabini Town Plaza</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">⏰</span>
+                                <span>6:00 AM - 6:00 PM</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">👥</span>
+                                <span>Community Event - Free</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Year Dive Celebration -->
+                <div class="event-card">
+                    <div class="event-header">
+                        <p class="event-date">31</p>
+                        <p class="event-month">December 2025 - January 2026</p>
+                        <span class="event-badge">CELEBRATION</span>
+                    </div>
+                    <div class="event-body">
+                        <h3 class="event-title">New Year Dive Celebration</h3>
+                        <p class="event-description">
+                            Ring in the New Year with a special underwater celebration. Dive shops organize group dives, 
+                            beach parties, and countdown events for an unforgettable start to 2026.
+                        </p>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">📍</span>
+                                <span>Various Dive Sites & Beach</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">⏰</span>
+                                <span>2:00 PM onwards</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">💰</span>
+                                <span>Check with dive shops for pricing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sinulog Festival -->
+                <div class="event-card">
+                    <div class="event-header">
+                        <p class="event-date">19</p>
+                        <p class="event-month">January 2026</p>
+                        <span class="event-badge">FESTIVAL</span>
+                    </div>
+                    <div class="event-body">
+                        <h3 class="event-title">Sinulog Festival</h3>
+                        <p class="event-description">
+                            A grand celebration with street dances, cultural shows, and massive crowds. 
+                            Mabini participates with local contingents in colorful costumes and traditional performances.
+                        </p>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">📍</span>
+                                <span>Batangas & Mabini Town Center</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">⏰</span>
+                                <span>All Day Event</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">👥</span>
+                                <span>Free Community Celebration</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fish Festival -->
+                <div class="event-card">
+                    <div class="event-header">
+                        <p class="event-date">02</p>
+                        <p class="event-month">February 2026</p>
+                        <span class="event-badge">FESTIVAL</span>
+                    </div>
+                    <div class="event-body">
+                        <h3 class="event-title">Mabini Fish Festival</h3>
+                        <p class="event-description">
+                            Celebrate the fishing heritage of Mabini with seafood feasts, cooking contests, 
+                            fish auctions, and cultural performances. A paradise for seafood lovers!
+                        </p>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">📍</span>
+                                <span>Mabini Fishing Port & Beach</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">⏰</span>
+                                <span>8:00 AM - 8:00 PM</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">🍽️</span>
+                                <span>Food & Activities - Minimal Fees</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Underwater Photography Contest -->
+                <div class="event-card">
+                    <div class="event-header">
+                        <p class="event-date">14</p>
+                        <p class="event-month">March 2026</p>
+                        <span class="event-badge">COMPETITION</span>
+                    </div>
+                    <div class="event-body">
+                        <h3 class="event-title">Underwater Photography Contest</h3>
+                        <p class="event-description">
+                            Showcase your best underwater shots! Open to all divers and snorkelers. 
+                            Winners get prizes and their work featured in local tourism materials.
+                        </p>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">📍</span>
+                                <span>Anilao Dive Sites</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">⏰</span>
+                                <span>Full Day Competition</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">📸</span>
+                                <span>Registration Required</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Holy Week Observance -->
+                <div class="event-card">
+                    <div class="event-header">
+                        <p class="event-date">13-20</p>
+                        <p class="event-month">April 2026</p>
+                        <span class="event-badge">RELIGIOUS</span>
+                    </div>
+                    <div class="event-body">
+                        <h3 class="event-title">Holy Week Observance</h3>
+                        <p class="event-description">
+                            Religious processions, church services, and community gatherings. 
+                            Many services reduce operations during this period. Plan accordingly.
+                        </p>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">📍</span>
+                                <span>Churches & Mabini Town</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">⏰</span>
+                                <span>Various Times</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-icon">⛪</span>
+                                <span>Religious Celebration</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Festival Calendar Section -->
+            <div class="calendar-section">
+                <h2 class="section-title">📅 2026 Festival Calendar</h2>
+                <p class="section-subtitle">Major events and festivals throughout the year</p>
+                
+                <div class="calendar-grid">
+                    <div class="month-box">
+                        <div class="month-name">January</div>
+                        <div class="event-count">2 Events</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">February</div>
+                        <div class="event-count">2 Events</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">March</div>
+                        <div class="event-count">1 Event</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">April</div>
+                        <div class="event-count">2 Events</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">May</div>
+                        <div class="event-count">1 Event</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">June</div>
+                        <div class="event-count">1 Event</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">July</div>
+                        <div class="event-count">2 Events</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">August</div>
+                        <div class="event-count">1 Event</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">September</div>
+                        <div class="event-count">1 Event</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">October</div>
+                        <div class="event-count">2 Events</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">November</div>
+                        <div class="event-count">1 Event</div>
+                    </div>
+                    <div class="month-box">
+                        <div class="month-name">December</div>
+                        <div class="event-count">2 Events</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Year Events Timeline -->
+            <h2 class="section-title" style="margin-top: 60px;">📆 Complete Year Timeline</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">December 18</div>
+                        <div class="timeline-title">Araw ng Batangas</div>
+                        <div class="timeline-text">Grand celebration of Batangas founding with parades and cultural shows.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">December 31 - January 1</div>
+                        <div class="timeline-title">New Year Dive Celebration</div>
+                        <div class="timeline-text">Special underwater celebrations and beach parties to welcome the New Year.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">January 19</div>
+                        <div class="timeline-title">Sinulog Festival</div>
+                        <div class="timeline-text">Street dances, cultural performances, and grand celebration of faith and culture.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">February 2</div>
+                        <div class="timeline-title">Mabini Fish Festival</div>
+                        <div class="timeline-text">Celebrate fishing heritage with seafood feasts, competitions, and performances.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">March 14</div>
+                        <div class="timeline-title">Underwater Photography Contest</div>
+                        <div class="timeline-text">Showcase underwater photography skills with prizes and recognition.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">April 13-20</div>
+                        <div class="timeline-title">Holy Week Observance</div>
+                        <div class="timeline-text">Religious processions and church services. Note reduced operations during this period.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">May 30</div>
+                        <div class="timeline-title">Flores de Mayo</div>
+                        <div class="timeline-text">Traditional Filipino celebration honoring the Virgin Mary with religious ceremonies.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">June 24</div>
+                        <div class="timeline-title">Ati-Atihan Festival</div>
+                        <div class="timeline-text">Regional festival with tribal dances, parades, and cultural celebrations.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">July 25</div>
+                        <div class="timeline-title">Dive Festival & Competition</div>
+                        <div class="timeline-text">International diving competition attracting divers from around the world.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">August 21</div>
+                        <div class="timeline-title">Araw ng Kababaihan</div>
+                        <div class="timeline-text">Celebration honoring women with special activities and performances.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">September 1</div>
+                        <div class="timeline-title">Foundation Day</div>
+                        <div class="timeline-text">Mabini's founding anniversary celebrated with community activities.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">October 30</div>
+                        <div class="timeline-title">Fiesta of the Reformist</div>
+                        <div class="timeline-text">Religious and cultural celebration honoring Mabini's patron saint.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">November 1</div>
+                        <div class="timeline-title">All Saints' Day</div>
+                        <div class="timeline-text">Religious observance with cemeteries open for remembrance activities.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlights Section -->
+            <div class="highlight-section">
+                <h2>💌 Stay Updated</h2>
+                <p>
+                    Events and dates may change. Always check with local tourism offices before planning your trip. 
+                    Contact us at info@divemabini.com or visit our social media for the latest announcements!
+                </p>
+                <a href="mailto:info@divemabini.com" style="display: inline-block; background: #e6c200; color: #002037; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; margin-top: 15px;">Subscribe to Updates</a>
+            </div>
+
+            <!-- Tips for Event Attendance -->
+            <div class="info-box">
+                <h3>Tips for Attending Events in Mabini</h3>
+                <ul class="facts-list">
+                    <li>Book accommodations early during festival season (December-January)</li>
+                    <li>Expect crowded roads and public transportation during major events</li>
+                    <li>Bring cash - not all vendors accept cards during street festivals</li>
+                    <li>Wear comfortable shoes and sun protection for outdoor events</li>
+                    <li>Respect local customs and traditions during religious celebrations</li>
+                    <li>Try local food and snacks offered at festival stalls</li>
+                    <li>Bring a camera to capture memorable moments</li>
+                    <li>Check weather forecasts and plan accordingly</li>
+                    <li>Follow instructions from event organizers and local authorities</li>
+                    <li>Stay hydrated and take breaks during long outdoor events</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <img src="logo.png" alt="Logo" class="footer-logo">
+                <h3>Dive in Mabini</h3>
+                <p>Stay updated with events and celebrations happening in Mabini, Batangas.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html#about-section">About Us</a></li>
+                    <li><a href="diving.html">Diving</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="resorts.html">Resorts</a></li>
+                    <li><a href="hiking.html">Hiking</a></li>
+                    <li><a href="cuisine.html">Cuisine</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@divemabini.com</p>
+                <p>Phone: +63 912 345 6789</p>
+                <p>Location: Mabini, Batangas, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <p>
+                    <a href="https://facebook.com/MabiniPIO" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Facebook</a> | 
+                    <a href="https://instagram.com/divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Instagram</a> | 
+                    <a href="https://youtube.com/@divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">YouTube</a>
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="copyright">© 2025 Dive in Mabini. All rights reserved.</p>
+            <ul class="footer-bottom-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Sitemap</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+
+<!-- User Auth Modal (moved to end of body for proper overlay) -->
+<div id="user-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="close-user-modal">&times;</span>
+        <h2 id="modal-title">Log In</h2>
+        <form id="modal-login-form">
+            <input type="email" id="modal-login-email" placeholder="Email" required>
+            <input type="password" id="modal-login-password" placeholder="Password" required>
+            <button type="submit">Log In</button>
+        </form>
+        <form id="modal-signup-form" style="display:none;">
+            <input type="email" id="modal-signup-email" placeholder="Email" required>
+            <input type="password" id="modal-signup-password" placeholder="Password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p style="text-align:center; margin: 10px 0;">or</p>
+        <button id="modal-google-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" style="width:20px;height:20px;vertical-align:middle;"> Continue with Google
+        </button>
+        <button id="modal-facebook-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" style="width:20px;height:20px;vertical-align:middle;"> Continue with Facebook
+        </button>
+        <hr>
+        <p id="toggle-auth-mode" style="cursor:pointer;color:#003d5c;font-weight:500;">Don't have an account? <span style="color:#e6c200;">Sign up</span></p>
+    </div>
+</div>
+<script src="main.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resorts in Mabini | Dive in Mabini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="service-pages.css" />
+</head>
+<body>
+     <nav class="navbar">
+        <div class="navbar-flex">
+            <ul class="links-left">
+                <li class="link-item"><a href="index.html#about-section">About</a></li>
+                <li class="link-item"><a href="index.html#marine-life">Marine Life</a></li>
+                <li class="link-item"><a href="index.html#service-section">Services</a></li>
+                <li class="link-item"><a href="announcements.html">Announcements</a></li>
+            </ul>
+            <div class="logo-center"><a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a></div>
+            <ul class="links-right">
+                <li class="link-item"><a href="community.html">Community</a></li>
+                <li class="link-item"><a href="index.html#find-section">Find Us</a></li>
+                <li class="link-item navbar-search-item">
+                    <form id="navbar-search-form" autocomplete="off">
+                        <span class="search-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </span>
+                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search" />
+                        <button id="navbar-search-go" type="submit" tabindex="-1">Go</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1>Resorts in Mabini</h1>
+        <p>Find the perfect accommodation for your Mabini adventure - from budget-friendly to luxury stays</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="content-section">
+            <a href="index.html" class="back-to-home">← Back to Home</a>
+
+            <!-- Introduction -->
+            <div class="info-box">
+                <h3>Accommodation in Mabini</h3>
+                <p>
+                    Mabini offers a diverse range of accommodation options to suit every budget and preference. 
+                    From beachfront luxury resorts to cozy budget-friendly hotels, eco-lodges to family-run guesthouses, 
+                    you'll find the perfect place to relax after your underwater adventures. Most resorts feature diving 
+                    packages and direct beach access to popular dive sites.
+                </p>
+            </div>
+
+            <!-- Filter Buttons -->
+            <h2 class="section-title" style="margin-top: 60px;">Find Your Perfect Resort</h2>
+            <p class="section-subtitle">Filter by resort type to find what suits you best</p>
+
+                            <ul class="links-container">
+                                    <li class="link-item"><a href="#about-section">About</a></li>
+                                    <li class="link-item"><a href="#marine-life">Marine Life</a></li>
+                                    <li class="link-item"><a href="#service-section">Services</a></li>
+                                    <li class="link-item"><a href="announcements.html">Announcements</a></li>
+                                    <li class="link-item logo-center"><a href="index.html"><img src="logo.png" alt="logo" class="logo"></a></li>
+                                    <li class="link-item"><a href="community.html">Community</a></li>
+                                    <li class="link-item"><a href="#find-section">Find Us</a></li>
+                                    <li class="link-item navbar-search-item">
+                                        <form id="navbar-search-form" autocomplete="off">
+                                            <span class="search-icon">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                            </span>
+                                            <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search" />
+                                            <button id="navbar-search-go" type="submit" tabindex="-1">Go</button>
+                                        </form>
+                                    </li>
+                                    <li class="link-item user-btn-item">
+                                        <button id="user-btn" title="Log in / Sign up" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;">
+                                            <span style="display:inline-flex;width:32px;height:32px;border-radius:50%;background:#f5f6fa;justify-content:center;align-items:center;">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                                            </span>
+                                        </button>
+                                    </li>
+                            </ul>
+                <div class="card" data-category="luxury">
+                    <img src="1.jpg" alt="Coral Bay Resort" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Coral Bay Luxury Resort</h3>
+                        <p class="card-text">
+                            Upscale resort with spa, restaurant, and direct access to premium diving spots. 
+                            Features rooms with ocean views and infinity pools overlooking the sea.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Luxury | <strong>Price:</strong> ₱7,500+ per night
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mid-Range Resorts -->
+                <div class="card" data-category="mid-range">
+                    <img src="2.jpg" alt="Dive Spot Resort" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Dive Spot Resort</h3>
+                        <p class="card-text">
+                            Well-established mid-range resort with comfortable rooms, on-site dive shop, 
+                            and experienced dive masters. Great value for divers.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Mid-Range | <strong>Price:</strong> ₱3,500-5,000 per night
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-category="mid-range">
+                    <img src="3.jpg" alt="Ocean View Inn" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Ocean View Inn</h3>
+                        <p class="card-text">
+                            Family-friendly resort with reasonable rates, clean accommodations, and helpful staff. 
+                            Features a restaurant and can arrange dive tours.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Mid-Range | <strong>Price:</strong> ₱4,000-5,500 per night
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-category="mid-range">
+                    <img src="4.jpg" alt="Seabreeze Resort" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Seabreeze Resort</h3>
+                        <p class="card-text">
+                            Comfortable beachfront resort with spacious rooms, restaurant serving local and 
+                            international cuisine, and beach access.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Mid-Range | <strong>Price:</strong> ₱3,800-5,200 per night
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget Resorts -->
+                <div class="card" data-category="budget">
+                    <img src="5.jpg" alt="Beach Budget Hotel" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Beach Budget Hotel</h3>
+                        <p class="card-text">
+                            Affordable beachfront accommodation with basic amenities. Great for budget travelers 
+                            and backpackers wanting beach access and good value.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Budget | <strong>Price:</strong> ₱1,500-2,500 per night
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-category="budget">
+                    <img src="6.jpg" alt="Mabini Budget Inn" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Mabini Budget Inn</h3>
+                        <p class="card-text">
+                            Clean and simple rooms at unbeatable prices. Located in town center with walking 
+                            access to shops and restaurants. Perfect for backpackers.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Budget | <strong>Price:</strong> ₱1,200-2,000 per night
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-category="budget">
+                    <img src="1.jpg" alt="Coastal Hostel" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Coastal Hostel Mabini</h3>
+                        <p class="card-text">
+                            Social hostel with dormitory and private rooms, shared kitchen, and common areas. 
+                            Great for meeting other travelers and budget-conscious visitors.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Budget | <strong>Price:</strong> ₱800-1,500 per night
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Eco-Lodges -->
+                <div class="card" data-category="eco-lodge">
+                    <img src="2.jpg" alt="Eco Resort Mabini" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Eco Resort Mabini</h3>
+                        <p class="card-text">
+                            Sustainable resort built with eco-friendly materials, solar power, and water conservation. 
+                            Committed to marine preservation and community support.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Eco-Lodge | <strong>Price:</strong> ₱4,000-6,000 per night
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-category="eco-lodge">
+                    <img src="3.jpg" alt="Green Haven Lodge" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Green Haven Eco-Lodge</h3>
+                        <p class="card-text">
+                            Nature-inspired accommodation using local materials and sustainable practices. 
+                            Offers eco-tours, organic meals, and environmental education programs.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Eco-Lodge | <strong>Price:</strong> ₱3,500-5,500 per night
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-category="eco-lodge">
+                    <img src="4.jpg" alt="Nature Lodge Anilao" class="card-image">
+                    <div class="card-body">
+                        <h3 class="card-title">Nature Lodge Anilao</h3>
+                        <p class="card-text">
+                            Jungle and beach eco-lodge promoting sustainable tourism and marine conservation. 
+                            Features nature trails and guided ecological tours.
+                        </p>
+                        <div class="card-footer">
+                            <strong>Category:</strong> Eco-Lodge | <strong>Price:</strong> ₱3,000-4,500 per night
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accommodation Tips -->
+            <div class="info-box" style="margin-top: 60px;">
+                <h3>Tips for Choosing Your Resort</h3>
+                <ul class="facts-list">
+                    <li>Consider proximity to dive shops if you plan to dive frequently</li>
+                    <li>Check if the resort offers dive packages or equipment rental</li>
+                    <li>Look for resorts with good reviews on beaches and water quality</li>
+                    <li>Verify amenities like WiFi, AC, and hot water availability</li>
+                    <li>Book during shoulder season (November or April-May) for better rates</li>
+                    <li>Peak season (December-March) requires advance booking</li>
+                    <li>Ask about included meals and breakfast options</li>
+                    <li>Check cancellation policies before booking</li>
+                    <li>Read recent guest reviews on booking platforms</li>
+                </ul>
+            </div>
+
+            <!-- Best Time to Visit -->
+            <div class="two-column">
+
+                    <!-- User Auth Modal (moved to end of body for proper overlay) -->
+                    <div id="user-modal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal" id="close-user-modal">&times;</span>
+                            <h2 id="modal-title">Log In</h2>
+                            <form id="modal-login-form">
+                                <input type="email" id="modal-login-email" placeholder="Email" required>
+                                <input type="password" id="modal-login-password" placeholder="Password" required>
+                                <button type="submit">Log In</button>
+                            </form>
+                            <form id="modal-signup-form" style="display:none;">
+                                <input type="email" id="modal-signup-email" placeholder="Email" required>
+                                <input type="password" id="modal-signup-password" placeholder="Password" required>
+                                <button type="submit">Sign Up</button>
+                            </form>
+                            <p style="text-align:center; margin: 10px 0;">or</p>
+                            <button id="modal-google-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" style="width:20px;height:20px;vertical-align:middle;"> Continue with Google
+                            </button>
+                            <button id="modal-facebook-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" style="width:20px;height:20px;vertical-align:middle;"> Continue with Facebook
+                            </button>
+                            <hr>
+                            <p id="toggle-auth-mode" style="cursor:pointer;color:#003d5c;font-weight:500;">Don't have an account? <span style="color:#e6c200;">Sign up</span></p>
+                        </div>
+                    </div>
+                    <script src="main.js"></script>
+                </body>
+                </html>
+                    </p>
+                    <p style="color: #666; line-height: 1.8; margin-top: 15px;">
+                        <strong>Off-Season:</strong> June to October provides discounted rates with fewer tourists. 
+                        Sea conditions are rougher but still suitable for diving.
+                    </p>
+                    <p style="color: #666; line-height: 1.8; margin-top: 15px;">
+                        <strong>Shoulder Season:</strong> April-May and November offer good weather with moderate prices. 
+                        Great time to visit with fewer crowds.
+                    </p>
+                </div>
+                <div>
+                    <img src="rs.jpg" alt="Resort Booking" class="column-image">
+                </div>
+            </div>
+
+            <!-- Resort Amenities Guide -->
+            <div class="info-box">
+                <h3>Common Resort Amenities</h3>
+                <ul class="facts-list">
+                    <li>Air-conditioned rooms with private bathrooms</li>
+                    <li>Restaurant and bar serving local and international cuisine</li>
+                    <li>Beach access for swimming and water activities</li>
+                    <li>WiFi and modern connectivity options</li>
+                    <li>Dive shop and equipment rental services</li>
+                    <li>Tour arrangement and transportation services</li>
+                    <li>Swimming pool or jacuzzi</li>
+                    <li>Spa and massage services</li>
+                    <li>Laundry and room cleaning services</li>
+                    <li>24-hour front desk and concierge support</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <img src="logo.png" alt="Logo" class="footer-logo">
+                <h3>Dive in Mabini</h3>
+                <p>Discover the underwater paradise of Mabini, Batangas with accommodations for every budget.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html#about-section">About Us</a></li>
+                    <li><a href="diving.html">Diving</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="resorts.html">Resorts</a></li>
+                    <li><a href="hiking.html">Hiking</a></li>
+                    <li><a href="cuisine.html">Cuisine</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@divemabini.com</p>
+                <p>Phone: +63 912 345 6789</p>
+                <p>Location: Mabini, Batangas, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <p>
+                    <a href="https://facebook.com/MabiniPIO" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Facebook</a> | 
+                    <a href="https://instagram.com/divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Instagram</a> | 
+                    <a href="https://youtube.com/@divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">YouTube</a>
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="copyright">© 2025 Dive in Mabini. All rights reserved.</p>
+            <ul class="footer-bottom-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Sitemap</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script src="main.js"></script>
+</body>
+</html>

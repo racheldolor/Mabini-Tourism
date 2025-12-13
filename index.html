@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Travel Website</title>
+    <title>Dive in Mabini</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/png" href="logo.png">
@@ -11,21 +11,50 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- Your Firebase config -->
+    <script src="firebase-config.js"></script>
 </head>
 <body>
 
     <header>
         <nav class="navbar">
-            <ul class="links-container">
-                <li class="link-item"><a href="#about-section">About</a></li>
-                <li class="link-item"><a href="#marine-life">Marine Life</a></li>
-                <li class="link-item"><a href="#hero-section"><img src="logo.png" alt="logo" class="logo"></a></li>
-                <li class="link-item"><a href="#service-section">Services</a></li>
-                <li class="link-item"><a href="#find-section">Find Us</a></li>
-            </ul>
+            <div class="navbar-flex">
+                <ul class="links-left">
+                    <li class="link-item"><a href="#about-section">About</a></li>
+                    <li class="link-item"><a href="#marine-life">Marine Life</a></li>
+                    <li class="link-item"><a href="#service-section">Services</a></li>
+                    <li class="link-item"><a href="announcements.html">Announcements</a></li>
+                </ul>
+                <div class="logo-center"><a href="#hero-section"><img src="logo.png" alt="logo" class="logo"></a></div>
+                <ul class="links-right">
+                    <li class="link-item"><a href="community.html">Community</a></li>
+                    <li class="link-item"><a href="#find-section">Find Us</a></li>
+                    <li class="link-item navbar-search-item">
+                        <form id="navbar-search-form" autocomplete="off">
+                            <span class="search-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </span>
+                            <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search" />
+                            <button id="navbar-search-go" type="submit" tabindex="-1">Go</button>
+                        </form>
+                    </li>
+                    <li class="link-item user-btn-item">
+                        <button id="user-btn" title="Log in / Sign up" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;">
+                            <span style="display:inline-flex;width:32px;height:32px;border-radius:50%;background:#f5f6fa;justify-content:center;align-items:center;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                            </span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </nav>
 
         <main class="hero-section" id="hero-section">
+            <!-- ...existing code... -->
             <div class="background">
                 <img src="bg.jpg" alt="hero-section-img" class="background-image">
                 <div class="slider-grid">
@@ -42,10 +71,65 @@
               <p class="hero-section-small-text" data-aos="fade-up">Welcome to</p>
               <h1 class="hero-section-title" data-aos="fade-up">Mabini, Batangas</h1>
               <p class="hero-section-sub-heading" data-aos="fade-up">Where Nature Create Unforgettable Journeys</p>
-              <a href="#explore" class="hero-btn" data-aos="fade-up">Explore Now</a>
+                                <button id="planVisitBtn" class="hero-btn" data-aos="fade-up">Plan Your Visit</button>
           </div>
     
             <img src="arrow.png" class="scroll-down-icon" alt="scroll-down">
+                            <!-- AI Itinerary Modal -->
+                                    <div id="aiItineraryModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); justify-content:center; align-items:center; z-index:9999;">
+                                        <div class="modal-content" style="background:linear-gradient(135deg,#e3f0ff 0%,#f9fafc 100%); padding:2.7rem 2rem 2rem 2rem; border-radius:22px; max-width:440px; width:97%; position:relative; box-shadow:0 12px 40px rgba(0,61,92,0.13); border:1px solid #e0e7ef;">
+                                            <span id="closeModal" style="position:absolute; top:18px; right:24px; cursor:pointer; font-size:2.2rem; color:#003d5c; font-weight:700;">&times;</span>
+                                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                                <img src="logo.png" alt="logo" style="width:54px; height:54px; margin-bottom:0.7rem; border-radius:12px; box-shadow:0 2px 8px rgba(0,61,92,0.08);">
+                                                <h2 style="text-align:center; color:#003d5c; font-size:2.1rem; margin-bottom:1.1rem; font-weight:800; letter-spacing:1px;">AI Itinerary Planner</h2>
+                                            </div>
+                                            <form id="itineraryForm" style="display:flex; flex-direction:column; gap:1.1rem;">
+                                                <div style="display:flex; flex-direction:column;">
+                                                    <label for="budget" style="font-weight:600; color:#003d5c; margin-bottom:0.3rem;">Budget (₱)</label>
+                                                    <input type="number" name="budget" id="budget" min="500" max="100000" required style="padding:0.8rem 1rem; border-radius:10px; border:1px solid #cfd8dc; font-size:1.08rem; background:#fff;">
+                                                </div>
+                                                <div style="display:flex; flex-direction:column;">
+                                                    <label for="groupSize" style="font-weight:600; color:#003d5c; margin-bottom:0.3rem;">Group Size</label>
+                                                    <input type="number" name="groupSize" id="groupSize" min="1" max="50" required style="padding:0.8rem 1rem; border-radius:10px; border:1px solid #cfd8dc; font-size:1.08rem; background:#fff;">
+                                                </div>
+                                                <div style="display:flex; flex-direction:column;">
+                                                    <label for="experience" style="font-weight:600; color:#003d5c; margin-bottom:0.3rem;">Swimming/Diving Experience</label>
+                                                    <select name="experience" id="experience" required style="padding:0.8rem 1rem; border-radius:10px; border:1px solid #cfd8dc; font-size:1.08rem; background:#fff;">
+                                                        <option value="none">None</option>
+                                                        <option value="beginner">Beginner</option>
+                                                        <option value="intermediate">Intermediate</option>
+                                                        <option value="advanced">Advanced</option>
+                                                    </select>
+                                                </div>
+                                                <div style="display:flex; flex-direction:column;">
+                                                    <label for="activities" style="font-weight:600; color:#003d5c; margin-bottom:0.3rem;">Preferred Activities</label>
+                                                    <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.5rem;">
+                                                        <label style="background:#e6f7ff; border-radius:8px; padding:0.5rem 1rem; cursor:pointer; font-weight:500; color:#003d5c; box-shadow:0 1px 4px rgba(0,61,92,0.04);">
+                                                            <input type="checkbox" name="activities" value="diving" style="margin-right:8px;"> Diving
+                                                        </label>
+                                                        <label style="background:#e6f7ff; border-radius:8px; padding:0.5rem 1rem; cursor:pointer; font-weight:500; color:#003d5c; box-shadow:0 1px 4px rgba(0,61,92,0.04);">
+                                                            <input type="checkbox" name="activities" value="island hopping" style="margin-right:8px;"> Island Hopping
+                                                        </label>
+                                                        <label style="background:#e6f7ff; border-radius:8px; padding:0.5rem 1rem; cursor:pointer; font-weight:500; color:#003d5c; box-shadow:0 1px 4px rgba(0,61,92,0.04);">
+                                                            <input type="checkbox" name="activities" value="relaxing" style="margin-right:8px;"> Relaxing
+                                                        </label>
+                                                        <label style="background:#e6f7ff; border-radius:8px; padding:0.5rem 1rem; cursor:pointer; font-weight:500; color:#003d5c; box-shadow:0 1px 4px rgba(0,61,92,0.04);">
+                                                            <input type="checkbox" name="activities" value="food trip" style="margin-right:8px;"> Food Trip
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" style="background:linear-gradient(90deg,#003d5c 0%,#0077b6 100%); color:#fff; font-weight:700; font-size:1.13rem; border:none; border-radius:10px; padding:0.95rem 0; margin-top:0.5rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,61,92,0.08); transition:background 0.2s;">Generate Itinerary</button>
+                                            </form>
+                                            <div id="itineraryResult" style="margin-top:1.7rem; font-size:1.08rem; min-height:48px;">
+                                                <div id="itineraryLoading" style="display:none; justify-content:center; align-items:center;">
+                                                    <div style="border:4px solid #e3f0ff; border-top:4px solid #0077b6; border-radius:50%; width:32px; height:32px; animation:spin 1s linear infinite;"></div>
+                                                </div>
+                                            </div>
+                                            <style>
+                                                @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+                                            </style>
+                                        </div>
+                                    </div>
         </main>
     </header>
 
@@ -133,19 +217,23 @@
           <div class="swiper-wrapper">
             
               <div class="swiper-slide">
-                  <div class="service-card">
-                      <img src="d.jpg" alt="Diving">
-                      <h3>Diving</h3>
-                      <p>Experience world-class diving spots in Anilao.</p>
-                  </div>
+                  <a href="diving.html" style="text-decoration: none; color: inherit;">
+                      <div class="service-card">
+                          <img src="d.jpg" alt="Diving">
+                          <h3>Diving</h3>
+                          <p>Experience world-class diving spots in Anilao.</p>
+                      </div>
+                  </a>
               </div>
       
               <div class="swiper-slide">
-                  <div class="service-card">
-                      <img src="s.jpg" alt="Snorkeling">
-                      <h3>Snorkeling</h3>
-                      <p>Enjoy colorful reefs with just a snorkel mask.</p>
-                  </div>
+                  <a href="snorkeling.html" style="text-decoration: none; color: inherit;">
+                      <div class="service-card">
+                          <img src="s.jpg" alt="Snorkeling">
+                          <h3>Snorkeling</h3>
+                          <p>Enjoy colorful reefs with just a snorkel mask.</p>
+                      </div>
+                  </a>
               </div>
       
               <div class="swiper-slide">
@@ -157,27 +245,33 @@
               </div>
 
               <div class="swiper-slide">
-                  <div class="service-card">
-                      <img src="rs.jpg" alt="Resorts">
-                      <h3>Resorts</h3>
-                      <p>Cozy stays by the sea with stunning views.</p>
-                  </div>
+                  <a href="resorts.html" style="text-decoration: none; color: inherit;">
+                      <div class="service-card">
+                          <img src="rs.jpg" alt="Resorts">
+                          <h3>Resorts</h3>
+                          <p>Cozy stays by the sea with stunning views.</p>
+                      </div>
+                  </a>
               </div>
 
               <div class="swiper-slide">
-                <div class="service-card">
-                    <img src="hk.jpg" alt="Hiking">
-                    <h3>Hiking</h3>
-                    <p>Scenic trails with breathtaking panoramas.</p>
-                </div>
+                <a href="hiking.html" style="text-decoration: none; color: inherit;">
+                    <div class="service-card">
+                        <img src="hk.jpg" alt="Hiking">
+                        <h3>Hiking</h3>
+                        <p>Scenic trails with breathtaking panoramas.</p>
+                    </div>
+                </a>
             </div>
 
             <div class="swiper-slide">
-              <div class="service-card">
-                  <img src="lomi.jfif" alt="Cuisine">
-                  <h3>Cuisine</h3>
-                  <p>Authentic Batangueño flavors to savor.</p>
-              </div>
+              <a href="cuisine.html" style="text-decoration: none; color: inherit;">
+                  <div class="service-card">
+                      <img src="lomi.jfif" alt="Cuisine">
+                      <h3>Cuisine</h3>
+                      <p>Authentic Batangueño flavors to savor.</p>
+                  </div>
+              </a>
           </div>
       
           </div>
@@ -280,22 +374,143 @@
   </div>
 
     <footer>
-        <div class="moving-icon-right">
-            <img src="https://ruks2022.github.io/Travel-Experia/img/windsurf.png" alt="">
-        </div>
-        <img src="https://ruks2022.github.io/Travel-Experia/img/footer-logo.png" alt="logo" class="footer-logo">
-        <div class="footer-text">
-            <p>Travel the World!</p>
-            <p>Email - support@travelexperia.com</p>
-            <p>Phone - 99 000 456 344, 99 445 445 23</p>
+        <div class="footer-container">
+            <!-- About Section -->
+            <div class="footer-section footer-logo-section">
+                <img src="logo.png" alt="Dive in Mabini Logo" class="footer-logo">
+                <h3>Dive in Mabini</h3>
+                <p class="footer-description">
+                    Discover the underwater paradise of Mabini, Batangas. Experience world-class diving, pristine beaches, and unforgettable marine adventures.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#about-section">About Us</a></li>
+                    <li><a href="#marine-life">Marine Life</a></li>
+                    <li><a href="#service-section">Services</a></li>
+                    <li><a href="#find-section">Find Us</a></li>
+                    <li><a href="#gallery">Photo Gallery</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                        <span>info@divemabini.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24">
+                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                        </svg>
+                        <span>+63 912 345 6789</span>
+                    </div>
+                    <div class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span>Mabini, Batangas, Philippines</span>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <h3 style="margin-top: 25px;">Follow Us</h3>
+                <div class="social-media">
+                    <!-- Facebook -->
+                    <a href="https://www.facebook.com/MabiniPIO" target="_blank" class="social-link" title="Facebook">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </a>
+                    <!-- Instagram -->
+                    <a href="https://instagram.com/divemabini" target="_blank" class="social-link" title="Instagram">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                    <!-- Twitter/X -->
+                    <a href="https://twitter.com/divemabini" target="_blank" class="social-link" title="Twitter">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                    </a>
+                    <!-- YouTube -->
+                    <a href="https://youtube.com/@divemabini" target="_blank" class="social-link" title="YouTube">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                    </a>
+                    <!-- TripAdvisor -->
+                    <a href="https://tripadvisor.com/divemabini" target="_blank" class="social-link" title="TripAdvisor">
+                        <svg class="social-icon" viewBox="0 0 24 24">
+                            <path d="M12.006 4.295c-2.67 0-5.338.784-7.645 2.353H0l1.963 2.135a5.997 5.997 0 0 0 4.04 10.43 5.976 5.976 0 0 0 4.522-2.068l1.481-1.73 1.481 1.73a5.976 5.976 0 0 0 4.522 2.068 5.997 5.997 0 0 0 4.04-10.43L24 6.648h-4.361c-2.307-1.569-4.975-2.353-7.633-2.353zm0 1.192a11.965 11.965 0 0 1 5.605 1.391L15.807 8.96a6.033 6.033 0 0 0-3.801-1.345c-1.407 0-2.689.481-3.705 1.286L6.498 6.878a11.965 11.965 0 0 1 5.508-1.391zM5.93 9.613a4.902 4.902 0 1 1 0 9.805 4.902 4.902 0 0 1 0-9.805zm12.143 0a4.902 4.902 0 1 1 0 9.805 4.902 4.902 0 0 1 0-9.805zM5.93 11.618c-1.607 0-2.898 1.293-2.898 2.9 0 1.606 1.291 2.898 2.898 2.898s2.898-1.292 2.898-2.899c0-1.606-1.291-2.899-2.898-2.899zm12.143 0c-1.607 0-2.898 1.293-2.898 2.9 0 1.606 1.291 2.898 2.898 2.898s2.898-1.292 2.898-2.899c0-1.606-1.291-2.899-2.898-2.899zm-12.143.861a2.055 2.055 0 0 1 2.054 2.054 2.055 2.055 0 0 1-2.054 2.054 2.055 2.055 0 0 1-2.054-2.054 2.055 2.055 0 0 1 2.054-2.054zm12.143 0a2.055 2.055 0 0 1 2.054 2.054 2.055 2.055 0 0 1-2.054 2.054 2.055 2.055 0 0 1-2.054-2.054 2.055 2.055 0 0 1 2.054-2.054z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <p class="footer-description">Subscribe to get special offers, dive tips, and updates!</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+
+                    <input type="email" class="newsletter-input" placeholder="Your email address" required>
+                    <button type="submit" class="newsletter-btn">Subscribe</button>
+                </form>
+            </div>
         </div>
 
-        <p class="copyright-line">This is demo design made for learning.</p>
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p class="copyright">© 2025 Dive in Mabini. All rights reserved.</p>
+            <ul class="footer-bottom-links">
+                <li><a href="#privacy">Privacy Policy</a></li>
+                <li><a href="#terms">Terms of Service</a></li>
+                <li><a href="#sitemap">Sitemap</a></li>
+            </ul>
+        </div>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="main.js"></script>
+</footer>
+
+<!-- User Auth Modal (moved to end of body for proper overlay) -->
+<div id="user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-user-modal">&times;</span>
+            <h2 id="modal-title">Log In</h2>
+            <form id="modal-login-form">
+                <input type="email" id="modal-login-email" placeholder="Email" required>
+                <input type="password" id="modal-login-password" placeholder="Password" required>
+                <button type="submit">Log In</button>
+            </form>
+            <form id="modal-signup-form" style="display:none;">
+                <input type="email" id="modal-signup-email" placeholder="Email" required>
+                <input type="password" id="modal-signup-password" placeholder="Password" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p style="text-align:center; margin: 10px 0;">or</p>
+            <button id="modal-google-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" style="width:20px;height:20px;vertical-align:middle;"> Continue with Google
+            </button>
+            <button id="modal-facebook-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" style="width:20px;height:20px;vertical-align:middle;"> Continue with Facebook
+            </button>
+            <hr>
+            <p id="toggle-auth-mode" style="cursor:pointer;color:#003d5c;font-weight:500;">Don't have an account? <span style="color:#e6c200;">Sign up</span></p>
+        </div>
+</div>
 </body>
 </html>
