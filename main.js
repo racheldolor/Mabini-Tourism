@@ -1,4 +1,84 @@
-AOS.init();
+// Initialize AOS safely (skip if library not loaded to prevent breaking other scripts)
+if (window.AOS && typeof AOS.init === 'function') {
+    AOS.init();
+} else {
+    console.warn('AOS not available; skipping animations.');
+}
+
+// Format itinerary text into styled HTML
+function formatItinerary(text) {
+  let html = '<div style="font-size: 15px; line-height: 1.8; color: #f6f8fb;">';
+  
+  const lines = text.split('\n');
+  let inList = false;
+  
+  for (let line of lines) {
+    const trimmed = line.trim();
+    
+    if (!trimmed) {
+      if (inList) {
+        html += '</ul>';
+        inList = false;
+      }
+      html += '<br/>';
+      continue;
+    }
+    
+    // H1 headers (###)
+    if (trimmed.startsWith('###')) {
+      if (inList) {
+        html += '</ul>';
+        inList = false;
+      }
+      const content = trimmed.replace(/^#+\s*/, '');
+      html += `<h3 style="margin-top: 28px; margin-bottom: 14px; color: #e6c200; font-weight: 700; border-bottom: 3px solid #e6c200; padding-bottom: 10px; font-size: 20px;">${content}</h3>`;
+    }
+    // H2 headers (** ... **)
+    else if (trimmed.startsWith('**') && trimmed.endsWith('**') && !trimmed.includes(' ')) {
+      if (inList) {
+        html += '</ul>';
+        inList = false;
+      }
+      const content = trimmed.replace(/\*\*/g, '');
+      html += `<h4 style="margin-top: 18px; margin-bottom: 12px; color: #bcd3ff; font-weight: 700; font-size: 16px;">${content}</h4>`;
+    }
+    // Bullet points
+    else if (trimmed.startsWith('* ')) {
+      if (!inList) {
+        html += '<ul style="margin-left: 20px; margin-bottom: 12px; list-style-type: disc;">';
+        inList = true;
+      }
+      const content = trimmed.substring(2);
+      // Handle bold within bullet points - only bold **text** markers
+      const formatted = content.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #bcd3ff;">$1</strong>');
+      html += `<li style="margin-bottom: 10px; color: #e8f0ff;">${formatted}</li>`;
+    }
+    // Horizontal lines (--)
+    else if (trimmed === '--' || trimmed === '---') {
+      if (inList) {
+        html += '</ul>';
+        inList = false;
+      }
+      html += '<hr style="border: none; border-top: 2px solid rgba(230, 194, 0, 0.3); margin: 20px 0;" />';
+    }
+    // Regular text
+    else {
+      if (inList) {
+        html += '</ul>';
+        inList = false;
+      }
+      const formatted = trimmed.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #bcd3ff;">$1</strong>');
+      html += `<p style="margin-bottom: 12px; color: #e8f0ff; font-weight: 400;">${formatted}</p>`;
+    }
+  }
+  
+  if (inList) {
+    html += '</ul>';
+  }
+  
+  html += '</div>';
+  return html;
+}
 
 //background image slider
 const sliderImage = ["bg.jpg", "5.jpg", "1.jpg", "3.jpg", "2.jpg", "4.jpg", "6.jpg"];
@@ -39,9 +119,8 @@ const changeSliderImage = () => {
 
 //navbar
 
-// --- User Modal Logic ---
+// --- Modern OAuth Modal Logic ---
 document.addEventListener('DOMContentLoaded', function() {
-    // Ensure firebase providers are initialized for modal
     function ensureProviders() {
         const fb = window.firebase || (typeof firebase !== 'undefined' ? firebase : null);
         if (fb) {
@@ -54,18 +133,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     ensureProviders();
-    const userBtn = document.getElementById('user-btn');
-    const userModal = document.getElementById('user-modal');
-    const closeUserModal = document.getElementById('close-user-modal');
-    const loginForm = document.getElementById('modal-login-form');
-    const signupForm = document.getElementById('modal-signup-form');
-    const toggleAuthMode = document.getElementById('toggle-auth-mode');
-    const modalTitle = document.getElementById('modal-title');
-    let isLogin = true;
-    // Modal social login buttons
-    const modalGoogleBtn = document.getElementById('modal-google-login');
-    const modalFacebookBtn = document.getElementById('modal-facebook-login');
-    // Try to get firebase and providers from window or global
+
+    // Inject modal markup once for all pages if missing
+    if (!document.getElementById('auth-modal')) {
+        const modal = document.createElement('div');
+        modal.id = 'auth-modal';
+        modal.className = 'auth-modal';
+        modal.innerHTML = `
+            <div class="auth-backdrop"></div>
+            <div class="auth-dialog">
+                <button class="auth-close" id="auth-close" aria-label="Close login dialog">&times;</button>
+                <div class="auth-header">
+                    <p class="auth-eyebrow">Sign in securely</p>
+                    <h3 class="auth-title">Continue with</h3>
+                </div>
+                <div class="auth-buttons">
+                    <button id="auth-google-btn" class="auth-btn google" type="button">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" aria-hidden="true"> Google
+                    </button>
+                    <button id="auth-facebook-btn" class="auth-btn facebook" type="button">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" aria-hidden="true"> Facebook
+                    </button>
+                </div>
+                <p class="auth-assurance">We only use your email to personalize your experience. We never post without permission.</p>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    const authModal = document.getElementById('auth-modal');
+    const authDialog = authModal ? authModal.querySelector('.auth-dialog') : null;
+    const authClose = document.getElementById('auth-close');
+    const googleBtn = document.getElementById('auth-google-btn');
+    const facebookBtn = document.getElementById('auth-facebook-btn');
+
     function getFirebase() {
         return window.firebase || (typeof firebase !== 'undefined' ? firebase : null);
     }
@@ -75,156 +176,179 @@ document.addEventListener('DOMContentLoaded', function() {
     function getFacebookProvider() {
         return window.facebookProvider || (typeof facebookProvider !== 'undefined' ? facebookProvider : null);
     }
-    if (modalGoogleBtn) {
-        modalGoogleBtn.addEventListener('click', function(e) {
-            e.preventDefault();
+
+    function openAuth() {
+        if (!authModal) return;
+        authModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        // force reflow so animation plays when re-opening
+        void authModal.offsetWidth;
+    }
+    function closeAuth() {
+        if (!authModal) return;
+        authModal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Find or create a trigger button
+    let userBtn = document.getElementById('user-btn');
+    if (!userBtn) {
+        const nav = document.querySelector('.navbar .links-container, .navbar .links-right');
+        if (nav) {
+            const li = document.createElement('li');
+            li.className = 'link-item user-btn-item';
+            li.innerHTML = `
+                <button id="user-btn" title="Log in" class="user-btn-inline">
+                    <span class="user-btn-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                    </span>
+                    <span class="user-btn-label">Login</span>
+                </button>
+            `;
+            nav.appendChild(li);
+            userBtn = li.querySelector('#user-btn');
+        }
+    }
+
+    if (userBtn) {
+        userBtn.addEventListener('click', openAuth);
+    }
+    if (authClose) {
+        authClose.addEventListener('click', closeAuth);
+    }
+    if (authModal) {
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal || e.target.classList.contains('auth-backdrop')) {
+                closeAuth();
+            }
+        });
+    }
+    if (googleBtn) {
+        googleBtn.addEventListener('click', function() {
             const fb = getFirebase();
             const gp = getGoogleProvider();
-            if (gp && fb) {
-                fb.auth().signInWithPopup(gp)
-                    .catch(err => alert('Google sign-in failed: ' + err.message));
+            if (fb && gp) {
+                fb.auth().signInWithPopup(gp).catch(err => alert('Google sign-in failed: ' + err.message));
             } else {
                 alert('Google login is not available.');
             }
         });
     }
-    if (modalFacebookBtn) {
-        modalFacebookBtn.addEventListener('click', function(e) {
-            e.preventDefault();
+    if (facebookBtn) {
+        facebookBtn.addEventListener('click', function() {
             const fb = getFirebase();
             const fp = getFacebookProvider();
-            if (fp && fb) {
-                fb.auth().signInWithPopup(fp)
-                    .catch(err => alert('Facebook sign-in failed: ' + err.message));
+            if (fb && fp) {
+                fb.auth().signInWithPopup(fp).catch(err => alert('Facebook sign-in failed: ' + err.message));
             } else {
                 alert('Facebook login is not available.');
             }
         });
     }
-    if (userBtn && userModal) {
-        userBtn.addEventListener('click', function(e) {
-            userModal.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent background scroll
-            // Always show login by default
-            if (loginForm && signupForm && modalTitle && toggleAuthMode) {
-                loginForm.style.display = '';
-                signupForm.style.display = 'none';
-                modalTitle.textContent = 'Log In';
-                toggleAuthMode.innerHTML = "Don't have an account? <span style=\"color:#e6c200;\">Sign up</span>";
-                isLogin = true;
-            }
-        });
-    }
-    if (closeUserModal && userModal) {
-        closeUserModal.addEventListener('click', function() {
-            userModal.style.display = 'none';
-            document.body.style.overflow = '';
-        });
-    }
-    // Close modal when clicking outside modal content
-    if (userModal) {
-        userModal.addEventListener('click', function(e) {
-            if (e.target === userModal) {
-                userModal.style.display = 'none';
-                document.body.style.overflow = '';
-            }
-        });
-    }
-    // Toggle between login and signup
-    if (toggleAuthMode && loginForm && signupForm && modalTitle) {
-        toggleAuthMode.addEventListener('click', function() {
-            if (isLogin) {
-                loginForm.style.display = 'none';
-                signupForm.style.display = '';
-                modalTitle.textContent = 'Sign Up';
-                toggleAuthMode.innerHTML = "Already have an account? <span style=\"color:#e6c200;\">Log in</span>";
-                isLogin = false;
-            } else {
-                loginForm.style.display = '';
-                signupForm.style.display = 'none';
-                modalTitle.textContent = 'Log In';
-                toggleAuthMode.innerHTML = "Don't have an account? <span style=\"color:#e6c200;\">Sign up</span>";
-                isLogin = true;
-            }
-        });
-    }
+    // Escape key closes modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeAuth();
+    });
 });
 
 // --- Navbar Inline Search Logic ---
+document.addEventListener('DOMContentLoaded', function() {
     const navbarSearchForm = document.getElementById('navbar-search-form');
-    const navbarSearchInput = document.getElementById('navbar-search');
+    const navbarSearchInput = document.getElementById('navbar-search') || document.getElementById('navbar-search-input');
     const navbarSearchClear = document.getElementById('navbar-search-clear');
+    const navbarSearchStatus = document.createElement('div');
+    navbarSearchStatus.className = 'navbar-search-status';
+    navbarSearchStatus.setAttribute('aria-live', 'polite');
+
+    if (navbarSearchForm && navbarSearchForm.parentNode && !document.querySelector('.navbar-search-status')) {
+        navbarSearchForm.insertAdjacentElement('afterend', navbarSearchStatus);
+    }
+
+    if (!navbarSearchForm || !navbarSearchInput) {
+        return; // No search bar on this page
+    }
 
     function removeHighlights() {
         document.querySelectorAll('.search-highlight').forEach(el => {
-            el.outerHTML = el.innerText;
+            if (el.parentNode) {
+                el.replaceWith(document.createTextNode(el.innerText));
+            }
         });
     }
 
     function performSearch(query) {
         const q = (query || '').trim().toLowerCase();
-        if (!q) return false;
         removeHighlights();
+
+        if (!q) {
+            navbarSearchStatus.textContent = 'Enter a search term';
+            return false;
+        }
+
+        const skipTags = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'IFRAME', 'SVG', 'PATH']);
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
         let found = false;
         let firstMatch = null;
-        const contentSelectors = ['main', '.container', '.page-header', '.about-section', '.hero-section', 'body'];
-        let contentRoot = null;
-        for (let sel of contentSelectors) {
-            contentRoot = document.querySelector(sel);
-            if (contentRoot) break;
-        }
-        if (!contentRoot) contentRoot = document.body;
-        function walk(node) {
-            if (node.nodeType === 3) {
-                const idx = node.data.toLowerCase().indexOf(q);
-                if (idx !== -1 && node.data.trim() !== '') {
-                    const span = document.createElement('span');
-                    span.className = 'search-highlight';
-                    span.style.background = '#ffe066';
-                    span.style.color = '#002037';
-                    span.style.borderRadius = '4px';
-                    span.style.padding = '0 2px';
-                    span.textContent = node.data.substr(idx, q.length);
-                    const after = node.splitText(idx);
-                    after.splitText(q.length);
-                    node.parentNode.insertBefore(span, after);
-                    if (!firstMatch) firstMatch = span;
-                    found = true;
-                }
-            } else if (node.nodeType === 1 && node.childNodes && !['SCRIPT','STYLE','NOSCRIPT','IFRAME'].includes(node.tagName)) {
-                for (let child of node.childNodes) walk(child);
+
+        while (walker.nextNode()) {
+            const node = walker.currentNode;
+            const parentTag = (node.parentElement && node.parentElement.tagName) || '';
+            if (skipTags.has(parentTag)) continue;
+
+            const text = node.nodeValue;
+            const lower = text.toLowerCase();
+            const idx = lower.indexOf(q);
+            if (idx !== -1 && text.trim() !== '') {
+                const span = document.createElement('span');
+                span.className = 'search-highlight';
+                span.style.background = '#ffe066';
+                span.style.color = '#002037';
+                span.style.borderRadius = '4px';
+                span.style.padding = '0 2px';
+                span.textContent = text.substr(idx, q.length);
+
+                const after = node.splitText(idx);
+                after.splitText(q.length);
+                node.parentNode.insertBefore(span, after);
+
+                if (!firstMatch) firstMatch = span;
+                found = true;
             }
         }
-        walk(contentRoot);
+
         if (found && firstMatch) {
-            firstMatch.scrollIntoView({behavior:'smooth',block:'center'});
+            navbarSearchStatus.textContent = `Found matches for "${query}"`;
+            firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            navbarSearchStatus.textContent = `No matches for "${query}"`;
         }
         return found;
     }
 
-    if (navbarSearchForm && navbarSearchInput) {
-        navbarSearchForm.addEventListener('submit', function(e) {
+    navbarSearchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        performSearch(navbarSearchInput.value);
+    });
+
+    navbarSearchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            navbarSearchInput.value = '';
+            removeHighlights();
+        }
+        if (e.key === 'Enter') {
             e.preventDefault();
             performSearch(navbarSearchInput.value);
-        });
-        navbarSearchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                navbarSearchInput.value = '';
-                removeHighlights();
-            }
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                performSearch(navbarSearchInput.value);
-            }
-        });
-        if (navbarSearchClear) {
-            navbarSearchClear.addEventListener('click', function() {
-                navbarSearchInput.value = '';
-                removeHighlights();
-                navbarSearchInput.focus();
-            });
         }
+    });
+
+    if (navbarSearchClear) {
+        navbarSearchClear.addEventListener('click', function() {
+            navbarSearchInput.value = '';
+            removeHighlights();
+            navbarSearchInput.focus();
+        });
     }
+});
 
 const navbar = document.querySelector('.navbar');
 
@@ -355,20 +479,63 @@ document.addEventListener('DOMContentLoaded', function() {
                 const budget = formData.get('budget');
                 const groupSize = formData.get('groupSize');
                 const experience = formData.get('experience');
-                // Get checked activities
-                const activities = Array.from(itineraryForm.querySelectorAll('input[name="activities"]:checked')).map(opt => opt.value);
+                const tripLength = formData.get('tripLength') || '1-day';
+
+                // Collect activities - now just a single dropdown
+                let activities = [];
+                const activitiesSelect = itineraryForm.querySelector('#activitiesSelect');
+                if (activitiesSelect && activitiesSelect.value) {
+                    activities = [activitiesSelect.value];
+                }
+                
+                // Change to multiple selections
+                activities = Array.from(activitiesSelect.selectedOptions).map(opt => opt.value);
+
+                if (!activities || activities.length === 0) {
+                    if (loading) loading.style.display = 'none';
+                    itineraryResult.innerHTML = '<p style="color:red;">Please select at least one activity.</p>';
+                    return;
+                }
 
                 try {
                     // Call Node.js backend for AI itinerary
+                    console.log('Sending request to backend:', { budget, groupSize, experience, activities, tripLength });
                     const response = await fetch('http://localhost:3001/generate-itinerary', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ budget, groupSize, experience, activities })
+                        body: JSON.stringify({ budget, groupSize, experience, activities, tripLength })
                     });
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error('Server error:', errorData);
+                        if (loading) loading.style.display = 'none';
+                        itineraryResult.innerHTML = `<p style="color:red;">Server error: ${errorData.error || 'Unknown error'}</p>`;
+                        return;
+                    }
+                    
                     const data = await response.json();
+                    console.log('Response data:', data);
                     if (loading) loading.style.display = 'none';
                     if (data.itinerary) {
-                        itineraryResult.innerHTML = `<div style="white-space:pre-line;">${data.itinerary}</div>`;
+                        // Format the itinerary with better styling
+                        const formattedItinerary = formatItinerary(data.itinerary);
+                        
+                        // Add inspirational images gallery below itinerary
+                        const imageGallery = `
+                          <div style="margin-top: 30px; border-top: 2px solid rgba(230,194,0,0.3); padding-top: 20px;">
+                            <h3 style="color: #e6c200; font-size: 18px; margin-bottom: 15px;">📸 Inspiration Gallery</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                              <img src="d.jpg" alt="Diving in Mabini" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                              <img src="s.jpg" alt="Snorkeling" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                              <img src="ih.jpg" alt="Island Hopping" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                              <img src="rs.jpg" alt="Resorts" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                            </div>
+                          </div>
+                        `;
+                        
+                        itineraryResult.innerHTML = formattedItinerary + imageGallery;
                         // Save to Firestore if user is logged in
                         if (window.firebase && window.firebase.auth().currentUser) {
                             try {
@@ -376,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     budget,
                                     groupSize,
                                     experience,
+                                    tripLength,
                                     activities,
                                     aiResult: data.itinerary,
                                     createdAt: new Date().toISOString(),
@@ -582,3 +750,112 @@ if (window.location.pathname.includes('community.html')) {
         });
     }
 }
+
+// --- Floating Gemini Chatbot ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Build chatbot container so it appears on every page that loads main.js
+    const chatContainer = document.createElement('div');
+    chatContainer.className = 'chatbot';
+    chatContainer.innerHTML = `
+        <button class="chatbot__toggle" aria-label="Open Mabini chatbot">
+            <span class="chatbot__icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 5h14a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2H9l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <circle cx="9" cy="10" r="1" fill="currentColor"/>
+                    <circle cx="12" cy="10" r="1" fill="currentColor"/>
+                    <circle cx="15" cy="10" r="1" fill="currentColor"/>
+                </svg>
+            </span>
+        </button>
+        <div class="chatbot__panel" aria-live="polite">
+            <div class="chatbot__header">
+                <div>
+                    <div class="chatbot__title">Mabini Chat</div>
+                    <div class="chatbot__subtitle">Ask about spots, costs, transport, weather.</div>
+                </div>
+                <button class="chatbot__close" aria-label="Close chat">x</button>
+            </div>
+            <div class="chatbot__messages" id="chatbotMessages"></div>
+            <form class="chatbot__form" id="chatbotForm">
+                <input type="text" id="chatbotInput" name="message" placeholder="Ask about Mabini..." autocomplete="off" required />
+                <button type="submit" id="chatbotSend">Send</button>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(chatContainer);
+
+    const toggleBtn = chatContainer.querySelector('.chatbot__toggle');
+    const closeBtn = chatContainer.querySelector('.chatbot__close');
+    const panel = chatContainer.querySelector('.chatbot__panel');
+    const form = chatContainer.querySelector('#chatbotForm');
+    const input = chatContainer.querySelector('#chatbotInput');
+    const sendBtn = chatContainer.querySelector('#chatbotSend');
+    const messagesEl = chatContainer.querySelector('#chatbotMessages');
+
+    const appendMessage = (text, role) => {
+        const msg = document.createElement('div');
+        msg.className = `chatbot__message chatbot__message--${role}`;
+        msg.innerText = text;
+        messagesEl.appendChild(msg);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    };
+
+    const setLoading = (loading) => {
+        sendBtn.disabled = loading;
+        input.disabled = loading;
+        if (loading) {
+            sendBtn.textContent = '...';
+        } else {
+            sendBtn.textContent = 'Send';
+        }
+    };
+
+    const openChat = () => {
+        panel.classList.add('is-open');
+        input.focus();
+    };
+
+    const closeChat = () => {
+        panel.classList.remove('is-open');
+    };
+
+    toggleBtn.addEventListener('click', () => {
+        if (panel.classList.contains('is-open')) {
+            closeChat();
+        } else {
+            openChat();
+        }
+    });
+
+    closeBtn.addEventListener('click', closeChat);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+        appendMessage(message, 'user');
+        input.value = '';
+        setLoading(true);
+
+        try {
+            const response = await fetch('http://localhost:3001/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errText = errorData.error || 'Request failed';
+                appendMessage(`Error: ${errText}`, 'bot');
+            } else {
+                const data = await response.json();
+                appendMessage(data.reply || 'Got it.', 'bot');
+            }
+        } catch (err) {
+            appendMessage('Network error. Please try again.', 'bot');
+        } finally {
+            setLoading(false);
+        }
+    });
+});

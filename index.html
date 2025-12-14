@@ -16,13 +16,44 @@
 
     <header>
         <nav class="navbar">
-            <ul class="links-container">
-                <li class="link-item"><a href="#about-section">About</a></li>
-                <li class="link-item"><a href="#marine-life">Marine Life</a></li>
-                <li class="link-item"><a href="#hero-section"><img src="logo.png" alt="logo" class="logo"></a></li>
-                <li class="link-item"><a href="#service-section">Services</a></li>
-                <li class="link-item"><a href="#find-section">Find Us</a></li>
-            </ul>
+            <div class="navbar-flex">
+                <!-- Left Column: Navigation Links -->
+                <ul class="links-left">
+                    <li class="link-item"><a href="#about-section">About</a></li>
+                    <li class="link-item"><a href="#marine-life">Marine Life</a></li>
+                    <li class="link-item"><a href="#service-section">Services</a></li>
+                    <li class="link-item"><a href="announcements.html">Announcements</a></li>
+                </ul>
+
+                <!-- Center Column: Logo -->
+                <div class="logo-center">
+                    <a href="#hero-section"><img src="logo.png" alt="logo" class="logo"></a>
+                </div>
+
+                <!-- Right Column: Navigation Links + Search + Login -->
+                <ul class="links-right">
+                    <li class="link-item"><a href="community.html">Community</a></li>
+                    <li class="link-item"><a href="#find-section">Find Us</a></li>
+                    <li class="link-item navbar-search-item">
+                        <form id="navbar-search-form" autocomplete="off">
+                            <span class="search-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </span>
+                            <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search site">
+                            <button type="button" id="navbar-search-clear" aria-label="Clear search">&times;</button>
+                            <button id="navbar-search-go" type="submit" tabindex="-1">Search</button>
+                        </form>
+                    </li>
+                    <li class="link-item user-btn-item">
+                        <button id="user-btn" title="Log in" class="user-btn-inline">
+                            <span class="user-btn-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                            </span>
+                            <span class="user-btn-label">Login</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </nav>
 
         <main class="hero-section" id="hero-section">
@@ -42,7 +73,9 @@
               <p class="hero-section-small-text" data-aos="fade-up">Welcome to</p>
               <h1 class="hero-section-title" data-aos="fade-up">Mabini, Batangas</h1>
               <p class="hero-section-sub-heading" data-aos="fade-up">Where Nature Create Unforgettable Journeys</p>
-              <a href="#explore" class="hero-btn" data-aos="fade-up">Plan Your Visit</a>
+              <div class="hero-cta" data-aos="fade-up">
+                <button id="planVisitBtn" class="hero-btn" type="button">Plan Your Visit</button>
+              </div>
           </div>
     
             <img src="arrow.png" class="scroll-down-icon" alt="scroll-down">
@@ -274,6 +307,89 @@
           </svg>
       </div>
   </div>
+
+    <!-- AI Itinerary Modal -->
+    <div id="aiItineraryModal" class="itinerary-modal" role="dialog" aria-modal="true" aria-labelledby="itinerary-title" aria-describedby="itinerary-description" style="display:none;">
+        <div class="itinerary-modal__backdrop"></div>
+        <div class="itinerary-modal__dialog">
+            <button id="closeModal" class="itinerary-modal__close" aria-label="Close itinerary form">&times;</button>
+            <div class="itinerary-modal__header">
+                <p class="itinerary-modal__eyebrow">Plan smarter</p>
+                <h3 id="itinerary-title" class="itinerary-modal__title">AI-crafted itinerary</h3>
+                <p id="itinerary-description" class="itinerary-modal__subtitle">Tell us your preferences and we’ll map a 1-day or 2-day plan with dive spots, beaches, costs, and tips.</p>
+            </div>
+            <form id="itineraryForm" class="itinerary-form">
+                <div class="itinerary-form__row">
+                    <label for="budget" class="itinerary-form__label">Budget</label>
+                    <select id="budget" name="budget" required>
+                        <option value="">Select budget</option>
+                        <option value="Budget-friendly">Budget-friendly (₱1k–₱3k pp/day)</option>
+                        <option value="Mid-range">Mid-range (₱3k–₱6k pp/day)</option>
+                        <option value="Premium">Premium (₱6k+ pp/day)</option>
+                    </select>
+                </div>
+                <div class="itinerary-form__row">
+                    <label for="groupSize" class="itinerary-form__label">Group size</label>
+                    <input id="groupSize" name="groupSize" type="number" min="1" max="50" value="2" required />
+                </div>
+                <fieldset class="itinerary-form__row">
+                    <legend class="itinerary-form__label">Swimming / diving experience</legend>
+                    <div class="itinerary-form__choices">
+                        <label><input type="radio" name="experience" value="Beginner" required /> Beginner</label>
+                        <label><input type="radio" name="experience" value="Intermediate" /> Intermediate</label>
+                        <label><input type="radio" name="experience" value="Advanced" /> Advanced / certified diver</label>
+                    </div>
+                </fieldset>
+                <div class="itinerary-form__row">
+                    <label for="activitiesSelect" class="itinerary-form__label">Preferred activities</label>
+                    <select id="activitiesSelect" name="activities" multiple required>
+                        <option value="Scuba diving">Scuba diving</option>
+                        <option value="Snorkeling">Snorkeling</option>
+                        <option value="Island hopping">Island hopping</option>
+                        <option value="Beach time">Beach time</option>
+                        <option value="Hiking">Hiking / viewpoints</option>
+                        <option value="Food crawl">Food crawl / local eats</option>
+                    </select>
+                    <p class="itinerary-form__hint">Hold Ctrl/Cmd to select multiple.</p>
+                </div>
+                <fieldset class="itinerary-form__row">
+                    <legend class="itinerary-form__label">Trip length</legend>
+                    <div class="itinerary-form__choices itinerary-form__choices--chips">
+                        <label class="chip">
+                            <input type="radio" name="tripLength" value="1-day" required />
+                            <span>1 day</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="tripLength" value="2-day" />
+                            <span>2 days</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="tripLength" value="3-day" />
+                            <span>3 days</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="tripLength" value="4-day" />
+                            <span>4 days</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="tripLength" value="5-day" />
+                            <span>5 days</span>
+                        </label>
+                        <label class="chip">
+                            <input type="radio" name="tripLength" value="6-day" />
+                            <span>6 days</span>
+                        </label>
+                    </div>
+                </fieldset>
+                <button type="submit" class="itinerary-form__submit">Generate my itinerary</button>
+            </form>
+            <div id="itineraryLoading" class="itinerary-loading" style="display:none;">
+                <div class="spinner"></div>
+                <p>Crafting your Mabini adventure...</p>
+            </div>
+            <div id="itineraryResult" class="itinerary-result" aria-live="polite"></div>
+        </div>
+    </div>
 
     <footer>
         <div class="footer-container">
