@@ -9,7 +9,11 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="service-pages.css" />
+    <link rel="stylesheet" href="service-template.css" />
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--bg); }
+        footer { background: var(--midnight); color: var(--card); padding: 40px 20px; text-align: center; margin-top: 60px; font-size: 14px; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -20,282 +24,182 @@
                 <li class="link-item"><a href="index.html#service-section">Services</a></li>
                 <li class="link-item"><a href="announcements.html">Announcements</a></li>
             </ul>
-            <div class="logo-center"><a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a></div>
+            <div class="logo-center">
+                <a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a>
+            </div>
             <ul class="links-right">
                 <li class="link-item"><a href="community.html">Community</a></li>
                 <li class="link-item"><a href="index.html#find-section">Find Us</a></li>
                 <li class="link-item navbar-search-item">
                     <form id="navbar-search-form" autocomplete="off">
-                        <span class="search-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <span class="search-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         </span>
-                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search" />
-                        <button id="navbar-search-go" type="submit" tabindex="-1">Go</button>
+                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search site">
+                        <button type="button" id="navbar-search-clear" aria-label="Clear search">&times;</button>
+                        <button id="navbar-search-go" type="submit" tabindex="-1">Search</button>
                     </form>
+                </li>
+                <li class="link-item user-btn-item">
+                    <button id="user-btn" title="Log in" class="user-btn-inline">
+                        <span class="user-btn-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg></span>
+                        <span class="user-btn-label">Login</span>
+                    </button>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <!-- Page Header -->
-    <!-- ...existing code... -->
-    <header class="page-header">
-        <h1>Snorkeling in Mabini</h1>
-        <p>Experience the vibrant underwater world without going deep - perfect for all ages and skill levels</p>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container">
-        <section class="content-section">
-            <a href="index.html" class="back-to-home">← Back to Home</a>
-
-            <!-- Introduction -->
-            <div class="info-box">
-                <h3>Discover the Magic of Snorkeling</h3>
-                <p>
-                    Snorkeling is one of the most accessible ways to explore the underwater beauty of Mabini. 
-                    No certification required! Simply put on your mask, snorkel, and fins to witness the incredible 
-                    coral reefs and marine life that lie just beneath the surface. Mabini's warm, clear waters and 
-                    shallow reef systems make it an ideal destination for snorkelers of all ages.
-                </p>
-            </div>
-
-            <!-- Best Snorkeling Spots -->
-            <h2 class="section-title">Best Snorkeling Spots</h2>
-            <p class="section-subtitle">Accessible locations perfect for snorkeling adventures</p>
-
-            <div class="cards-grid">
-                <!-- Sepoc Point -->
-                <div class="card">
-                    <img src="1.jpg" alt="Sepoc Point" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Sepoc Point</h3>
-                        <p class="card-text">
-                            A shallow reef perfect for beginners with vibrant corals and colorful tropical fish. 
-                            Excellent for first-time snorkelers and families.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Depth:</strong> 1-8 meters | <strong>Difficulty:</strong> Easy
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Anilao Reef -->
-                <div class="card">
-                    <img src="2.jpg" alt="Anilao Reef" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Anilao Reef</h3>
-                        <p class="card-text">
-                            A diverse reef system with healthy corals and abundant marine life. Great visibility 
-                            and easy access from the shore.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Depth:</strong> 2-12 meters | <strong>Difficulty:</strong> Easy-Moderate
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dry Hand Island -->
-                <div class="card">
-                    <img src="3.jpg" alt="Dry Hand Island" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Dry Hand Island</h3>
-                        <p class="card-text">
-                            An island snorkeling destination with pristine coral formations and schools of fish. 
-                            Includes beach access and rest areas.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Depth:</strong> 1-10 meters | <strong>Difficulty:</strong> Easy
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mainit Point -->
-                <div class="card">
-                    <img src="4.jpg" alt="Mainit Point" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Mainit Point</h3>
-                        <p class="card-text">
-                            A scenic snorkeling location featuring diverse marine species and interesting rock formations. 
-                            Protected by local conservation efforts.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Depth:</strong> 2-15 meters | <strong>Difficulty:</strong> Moderate
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tinglad Island -->
-                <div class="card">
-                    <img src="5.jpg" alt="Tinglad Island" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Tinglad Island</h3>
-                        <p class="card-text">
-                            A beautiful island destination with spectacular snorkeling around submerged rock formations. 
-                            Home to rays, jacks, and groupers.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Depth:</strong> 2-18 meters | <strong>Difficulty:</strong> Moderate
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mabini Beach -->
-                <div class="card">
-                    <img src="6.jpg" alt="Mabini Beach" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Mabini Beach</h3>
-                        <p class="card-text">
-                            Beach snorkeling with easy access and calm waters. Perfect for families and those 
-                            wanting a relaxed snorkeling experience.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Depth:</strong> 1-6 meters | <strong>Difficulty:</strong> Very Easy
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Snorkeling Facts -->
-            <div class="info-box" style="margin-top: 60px;">
-                <h3>Why Snorkel in Mabini?</h3>
-                <ul class="facts-list">
-                    <li>No certification or prior experience required - perfect for all ages</li>
-                    <li>Shallow reef systems ideal for viewing marine life from the surface</li>
-                    <li>Crystal-clear waters with excellent visibility of 20-40 meters</li>
-                    <li>Rich coral formations hosting diverse fish and marine species</li>
-                    <li>Year-round snorkeling opportunities with best conditions November-May</li>
-                    <li>Affordable compared to diving - starting at ₱500 for guided tours</li>
-                    <li>Family-friendly and accessible to people of all fitness levels</li>
-                    <li>Perfect for underwater photography with minimal gear</li>
-                </ul>
-            </div>
-
-            <!-- Snorkeling Facts Section -->
-            <h2 class="section-title" style="margin-top: 60px;">Fun Facts About Snorkeling</h2>
-            
-            <div class="two-column">
-
-                    <!-- User Auth Modal (moved to end of body for proper overlay) -->
-                    <div id="user-modal" class="modal">
-                        <div class="modal-content">
-                            <span class="close-modal" id="close-user-modal">&times;</span>
-                            <h2 id="modal-title">Log In</h2>
-                            <form id="modal-login-form">
-                                <input type="email" id="modal-login-email" placeholder="Email" required>
-                                <input type="password" id="modal-login-password" placeholder="Password" required>
-                                <button type="submit">Log In</button>
-                            </form>
-                            <form id="modal-signup-form" style="display:none;">
-                                <input type="email" id="modal-signup-email" placeholder="Email" required>
-                                <input type="password" id="modal-signup-password" placeholder="Password" required>
-                                <button type="submit">Sign Up</button>
-                            </form>
-                            <p style="text-align:center; margin: 10px 0;">or</p>
-                            <button id="modal-google-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" style="width:20px;height:20px;vertical-align:middle;"> Continue with Google
-                            </button>
-                            <button id="modal-facebook-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" style="width:20px;height:20px;vertical-align:middle;"> Continue with Facebook
-                            </button>
-                            <hr>
-                            <p id="toggle-auth-mode" style="cursor:pointer;color:#003d5c;font-weight:500;">Don't have an account? <span style="color:#e6c200;">Sign up</span></p>
-                        </div>
-                    </div>
-                    <script src="main.js"></script>
-                </body>
-                </html>
-                        <li>Increased awareness and appreciation for ocean conservation</li>
-                        <li>Suitable for all ages and fitness levels</li>
-                        <li>Minimal training required compared to scuba diving</li>
-                        <li>Creates lasting family memories and bonding experiences</li>
-                    </ul>
-                </div>
-                <div>
-                    <img src="s.jpg" alt="Snorkeling Benefits" class="column-image">
-                </div>
-            </div>
-
-            <!-- Marine Life You'll See -->
-            <div class="info-box">
-                <h3>Marine Life You'll Encounter</h3>
-                <p>
-                    When snorkeling in Mabini, you'll see incredible varieties of marine life including:
-                </p>
-                <ul class="facts-list" style="margin-top: 20px;">
-                    <li><strong>Reef Fish:</strong> Parrotfish, angelfish, damselfish, and wrasses</li>
-                    <li><strong>Larger Fish:</strong> Barracudas, jacks, and occasional groupers</li>
-                    <li><strong>Rays and Sharks:</strong> Stingrays, eagle rays, and harmless reef sharks</li>
-                    <li><strong>Sea Turtles:</strong> Green and hawksbill turtles (seasonal)</li>
-                    <li><strong>Invertebrates:</strong> Sea stars, sea urchins, and octopuses</li>
-                    <li><strong>Corals:</strong> Hard corals, soft corals, and anemones</li>
-                    <li><strong>Crustaceans:</strong> Crabs and lobsters in reef crevices</li>
-                </ul>
-            </div>
-
-            <!-- Snorkeling Tips -->
-            <div class="dos-donts-container">
-                <div class="dos-section">
-                    <h3>✓ DO's</h3>
-                    <ul class="facts-list do-list">
-                        <li>Use reef-safe sunscreen to protect coral ecosystems</li>
-                        <li>Wear UV-protective clothing and rash guards</li>
-                        <li>Stay in groups and never snorkel alone</li>
-                        <li>Keep a safe distance from marine wildlife</li>
-                        <li>Listen to your guide's instructions</li>
-                        <li>Practice proper breathing techniques before going deep</li>
-                        <li>Take breaks and stay hydrated</li>
-                        <li>Respect marine protection areas</li>
-                    </ul>
-                </div>
-                <div class="donts-section">
-                    <h3>✕ DON'Ts</h3>
-                    <ul class="facts-list dont-list">
-                        <li>Don't touch or stand on coral - it damages the ecosystem</li>
-                        <li>Don't chase or pursue marine animals</li>
-                        <li>Don't feed fish or other marine life</li>
-                        <li>Don't wear sunscreen that harms coral</li>
-                        <li>Don't collect shells or marine specimens</li>
-                        <li>Don't snorkel under the influence</li>
-                        <li>Don't venture too far from shore if inexperienced</li>
-                        <li>Don't ignore weather warnings or water conditions</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Best Time & Season -->
-            <div class="info-box">
-                <h3>Best Time to Snorkel</h3>
-                <p>
-                    <strong>Ideal Season (November to May):</strong> These months offer calm seas, excellent visibility, 
-                    and stable weather. December to February is peak season with the best conditions.
-                </p>
-                <p style="margin-top: 15px;">
-                    <strong>Off-Season (June to October):</strong> Snorkeling is still possible but seas may be rougher 
-                    and visibility can be reduced. Some areas may be less accessible.
-                </p>
-                <p style="margin-top: 15px;">
-                    <strong>Best Time of Day:</strong> Early morning (6-10 AM) offers the best visibility and calmest waters. 
-                    Afternoon visits are also good but currents may be stronger.
-                </p>
-            </div>
-
-            <!-- What to Bring -->
-            <div class="info-box">
-                <h3>What to Bring</h3>
-                <ul class="facts-list">
-                    <li>Mask and snorkel (or rent at local shops)</li>
-                    <li>Fins/flippers for easier movement</li>
-                    <li>Rash guard or UV protective clothing</li>
-                    <li>Reef-safe sunscreen (SPF 50+)</li>
-                    <li>Water bottle and snacks</li>
-                    <li>Towel and change of clothes</li>
-                    <li>Underwater camera to capture memories</li>
-                    <li>Cash for entrance fees and tips</li>
-                </ul>
-            </div>
+    <div class="service-shell">
+        <!-- Hero Section -->
+        <section class="service-hero">
+            <h1>🤿 Snorkeling in Mabini</h1>
+            <p>Explore vibrant coral reefs and tropical marine life in crystal-clear, shallow waters—no certification needed. Perfect for families, beginners, and all ages.</p>
         </section>
-    </main>
+
+        <!-- Overview Card -->
+        <div class="overview-card">
+            <h2>What is Snorkeling?</h2>
+            <p><strong>Snorkeling</strong> lets you observe underwater ecosystems from the surface using only a mask, snorkel, and fins. It's the perfect gateway to marine exploration—accessible, safe, and incredibly rewarding.</p>
+            <h3 style="margin-top: 16px; color: var(--midnight); font-size: 16px;">Why Mabini?</h3>
+            <p>Mabini boasts pristine, shallow coral reefs with colorful fish, anemones, and sea urchins. The calm, warm waters and abundance of marine biodiversity make it an ideal snorkeling destination.</p>
+            <h3 style="margin-top: 16px; color: var(--midnight); font-size: 16px;">Best For</h3>
+            <p>Families, beginners, non-certified explorers, photographers, and anyone seeking a safe, accessible way to connect with marine nature.</p>
+        </div>
+
+        <!-- Key Info Grid -->
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">📅</div>
+                <div class="info-label">Best Time</div>
+                <div class="info-value">Year-Round</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">Peak: Nov–May</div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">💰</div>
+                <div class="info-label">Cost</div>
+                <div class="info-value">₱800–₱1,200</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">per person, incl. guide</div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">🎓</div>
+                <div class="info-label">Skill Level</div>
+                <div class="info-value">Beginner–Intermediate</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">No cert. required</div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">⏱️</div>
+                <div class="info-label">Duration</div>
+                <div class="info-value">2–4 Hours</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">flexible timing</div>
+            </div>
+        </div>
+
+        <!-- Top Snorkeling Spots -->
+        <div class="section-head">
+            <h2>Top Snorkeling Spots</h2>
+            <p>Family-friendly, shallow reef areas with abundant colorful fish and coral.</p>
+        </div>
+
+        <div class="spots-grid">
+            <div class="spot-card">
+                <img src="lomi.jfif" alt="Tingloy Cove" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Tingloy Cove</h3>
+                    <p class="spot-desc">Protected cove with calm water and abundant fish. Ideal for children and cautious swimmers.</p>
+                    <div class="spot-meta">
+                        <span>📍 Depth: 1–4m</span>
+                        <span>⭐ Very Easy</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spot-card">
+                <img src="lomi.jfif" alt="Ligpo Island Reef" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Ligpo Island Reef</h3>
+                    <p class="spot-desc">Diverse marine biodiversity with coral formations and schooling fish. Slightly deeper but still accessible.</p>
+                    <div class="spot-meta">
+                        <span>📍 Depth: 3–10m</span>
+                        <span>⭐ Intermediate</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snorkeling Timeline -->
+        <div class="section-head">
+            <h2>Your Snorkeling Journey</h2>
+            <p>What to expect on a typical snorkeling day trip.</p>
+        </div>
+
+        <div class="timeline-steps">
+            <div class="step">
+                <div class="step-icon">1️⃣</div>
+                <div class="step-content">
+                    <h3>Meet at Departure Point</h3>
+                    <p>Gather at the beach or resort. Guides provide equipment check, size adjustment, and safety briefing. Learn mask/snorkel fit and emergency signals.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">2️⃣</div>
+                <div class="step-content">
+                    <h3>Boat Ride to Reef</h3>
+                    <p>Scenic 15–30 minute journey to snorkeling site. Guides point out landmarks and share marine facts during transit.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">3️⃣</div>
+                <div class="step-content">
+                    <h3>First Snorkel Session</h3>
+                    <p>Enter calm, shallow water. Guide stays close for support. Observe corals, fish, and sea life. Duration: 45–60 minutes with breaks.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">4️⃣</div>
+                <div class="step-content">
+                    <h3>Lunch & Rest</h3>
+                    <p>Return to boat or beach. Enjoy fresh snacks, hydrate, and rest in shade. Perfect time for questions and photo sharing.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">5️⃣</div>
+                <div class="step-content">
+                    <h3>Second Snorkel Session</h3>
+                    <p>Return to reef or explore another spot. More fish activity, deeper reef sections, or night snorkeling (if available).</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">6️⃣</div>
+                <div class="step-content">
+                    <h3>Return & Debrief</h3>
+                    <p>Head back to shore. Rinse equipment, change clothes, and discuss highlights with your guide. Photos available for sharing.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snorkeling Tips -->
+        <div class="tips-box">
+            <h3>Essential Snorkeling Tips</h3>
+            <ul class="tips-list">
+                <li><strong>Always wear a life vest</strong> — required for safety, especially in deeper areas or currents.</li>
+                <li><strong>Apply reef-safe sunscreen</strong> — protect your skin and the coral ecosystem.</li>
+                <li><strong>Respect marine life</strong> — observe from a distance; do not touch corals or chase fish.</li>
+                <li><strong>Watch for currents</strong> — stay close to guide; use a buddy system with your partner.</li>
+                <li><strong>Never stand on coral</strong> — use soft steps and watch your fins to avoid damage.</li>
+                <li><strong>Check equipment before entry</strong> — ensure mask seal, snorkel flow, and fin comfort.</li>
+                <li><strong>Bring fresh water & snacks</strong> — dehydration is common; stay hydrated throughout the day.</li>
+                <li><strong>Start in shallow water</strong> — build confidence before venturing deeper or into currents.</li>
+            </ul>
+        </div>
+
+        <!-- Call-to-Action -->
+        <div class="cta-section">
+            <h2>Ready to Explore the Reefs?</h2>
+            <p>Book your snorkeling adventure in Mabini today. Perfect for families, groups, and solo travelers.</p>
+            <a href="index.html#find-section" class="cta-btn">Find a Snorkeling Guide</a>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>

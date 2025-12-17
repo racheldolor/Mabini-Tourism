@@ -9,7 +9,15 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="service-pages.css" />
+    <link rel="stylesheet" href="service-template.css" />
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--bg); }
+        footer { background: var(--midnight); color: var(--card); padding: 40px 20px; text-align: center; margin-top: 60px; font-size: 14px; }
+        .category-tabs { display: flex; gap: 12px; margin: 24px 0; flex-wrap: wrap; }
+        .category-tab { padding: 8px 16px; border-radius: 20px; background: var(--border); color: var(--text); cursor: pointer; border: none; font-weight: 600; transition: all 0.2s ease; }
+        .category-tab.active { background: var(--midnight); color: white; }
+        .category-tab:hover { background: var(--deep-blue); color: white; }
+    </style>
 </head>
 <body>
      <nav class="navbar">
@@ -20,453 +28,355 @@
                 <li class="link-item"><a href="index.html#service-section">Services</a></li>
                 <li class="link-item"><a href="announcements.html">Announcements</a></li>
             </ul>
-            <div class="logo-center"><a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a></div>
+            <div class="logo-center">
+                <a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a>
+            </div>
             <ul class="links-right">
                 <li class="link-item"><a href="community.html">Community</a></li>
                 <li class="link-item"><a href="index.html#find-section">Find Us</a></li>
                 <li class="link-item navbar-search-item">
                     <form id="navbar-search-form" autocomplete="off">
-                        <span class="search-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <span class="search-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         </span>
-                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search" />
-                        <button id="navbar-search-go" type="submit" tabindex="-1">Go</button>
+                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search site">
+                        <button type="button" id="navbar-search-clear" aria-label="Clear search">&times;</button>
+                        <button id="navbar-search-go" type="submit" tabindex="-1">Search</button>
                     </form>
+                </li>
+                <li class="link-item user-btn-item">
+                    <button id="user-btn" title="Log in" class="user-btn-inline">
+                        <span class="user-btn-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg></span>
+                        <span class="user-btn-label">Login</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <!-- Page Header -->
-    <header class="page-header">
-        <h1>Cuisine in Mabini</h1>
-        <p>Savor authentic Batangueño flavors and fresh seafood delicacies</p>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container">
-        <section class="content-section">
-            <a href="index.html" class="back-to-home">← Back to Home</a>
-
-            <!-- Introduction -->
-            <div class="info-box">
-                <h3>Discover Mabini's Culinary Treasures</h3>
-                <p>
-                    Mabini's cuisine reflects the rich gastronomic heritage of Batangas, blending traditional 
-                    Filipino flavors with fresh local seafood. As a coastal town, Mabini specializes in delicious 
-                    seafood dishes prepared with recipes passed down through generations. From humble local eateries 
-                    to upscale restaurants, you'll find unforgettable dining experiences that showcase the region's 
-                    culinary excellence.
-                </p>
-            </div>
-
-            <!-- Popular Dishes -->
-            <h2 class="section-title" style="margin-top: 60px;">Must-Try Local Dishes</h2>
-            <p class="section-subtitle">Authentic Batangueño and seafood specialties</p>
-
-            <div class="cards-grid">
-                <!-- Arroz a la Tumbada -->
-                <div class="card">
-                    <img src="1.jpg" alt="Arroz a la Tumbada" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Arroz a la Tumbada</h3>
-                        <p class="card-text">
-                            The crown jewel of Batangas cuisine. A hearty rice dish cooked in seafood or meat broth, 
-                            layered with fresh seafood, vegetables, and rich flavors. It's filling, delicious, and 
-                            a must-try when visiting Batangas.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Type:</strong> Rice Dish | <strong>Price Range:</strong> ₱150-300 per serving
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lomi -->
-                <div class="card">
-                    <img src="2.jpg" alt="Lomi" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Lomi (Batangas Style)</h3>
-                        <p class="card-text">
-                            A comforting noodle soup that's hearty and flavorful. Made with fresh egg noodles, 
-                            broth, eggs, and various toppings. Batangas version often includes fresh seafood and 
-                            is thicker than typical Filipino lomi.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Type:</strong> Noodle Soup | <strong>Price Range:</strong> ₱80-150 per serving
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fresh Seafood Grilled -->
-                <div class="card">
-                    <img src="3.jpg" alt="Grilled Seafood" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Fresh Grilled Seafood</h3>
-                        <p class="card-text">
-                            Fresh catch from the sea grilled to perfection. Fish, shrimp, squid, and crabs are 
-                            simply seasoned and grilled, allowing the natural flavors to shine. A specialty of 
-                            beachfront restaurants.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Type:</strong> Grilled Seafood | <strong>Price Range:</strong> ₱300-600 per serving
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Inihaw na Manok -->
-                <div class="card">
-                    <img src="4.jpg" alt="Grilled Chicken" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Inihaw na Manok</h3>
-                        <p class="card-text">
-                            Grilled chicken marinated in local spices and grilled over charcoal. Crispy on the outside, 
-                            tender on the inside, and bursting with smoky flavor. Often served with rice and local 
-                            vinegar dipping sauce.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Type:</strong> Grilled Meat | <strong>Price Range:</strong> ₱200-400 per serving
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Kinilaw -->
-                <div class="card">
-                    <img src="5.jpg" alt="Kinilaw" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Kinilaw (Ceviche)</h3>
-                        <p class="card-text">
-                            Fresh raw fish or seafood "cooked" in citrus juice (lemon or vinegar) and mixed with 
-                            ginger, onions, and spices. A refreshing and light dish perfect for hot days after 
-                            diving or snorkeling.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Type:</strong> Raw Seafood Dish | <strong>Price Range:</strong> ₱150-300 per serving
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tawilis (Baby Fish) -->
-                <div class="card">
-                    <img src="6.jpg" alt="Tawilis" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Tawilis (Baby Fish)</h3>
-                        <p class="card-text">
-                            Small, delicate fish fried whole until crispy. Often eaten head-to-tail and served as 
-                            an appetizer or side dish. A Batangas delicacy available in many local restaurants.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Type:</strong> Fried Seafood | <strong>Price Range:</strong> ₱100-200 per serving
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Popular Restaurants -->
-            <h2 class="section-title" style="margin-top: 60px;">Recommended Restaurants & Eateries</h2>
-            <p class="section-subtitle">Where to eat in Mabini</p>
-
-            <div class="cards-grid">
-                <!-- Upscale Restaurant 1 -->
-                <div class="card">
-                    <img src="1.jpg" alt="Seaside Bistro" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Seaside Bistro</h3>
-                        <p class="card-text">
-                            Upscale beachfront restaurant with a sophisticated atmosphere. Specializes in fresh 
-                            seafood and international cuisine. Great for dinner with sunset views. Highly recommended 
-                            for special occasions.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Cuisine:</strong> Seafood & International | <strong>Price:</strong> ₱₱₱
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Local Eatery 1 -->
-                <div class="card">
-                    <img src="2.jpg" alt="Nanay's Lomi & Arroz" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Nanay's Lomi & Arroz</h3>
-                        <p class="card-text">
-                            A family-run establishment serving authentic Batangueño dishes. Famous for their Arroz a 
-                            la Tumbada and Lomi. Casual, friendly atmosphere with locals. Budget-friendly and heartily 
-                            portions.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Cuisine:</strong> Batangueño | <strong>Price:</strong> ₱
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fresh Seafood Restaurant -->
-                <div class="card">
-                    <img src="3.jpg" alt="The Fish House" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">The Fish House</h3>
-                        <p class="card-text">
-                            A seafood-focused restaurant featuring fresh daily catch prepared various ways. Known for 
-                            grilled fish, shrimp, and crabs. Casual beachfront setting with outdoor seating overlooking 
-                            the sea.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Cuisine:</strong> Fresh Seafood | <strong>Price:</strong> ₱₱
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Casual Dining -->
-                <div class="card">
-                    <img src="4.jpg" alt="Bauan Lechon House" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Bauan Lechon House</h3>
-                        <p class="card-text">
-                            Specializing in lechon (roasted pig) and other meat dishes. Famous for their crispy-skinned 
-                            lechon. Casual open-air dining with picnic-table seating. Perfect for group meals and 
-                            celebrations.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Cuisine:</strong> Grilled & Roasted Meat | <strong>Price:</strong> ₱₱
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Beachfront Grill -->
-                <div class="card">
-                    <img src="5.jpg" alt="Beachfront Grill" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Beachfront Grill Mabini</h3>
-                        <p class="card-text">
-                            A relaxed beachfront restaurant with direct access to sand and sea. Offers grilled seafood 
-                            and international dishes. Great for lunch with beach activities. Cold drinks and refreshments 
-                            available.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Cuisine:</strong> Grilled & Seafood | <strong>Price:</strong> ₱₱
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cafe/Snack Bar -->
-                <div class="card">
-                    <img src="6.jpg" alt="Dive & Dine Cafe" class="card-image">
-                    <div class="card-body">
-                        <h3 class="card-title">Dive & Dine Cafe</h3>
-                        <p class="card-text">
-                            Casual cafe located near dive shops. Serves breakfast, light lunch, and refreshments. 
-                            Popular among divers and tourists. Known for good coffee, pastries, and Filipino breakfast. 
-                            Affordable and welcoming.
-                        </p>
-                        <div class="card-footer">
-                            <strong>Cuisine:</strong> Cafe & Breakfast | <strong>Price:</strong> ₱
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Culinary Facts -->
-            <div class="info-box" style="margin-top: 60px;">
-                <h3>Interesting Food Facts About Batangas</h3>
-                <ul class="facts-list">
-                    <li>Batangas is famous for being the largest producer of beef in the Philippines</li>
-                    <li>Arroz a la Tumbada is considered the unofficial national rice dish</li>
-                    <li>Mango from Batangas (Calapuy) is sweet and aromatic</li>
-                    <li>Bulalo (beef bone marrow soup) is a Batangas specialty from highland areas</li>
-                    <li>Adobong Baka (beef adobo) is a classic Batangas preparation</li>
-                    <li>Fresh seafood from Mabini reaches Manila markets daily</li>
-                    <li>Local coffee grows in the highland regions of Batangas</li>
-                    <li>Tiyula ng Manok (chicken stew) is a comfort food favorite</li>
-                </ul>
-            </div>
-
-            <!-- Dining Tips -->
-            <div class="dos-donts-container" style="margin-top: 60px;">
-                <div class="dos-section">
-                    <h3>✓ DO's</h3>
-                    <ul class="facts-list do-list">
-                        <li>Try authentic local dishes from family-run eateries</li>
-                        <li>Eat fresh seafood during lunch hours (usually 11 AM-2 PM)</li>
-                        <li>Ask locals for restaurant recommendations</li>
-                        <li>Visit night markets for affordable local snacks and food</li>
-                        <li>Pair meals with local beverages like fresh juice</li>
-                        <li>Be adventurous and try new dishes</li>
-                        <li>Eat at beachfront restaurants for sunset dining</li>
-                        <li>Support local businesses and family restaurants</li>
-                        <li>Check menu items and ask about ingredients if allergic</li>
-                        <li>Enjoy meal times as social experiences</li>
-                    </ul>
-                </div>
-                <div class="donts-section">
-                    <h3>✕ DON'Ts</h3>
-                    <ul class="facts-list dont-list">
-                        <li>Don't ignore street food - some of the best food is there</li>
-                        <li>Don't eat at restaurants that look too empty</li>
-                        <li>Don't order dishes that don't look fresh or appetizing</li>
-                        <li>Don't be picky about authentic preparation methods</li>
-                        <li>Don't eat heavy meals before diving or swimming</li>
-                        <li>Don't forget to stay hydrated while eating spicy food</li>
-                        <li>Don't refuse offered local delicacies out of politeness</li>
-                        <li>Don't expect Western portion sizes</li>
-                        <li>Don't drink tap water - always ask for bottled water</li>
-                        <li>Don't hesitate to ask for recommendations from staff</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Dining Etiquette -->
-            <div class="info-box">
-                <h3>Filipino Dining Etiquette & Tips</h3>
-                <ul class="facts-list">
-                    <li><strong>Sharing is Caring:</strong> Meals are often shared family-style - embrace the communal culture</li>
-                    <li><strong>Rice as Staple:</strong> Rice is served with almost every meal as the main carbohydrate</li>
-                    <li><strong>Condiments:</strong> Soy sauce (toyo) and vinegar are common condiments for dipping</li>
-                    <li><strong>Eating Style:</strong> Expect to eat with hands or utensils depending on the dish</li>
-                    <li><strong>Meal Times:</strong> Breakfast is 6-7 AM, lunch at 12-1 PM, and dinner at 6-7 PM</li>
-                    <li><strong>Tipping:</strong> 10% tip is customary at restaurants, 5% at casual eateries</li>
-                    <li><strong>Eating Pace:</strong> Take your time - meals are social occasions, not rushed</li>
-                    <li><strong>Compliments:</strong> Complimenting the food shows respect and appreciation</li>
-                </ul>
-            </div>
-
-            <!-- Seafood Safety -->
-            <div class="info-box">
-                <h3>Seafood Freshness & Safety</h3>
-                <ul class="facts-list">
-                    <li>Look for bright, clear eyes in whole fish</li>
-                    <li>Fresh seafood should smell like ocean, not fishy</li>
-                    <li>Ask the restaurant how fresh the catch is</li>
-                    <li>Avoid raw seafood if you have a weak immune system</li>
-                    <li>Check that shell fish (shrimp, crabs) are lively and fresh</li>
-                    <li>Reputable restaurants receive daily fresh deliveries</li>
-                    <li>If unsure, stick with cooked seafood options</li>
-                    <li>Storage and handling are important - eat at established restaurants</li>
-                </ul>
-            </div>
-
-            <!-- Budget Dining -->
-            <div class="two-column" style="margin-top: 60px;">
-
-                    <!-- User Auth Modal (moved to end of body for proper overlay) -->
-                    <div id="user-modal" class="modal">
-                        <div class="modal-content">
-                            <span class="close-modal" id="close-user-modal">&times;</span>
-                            <h2 id="modal-title">Log In</h2>
-                            <form id="modal-login-form">
-                                <input type="email" id="modal-login-email" placeholder="Email" required>
-                                <input type="password" id="modal-login-password" placeholder="Password" required>
-                                <button type="submit">Log In</button>
-                            </form>
-                            <form id="modal-signup-form" style="display:none;">
-                                <input type="email" id="modal-signup-email" placeholder="Email" required>
-                                <input type="password" id="modal-signup-password" placeholder="Password" required>
-                                <button type="submit">Sign Up</button>
-                            </form>
-                            <p style="text-align:center; margin: 10px 0;">or</p>
-                            <button id="modal-google-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" style="width:20px;height:20px;vertical-align:middle;"> Continue with Google
-                            </button>
-                            <button id="modal-facebook-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" style="width:20px;height:20px;vertical-align:middle;"> Continue with Facebook
-                            </button>
-                            <hr>
-                            <p id="toggle-auth-mode" style="cursor:pointer;color:#003d5c;font-weight:500;">Don't have an account? <span style="color:#e6c200;">Sign up</span></p>
-                        </div>
-                    </div>
-                    <script src="main.js"></script>
-                </body>
-                </html>
-                    </p>
-                    <p style="color: #666; line-height: 1.8; margin-top: 15px;">
-                        <strong>Mid-Range (₱150-400):</strong> Casual restaurants and beachfront eateries offer good 
-                        quality food with comfortable seating.
-                    </p>
-                    <p style="color: #666; line-height: 1.8; margin-top: 15px;">
-                        <strong>Upscale (₱400+):</strong> Fine dining restaurants with premium seafood and service, 
-                        perfect for special occasions.
-                    </p>
-                </div>
-                <div>
-                    <img src="lomi.jfif" alt="Local Cuisine" class="column-image">
-                </div>
-            </div>
-
-            <!-- Best Dining Times -->
-            <div class="info-box">
-                <h3>Best Times for Dining</h3>
-                <p>
-                    <strong>Breakfast (6-8 AM):</strong> Perfect for local breakfast before diving. Hotels often serve 
-                    continental breakfast. Local cafes offer rice, eggs, and Filipino breakfast dishes.
-                </p>
-                <p style="margin-top: 15px;">
-                    <strong>Lunch (12-1 PM):</strong> Peak dining time with fresh catch available. Restaurants are busiest. 
-                    Arroz a la Tumbada is best enjoyed at lunch.
-                </p>
-                <p style="margin-top: 15px;">
-                    <strong>Dinner (6-8 PM):</strong> Sunset dining at beachfront restaurants is romantic and memorable. 
-                    Many restaurants offer special dinner specials. Sunset views enhance the dining experience.
-                </p>
-                <p style="margin-top: 15px;">
-                    <strong>Night Market (7-10 PM):</strong> Local night markets offer affordable street food and snacks. 
-                    Great for casual evening strolls and discovering hidden culinary gems.
-                </p>
-            </div>
+    <div class="service-shell">
+        <!-- Hero Section -->
+        <section class="service-hero">
+            <h1>🍽️ Cuisine in Mabini</h1>
+            <p>Savor authentic Batangueño flavors and fresh seafood delicacies. From local family eateries to upscale bistros, Mabini offers unforgettable culinary experiences.</p>
         </section>
-    </main>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-section">
-                <img src="logo.png" alt="Logo" class="footer-logo">
-                <h3>Dive in Mabini</h3>
-                <p>Discover the culinary delights of Mabini and authentic Batangueño flavors.</p>
+        <!-- Overview Card -->
+        <div class="overview-card">
+            <h2>What Makes Mabini Food Special?</h2>
+            <p><strong>Mabini's cuisine</strong> reflects Batangas' gastronomic heritage—a blend of traditional Filipino flavors with fresh local seafood. As a coastal town, Mabini specializes in delicious, freshly caught marine dishes prepared with generations-old recipes.</p>
+            <h3 style="margin-top: 16px; color: var(--midnight); font-size: 16px;">Why Eat Here?</h3>
+            <p>Fresh daily catch, authentic Batangueño specialties, and affordable dining across casual eateries and upscale restaurants. Food is a social celebration—meals are shared, generous, and made with care.</p>
+            <h3 style="margin-top: 16px; color: var(--midnight); font-size: 16px;">Best For</h3>
+            <p>Food lovers, seafood enthusiasts, adventurous eaters, families, and anyone seeking authentic Filipino flavors and cultural immersion through food.</p>
+        </div>
+
+        <!-- Key Info Grid -->
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">🌊</div>
+                <div class="info-label">Specialty</div>
+                <div class="info-value">Fresh Seafood</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">daily catch, coastal</div>
             </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="index.html#about-section">About Us</a></li>
-                    <li><a href="diving.html">Diving</a></li>
-                    <li><a href="snorkeling.html">Snorkeling</a></li>
-                    <li><a href="resorts.html">Resorts</a></li>
-                    <li><a href="hiking.html">Hiking</a></li>
-                    <li><a href="cuisine.html">Cuisine</a></li>
-                </ul>
+            <div class="info-card">
+                <div class="info-icon">💰</div>
+                <div class="info-label">Price Range</div>
+                <div class="info-value">₱80–₱600+</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">casual to upscale</div>
             </div>
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <p>Email: info@divemabini.com</p>
-                <p>Phone: +63 912 345 6789</p>
-                <p>Location: Mabini, Batangas, Philippines</p>
+            <div class="info-card">
+                <div class="info-icon">⭐</div>
+                <div class="info-label">Must-Try</div>
+                <div class="info-value">Arroz a la Tumbada</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">Batangas treasure</div>
             </div>
-            <div class="footer-section">
-                <h3>Follow Us</h3>
-                <p>
-                    <a href="https://facebook.com/MabiniPIO" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Facebook</a> | 
-                    <a href="https://instagram.com/divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Instagram</a> | 
-                    <a href="https://youtube.com/@divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">YouTube</a>
-                </p>
+            <div class="info-card">
+                <div class="info-icon">🕐</div>
+                <div class="info-label">Peak Time</div>
+                <div class="info-value">12–1 PM</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">lunch rush, fresh catch</div>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p class="copyright">© 2025 Dive in Mabini. All rights reserved.</p>
-            <ul class="footer-bottom-links">
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">Sitemap</a></li>
+
+        <!-- Popular Local Products -->
+        <div class="section-head">
+            <h2>Signature Local Products</h2>
+            <p>Must-try Batangueño and seafood specialties that define Mabini's culinary identity.</p>
+        </div>
+
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="lomi.jfif" alt="Arroz a la Tumbada" class="product-image">
+                <div class="product-content">
+                    <h3 class="product-name">Arroz a la Tumbada</h3>
+                    <p class="product-desc">The crown jewel of Batangas cuisine. Hearty rice layered with seafood, meat, and vegetables in rich broth.</p>
+                    <div class="product-where">🏪 Local eateries, family restaurants</div>
+                    <p style="font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 8px;">₱150–300 per serving</p>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="lomi.jfif" alt="Fresh Grilled Fish" class="product-image">
+                <div class="product-content">
+                    <h3 class="product-name">Fresh Grilled Fish</h3>
+                    <p class="product-desc">Daily catch grilled to perfection with natural flavors shining. Simply seasoned with salt and lemon.</p>
+                    <div class="product-where">🏪 Beachfront restaurants, seafood grills</div>
+                    <p style="font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 8px;">₱300–500 per serving</p>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="lomi.jfif" alt="Kinilaw" class="product-image">
+                <div class="product-content">
+                    <h3 class="product-name">Kinilaw (Ceviche)</h3>
+                    <p class="product-desc">Fresh raw fish "cooked" in citrus and vinegar, mixed with ginger, onions, and chili. Refreshing & light.</p>
+                    <div class="product-where">🏪 Seafood restaurants, coastal eateries</div>
+                    <p style="font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 8px;">₱150–300 per serving</p>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="lomi.jfif" alt="Lomi" class="product-image">
+                <div class="product-content">
+                    <h3 class="product-name">Lomi (Batangas Style)</h3>
+                    <p class="product-desc">Hearty noodle soup with eggs, fresh noodles, and broth. Batangas version includes seafood and is thicker.</p>
+                    <div class="product-where">🏪 Cafes, family restaurants, street stalls</div>
+                    <p style="font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 8px;">₱80–150 per serving</p>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="lomi.jfif" alt="Inihaw na Manok" class="product-image">
+                <div class="product-content">
+                    <h3 class="product-name">Inihaw na Manok</h3>
+                    <p class="product-desc">Marinated grilled chicken, charcoal-cooked until crispy outside and tender inside. Served with rice & vinegar.</p>
+                    <div class="product-where">🏪 Grill restaurants, casual dining, markets</div>
+                    <p style="font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 8px;">₱200–400 per serving</p>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="lomi.jfif" alt="Tawilis" class="product-image">
+                <div class="product-content">
+                    <h3 class="product-name">Tawilis (Baby Fish)</h3>
+                    <p class="product-desc">Whole small fish fried until crispy. Eaten head-to-tail. A beloved appetizer and Batangas delicacy.</p>
+                    <div class="product-where">🏪 Seafood restaurants, local eateries</div>
+                    <p style="font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 8px;">₱100–200 per serving</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Food Categories -->
+        <div class="section-head">
+            <h2>Food Categories in Mabini</h2>
+            <p>Browse dining options by cuisine type and style.</p>
+        </div>
+
+        <div class="category-tabs">
+            <button class="category-tab active" data-filter="all">All Restaurants</button>
+            <button class="category-tab" data-filter="seafood">🐟 Seafood</button>
+            <button class="category-tab" data-filter="batangueño">🍲 Batangueño Classics</button>
+            <button class="category-tab" data-filter="casual">🍴 Casual Dining</button>
+            <button class="category-tab" data-filter="cafes">☕ Cafés & Snacks</button>
+        </div>
+
+        <div class="spots-grid" id="restaurant-list">
+            <!-- Seafood Restaurant -->
+            <div class="spot-card" data-category="seafood" data-name="The Fish House">
+                <img src="lomi.jfif" alt="The Fish House" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">The Fish House</h3>
+                    <p class="spot-desc">Fresh daily catch prepared grilled, fried, or steamed. Outdoor beachfront seating with sea views. Perfect for lunch after diving.</p>
+                    <div class="spot-meta">
+                        <span>📍 Beachfront</span>
+                        <span>💰 ₱₱</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batangueño Specialist -->
+            <div class="spot-card" data-category="batangueño" data-name="Nanay's Lomi & Arroz">
+                <img src="lomi.jfif" alt="Nanay's Lomi & Arroz" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Nanay's Lomi & Arroz</h3>
+                    <p class="spot-desc">Family-run authentic Batangueño dishes. Famous for Arroz a la Tumbada & hearty Lomi. Casual, friendly, budget-friendly.</p>
+                    <div class="spot-meta">
+                        <span>📍 Town Center</span>
+                        <span>💰 ₱</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upscale Dining -->
+            <div class="spot-card" data-category="seafood" data-name="Seaside Bistro">
+                <img src="lomi.jfif" alt="Seaside Bistro" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Seaside Bistro</h3>
+                    <p class="spot-desc">Upscale beachfront restaurant with fresh seafood and international cuisine. Romantic sunset dining. Perfect for special occasions.</p>
+                    <div class="spot-meta">
+                        <span>📍 Beachfront</span>
+                        <span>💰 ₱₱₱</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Casual Grilling -->
+            <div class="spot-card" data-category="casual" data-name="Beachfront Grill Mabini">
+                <img src="lomi.jfif" alt="Beachfront Grill Mabini" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Beachfront Grill Mabini</h3>
+                    <p class="spot-desc">Relaxed beach dining with direct sand access. Grilled seafood and international options. Cold drinks & refreshments available.</p>
+                    <div class="spot-meta">
+                        <span>📍 Beach</span>
+                        <span>💰 ₱₱</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cafe -->
+            <div class="spot-card" data-category="cafes" data-name="Dive & Dine Cafe">
+                <img src="lomi.jfif" alt="Dive & Dine Cafe" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Dive & Dine Cafe</h3>
+                    <p class="spot-desc">Casual cafe near dive shops. Breakfast, light lunch, coffee & pastries. Popular with divers. Affordable & welcoming atmosphere.</p>
+                    <div class="spot-meta">
+                        <span>📍 Dive Center</span>
+                        <span>💰 ₱</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lechon House -->
+            <div class="spot-card" data-category="batangueño" data-name="Bauan Lechon House">
+                <img src="lomi.jfif" alt="Bauan Lechon House" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Bauan Lechon House</h3>
+                    <p class="spot-desc">Famous for crispy-skinned lechon and roasted meats. Open-air picnic-table dining. Perfect for groups and celebrations.</p>
+                    <div class="spot-meta">
+                        <span>📍 Town Center</span>
+                        <span>💰 ₱₱</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dining Timeline -->
+        <div class="section-head">
+            <h2>Your Culinary Journey</h2>
+            <p>A perfect day of eating in Mabini, from breakfast to dinner.</p>
+        </div>
+
+        <div class="timeline-steps">
+            <div class="step">
+                <div class="step-icon">1️⃣</div>
+                <div class="step-content">
+                    <h3>Breakfast (6–8 AM)</h3>
+                    <p>Start with Filipino breakfast: rice, eggs, fried fish, or local pastries. Hotel breakfast buffets offer variety. Local cafes serve authentic flavors.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">2️⃣</div>
+                <div class="step-content">
+                    <h3>Morning Activity & Snacks</h3>
+                    <p>Dive, snorkel, or hike. Mid-morning snack: fresh fruits, local pastries, or street food from vendors.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">3️⃣</div>
+                <div class="step-content">
+                    <h3>Lunch (12–1 PM)</h3>
+                    <p>Peak dining time with freshest seafood. Try Arroz a la Tumbada or grilled fish at beachfront restaurants. Family-style sharing is typical.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">4️⃣</div>
+                <div class="step-content">
+                    <h3>Afternoon Rest & Siesta</h3>
+                    <p>Relax after lunch. Afternoon coffee or local drinks at cafes. Light activity or rest time.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">5️⃣</div>
+                <div class="step-content">
+                    <h3>Late Afternoon Snack (4–5 PM)</h3>
+                    <p>Merienda (snack time): local pastries, fresh juice, or street food. Common Filipino tradition between lunch and dinner.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">6️⃣</div>
+                <div class="step-content">
+                    <h3>Dinner (6–8 PM)</h3>
+                    <p>Sunset dining at beachfront restaurants. Upscale bistro or casual grill. End with dessert or local sweets. Reflect on the day's adventures.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dining Tips -->
+        <div class="tips-box">
+            <h3>Essential Dining Tips</h3>
+            <ul class="tips-list">
+                <li><strong>Eat at lunch (12–1 PM)</strong> — freshest catch, busiest restaurants, authentic experience.</li>
+                <li><strong>Ask locals for recommendations</strong> — best food is often found through word-of-mouth.</li>
+                <li><strong>Try family-style dining</strong> — order multiple dishes and share, sampling more flavors.</li>
+                <li><strong>Embrace local condiments</strong> — soy sauce (toyo) and vinegar are perfect pairings.</li>
+                <li><strong>Respect meal timing</strong> — Filipino meals follow set times; plan your day around dining.</li>
+                <li><strong>Be adventurous</strong> — try unfamiliar dishes; Mabini's cuisine is best explored boldly.</li>
+                <li><strong>Stay hydrated</strong> — order water with meals; spicy food is common, drink plenty.</li>
+                <li><strong>Support local businesses</strong> — eat at family-run eateries; tourism dollars help communities.</li>
             </ul>
         </div>
+
+        <!-- Call-to-Action -->
+        <div class="cta-section">
+            <h2>Ready to Taste Mabini?</h2>
+            <p>Join us for an unforgettable culinary adventure. Authentic flavors, fresh seafood, and warm Filipino hospitality await.</p>
+            <a href="index.html#find-section" class="cta-btn">Find Restaurants & Guides</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Dive in Mabini. All rights reserved. | <a href="index.html" style="color: var(--gold); text-decoration: none;">Home</a></p>
     </footer>
 
-   <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        // Simple category filter + map links for restaurants
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = Array.from(document.querySelectorAll('.category-tab'));
+            const cards = Array.from(document.querySelectorAll('#restaurant-list .spot-card'));
 
-<script src="main.js"></script>
+            const applyFilter = (filter) => {
+                cards.forEach(card => {
+                    const match = filter === 'all' || card.dataset.category === filter;
+                    card.style.display = match ? '' : 'none';
+                });
+            };
+
+            const mapUrl = (name) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Mabini Batangas')}`;
+
+            cards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', () => {
+                    const name = card.dataset.name || 'Mabini restaurant';
+                    window.open(mapUrl(name), '_blank');
+                });
+            });
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    applyFilter(tab.dataset.filter);
+                });
+            });
+
+            applyFilter('all');
+        });
+    </script>
+    <script src="main.js"></script>
 </body>
 </html>

@@ -108,6 +108,13 @@ app.get('/list-models', async (req, res) => {
   }
 });
 
+// Config endpoint for frontend to fetch API keys and settings
+app.get('/api/config', (req, res) => {
+  res.json({
+    imgbbApiKey: process.env.IMGBB_API_KEY || ''
+  });
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`AI Itinerary API (Gemini) running on port ${PORT}`));
 
