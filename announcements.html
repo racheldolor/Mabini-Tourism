@@ -9,281 +9,318 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="service-pages.css" />
+    <link rel="stylesheet" href="service-template.css" />
     <style>
-        /* Additional styles for announcements page */
-        .event-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+        :root {
+            --midnight: #002037;
+            --deep-blue: #003d5c;
+            --marine: #005580;
+            --gold: #e6c200;
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #0d1b2a;
+            --muted: #5a6a80;
+            --border: #dfe6ee;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .page-shell {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 20px 80px;
+        }
+
+        /* Featured announcement */
+        .featured-card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+            display: grid;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .featured-top {
             display: flex;
-            flex-direction: column;
-            height: 100%;
+            align-items: center;
+            gap: 12px;
         }
 
-        .event-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        .featured-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(230, 194, 0, 0.18);
+            color: var(--midnight);
+            font-size: 22px;
         }
 
-        .event-header {
-            background: linear-gradient(135deg, #002037 0%, #003d5c 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .event-date {
-            font-size: 28px;
+        .featured-title {
+            font-size: 18px;
             font-weight: 700;
             margin: 0;
         }
 
-        .event-month {
+        .featured-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             font-size: 14px;
-            opacity: 0.9;
-            margin: 5px 0 0;
+            color: var(--muted);
         }
 
-        .event-badge {
-            display: inline-block;
-            background: #e6c200;
-            color: #002037;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #eef3f9;
+            color: var(--midnight);
             font-weight: 600;
-            margin-top: 10px;
-        }
-
-        .event-body {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .event-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #002037;
-            margin-bottom: 10px;
-        }
-
-        .event-description {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            flex-grow: 1;
-        }
-
-        .event-details {
             font-size: 13px;
-            color: #999;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
         }
 
-        .event-detail-item {
-            margin: 8px 0;
+        .pill.gold { background: rgba(230, 194, 0, 0.14); color: var(--midnight); }
+        .pill.midnight { background: rgba(0, 32, 55, 0.12); color: var(--midnight); }
+        .pill.success { background: rgba(0, 170, 105, 0.12); color: #006b4b; }
+
+        .featured-body { line-height: 1.6; color: var(--muted); }
+
+        /* Filters & layout */
+        .controls-grid {
+            margin: 32px 0;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 20px;
+        }
+
+        .filters-card {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
             display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
             align-items: center;
         }
 
-        .event-detail-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            color: #e6c200;
-            font-weight: bold;
+        .filter-tab {
+            border: 1px solid var(--border);
+            background: #f3f6fb;
+            color: var(--midnight);
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .calendar-section {
-            background: linear-gradient(135deg, rgba(0, 32, 55, 0.05) 0%, rgba(230, 194, 0, 0.05) 100%);
-            padding: 30px;
-            border-radius: 12px;
-            margin: 40px 0;
+        .filter-tab.active {
+            background: var(--midnight);
+            color: white;
+            border-color: var(--midnight);
+        }
+
+        .select-input {
+            min-width: 160px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: white;
+            font-weight: 600;
+            color: var(--midnight);
+        }
+
+        /* Calendar */
+        .calendar-card {
+            background: var(--card);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.06);
+            padding: 16px;
+        }
+
+        .calendar-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            border: 1px solid var(--border);
+            background: #f3f6fb;
+            border-radius: 10px;
+            padding: 6px 10px;
+            cursor: pointer;
+            color: var(--midnight);
+            font-weight: 700;
         }
 
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
         }
 
-        .month-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
+        .day-name {
             text-align: center;
-            border: 2px solid #f0f0f0;
-            transition: all 0.3s ease;
-        }
-
-        .month-box:hover {
-            border-color: #e6c200;
-            box-shadow: 0 4px 12px rgba(230, 194, 0, 0.15);
-        }
-
-        .month-name {
-            font-size: 18px;
+            font-size: 12px;
+            color: var(--muted);
             font-weight: 700;
-            color: #002037;
-            margin-bottom: 8px;
         }
 
-        .event-count {
-            background: linear-gradient(135deg, #002037 0%, #003d5c 100%);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .events-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 40px 0;
-        }
-
-        .timeline {
-            position: relative;
-            padding: 40px 0;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(to bottom, #e6c200, #002037);
-        }
-
-        .timeline-item {
-            margin-bottom: 40px;
-            width: 45%;
-        }
-
-        .timeline-item:nth-child(odd) {
-            margin-left: 0;
-            text-align: right;
-            padding-right: 5%;
-        }
-
-        .timeline-item:nth-child(even) {
-            margin-left: 55%;
-        }
-
-        .timeline-content {
-            background: white;
-            padding: 25px;
+        .day-cell {
+            border: 1px solid var(--border);
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .timeline-date {
-            font-size: 16px;
-            font-weight: 700;
-            color: #e6c200;
-            margin-bottom: 8px;
-        }
-
-        .timeline-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #002037;
-            margin-bottom: 8px;
-        }
-
-        .timeline-text {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
+            min-height: 70px;
+            padding: 6px;
             background: white;
-            border: 4px solid #e6c200;
-            border-radius: 50%;
-            top: 0;
-        }
-
-        @media (max-width: 768px) {
-            .timeline::before {
-                left: 30px;
-            }
-
-            .timeline-item {
-                width: 100%;
-                margin-left: 0 !important;
-                text-align: left;
-                padding-right: 0;
-                padding-left: 80px;
-            }
-
-            .timeline-dot {
-                left: 30px;
-            }
-
-            .calendar-grid {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            }
-
-            .events-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .badge-featured {
+            cursor: pointer;
             position: relative;
+            transition: all 0.2s ease;
         }
 
-        .featured-ribbon {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: linear-gradient(135deg, #e6c200 0%, #ff9800 100%);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            box-shadow: 0 2px 8px rgba(230, 194, 0, 0.3);
-        }
+        .day-cell:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .day-cell.today { border-color: var(--marine); }
+        .day-cell.has-event { background: linear-gradient(135deg, rgba(0, 85, 128, 0.06), rgba(230, 194, 0, 0.08)); }
+        .day-cell.selected { border-color: var(--deep-blue); box-shadow: 0 0 0 2px rgba(0, 61, 92, 0.18); }
+        .day-number { font-weight: 700; color: var(--midnight); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); position: absolute; bottom: 6px; right: 6px; }
 
-        .highlight-section {
-            background: linear-gradient(135deg, #002037 0%, #003d5c 100%);
-            color: white;
-            padding: 40px;
+        /* Day events */
+        .day-events {
+            margin-top: 16px;
+            background: #f8fafc;
+            border: 1px dashed var(--border);
             border-radius: 12px;
-            margin: 40px 0;
+            padding: 12px;
+        }
+
+        .day-events h4 { margin: 0 0 8px 0; font-size: 14px; color: var(--midnight); }
+        .mini-event { display: grid; gap: 4px; padding: 10px; border-radius: 10px; background: white; border: 1px solid var(--border); margin-bottom: 8px; }
+
+        /* Events list */
+        .list-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            display: grid;
+            gap: 10px;
+        }
+
+        .list-stack { display: grid; gap: 16px; }
+
+        /* Admin add form */
+        .admin-card {
+            margin-top: 28px;
+            background: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .form-grid label { display: grid; gap: 6px; font-size: 14px; color: var(--midnight); }
+        .form-grid input, .form-grid select, .form-grid textarea {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-actions { margin-top: 12px; display: flex; gap: 12px; align-items: center; }
+        .btn-primary { background: var(--midnight); color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .muted { color: var(--muted); font-size: 13px; }
+
+        .list-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: 14px; }
+
+        .date-badge {
+            background: rgba(0, 32, 55, 0.08);
+            color: var(--midnight);
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .event-title { margin: 0; font-size: 18px; color: var(--midnight); }
+        .event-desc { color: var(--muted); margin: 0; line-height: 1.6; }
+
+        .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+        .chip { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); font-weight: 600; font-size: 12px; color: var(--midnight); background: #f7f9fc; }
+
+        .status.upcoming { color: #006b4b; background: rgba(0, 170, 105, 0.12); }
+        .status.ongoing { color: #8a4fff; background: rgba(138, 79, 255, 0.12); }
+        .status.past { color: #9b1c1c; background: rgba(155, 28, 28, 0.12); }
+
+        .btn-link {
+            background: transparent;
+            border: none;
+            color: var(--marine);
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* Empty state */
+        .empty {
             text-align: center;
+            padding: 40px;
+            background: var(--card);
+            border-radius: 14px;
+            border: 1px solid var(--border);
         }
 
-        .highlight-section h2 {
-            color: white;
-            margin-bottom: 15px;
+        /* Pagination */
+        .pagination { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+        .page-btn { border: 1px solid var(--border); background: white; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+        .page-btn.active { background: var(--midnight); color: white; border-color: var(--midnight); }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            .controls-grid { grid-template-columns: 1fr; }
         }
 
-        .highlight-section p {
-            font-size: 16px;
-            opacity: 0.95;
-            max-width: 600px;
-            margin: 0 auto 20px;
+        @media (max-width: 640px) {
+            .page-shell { padding: 110px 14px 60px; }
+            .filters-card { flex-direction: column; align-items: stretch; }
+            .calendar-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
         }
     </style>
 </head>
@@ -291,441 +328,600 @@
     <!-- Unified Navbar (matches index.html) -->
     <nav class="navbar">
         <div class="navbar-flex">
+            <!-- Left Column: Navigation Links -->
             <ul class="links-left">
                 <li class="link-item"><a href="index.html#about-section">About</a></li>
                 <li class="link-item"><a href="index.html#marine-life">Marine Life</a></li>
                 <li class="link-item"><a href="index.html#service-section">Services</a></li>
                 <li class="link-item"><a href="announcements.html">Announcements</a></li>
             </ul>
-            <div class="logo-center"><a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a></div>
+
+            <!-- Center Column: Logo -->
+            <div class="logo-center">
+                <a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a>
+            </div>
+
+            <!-- Right Column: Navigation Links + Search + Login -->
             <ul class="links-right">
                 <li class="link-item"><a href="community.html">Community</a></li>
                 <li class="link-item"><a href="index.html#find-section">Find Us</a></li>
                 <li class="link-item navbar-search-item">
                     <form id="navbar-search-form" autocomplete="off">
-                        <span class="search-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <span class="search-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         </span>
-                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search" />
-                        <button id="navbar-search-go" type="submit" tabindex="-1">Go</button>
+                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search site">
+                        <button type="button" id="navbar-search-clear" aria-label="Clear search">&times;</button>
+                        <button id="navbar-search-go" type="submit" tabindex="-1">Search</button>
                     </form>
                 </li>
                 <li class="link-item user-btn-item">
-                    <button id="user-btn" title="Log in / Sign up" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;">
-                        <span style="display:inline-flex;width:32px;height:32px;border-radius:50%;background:#f5f6fa;justify-content:center;align-items:center;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#003d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                    <button id="user-btn" title="Log in" class="user-btn-inline">
+                        <span class="user-btn-avatar">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
                         </span>
+                        <span class="user-btn-label">Login</span>
                     </button>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <!-- Page Header -->
-    <header class="page-header">
-        <h1>Events & Announcements</h1>
-        <p>Discover exciting festivals, events, and activities happening in Mabini throughout the year</p>
-    </header>
+    <!-- Hero Section -->
+    <section class="service-hero">
+        <h1>📢 Announcements & Events</h1>
+        <p>Track local advisories, LGU-led programs, and tourism events in Mabini. Built for residents, divers, resort owners, and visitors.</p>
+    </section>
 
-    <!-- Main Content -->
-    <main class="container">
-        <section class="content-section">
-            <a href="index.html" class="back-to-home">← Back to Home</a>
+    <div class="page-shell">
 
-            <!-- Upcoming Events -->
-            <h2 class="section-title" style="margin-top: 40px;">🎉 Upcoming Events</h2>
-            <p class="section-subtitle">Don't miss these exciting activities happening soon</p>
-
-            <div class="events-grid">
-                <!-- Araw ng Batangas -->
-                <div class="event-card badge-featured">
-                    <div class="featured-ribbon">Featured</div>
-                    <div class="event-header">
-                        <p class="event-date">18</p>
-                        <p class="event-month">December 2025</p>
-                        <span class="event-badge">FESTIVAL</span>
-                    </div>
-                    <div class="event-body">
-                        <h3 class="event-title">Araw ng Batangas</h3>
-                        <p class="event-description">
-                            Celebrate the founding of Batangas with colorful parades, cultural performances, 
-                            local food stalls, and community festivities. A great time to experience Batangueño culture.
-                        </p>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">📍</span>
-                                <span>Mabini Town Plaza</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">⏰</span>
-                                <span>6:00 AM - 6:00 PM</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">👥</span>
-                                <span>Community Event - Free</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- New Year Dive Celebration -->
-                <div class="event-card">
-                    <div class="event-header">
-                        <p class="event-date">31</p>
-                        <p class="event-month">December 2025 - January 2026</p>
-                        <span class="event-badge">CELEBRATION</span>
-                    </div>
-                    <div class="event-body">
-                        <h3 class="event-title">New Year Dive Celebration</h3>
-                        <p class="event-description">
-                            Ring in the New Year with a special underwater celebration. Dive shops organize group dives, 
-                            beach parties, and countdown events for an unforgettable start to 2026.
-                        </p>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">📍</span>
-                                <span>Various Dive Sites & Beach</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">⏰</span>
-                                <span>2:00 PM onwards</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">💰</span>
-                                <span>Check with dive shops for pricing</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sinulog Festival -->
-                <div class="event-card">
-                    <div class="event-header">
-                        <p class="event-date">19</p>
-                        <p class="event-month">January 2026</p>
-                        <span class="event-badge">FESTIVAL</span>
-                    </div>
-                    <div class="event-body">
-                        <h3 class="event-title">Sinulog Festival</h3>
-                        <p class="event-description">
-                            A grand celebration with street dances, cultural shows, and massive crowds. 
-                            Mabini participates with local contingents in colorful costumes and traditional performances.
-                        </p>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">📍</span>
-                                <span>Batangas & Mabini Town Center</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">⏰</span>
-                                <span>All Day Event</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">👥</span>
-                                <span>Free Community Celebration</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fish Festival -->
-                <div class="event-card">
-                    <div class="event-header">
-                        <p class="event-date">02</p>
-                        <p class="event-month">February 2026</p>
-                        <span class="event-badge">FESTIVAL</span>
-                    </div>
-                    <div class="event-body">
-                        <h3 class="event-title">Mabini Fish Festival</h3>
-                        <p class="event-description">
-                            Celebrate the fishing heritage of Mabini with seafood feasts, cooking contests, 
-                            fish auctions, and cultural performances. A paradise for seafood lovers!
-                        </p>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">📍</span>
-                                <span>Mabini Fishing Port & Beach</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">⏰</span>
-                                <span>8:00 AM - 8:00 PM</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">🍽️</span>
-                                <span>Food & Activities - Minimal Fees</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Underwater Photography Contest -->
-                <div class="event-card">
-                    <div class="event-header">
-                        <p class="event-date">14</p>
-                        <p class="event-month">March 2026</p>
-                        <span class="event-badge">COMPETITION</span>
-                    </div>
-                    <div class="event-body">
-                        <h3 class="event-title">Underwater Photography Contest</h3>
-                        <p class="event-description">
-                            Showcase your best underwater shots! Open to all divers and snorkelers. 
-                            Winners get prizes and their work featured in local tourism materials.
-                        </p>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">📍</span>
-                                <span>Anilao Dive Sites</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">⏰</span>
-                                <span>Full Day Competition</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">📸</span>
-                                <span>Registration Required</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Holy Week Observance -->
-                <div class="event-card">
-                    <div class="event-header">
-                        <p class="event-date">13-20</p>
-                        <p class="event-month">April 2026</p>
-                        <span class="event-badge">RELIGIOUS</span>
-                    </div>
-                    <div class="event-body">
-                        <h3 class="event-title">Holy Week Observance</h3>
-                        <p class="event-description">
-                            Religious processions, church services, and community gatherings. 
-                            Many services reduce operations during this period. Plan accordingly.
-                        </p>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">📍</span>
-                                <span>Churches & Mabini Town</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">⏰</span>
-                                <span>Various Times</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-icon">⛪</span>
-                                <span>Religious Celebration</span>
-                            </div>
-                        </div>
-                    </div>
+        <section class="featured-card" id="featured-card">
+            <div class="featured-top">
+                <span class="featured-icon" aria-hidden="true">📢</span>
+                <div>
+                    <div class="pill gold" id="featured-type">Featured</div>
+                    <p class="featured-title" id="featured-title">Loading featured announcement...</p>
                 </div>
             </div>
-
-            <!-- Festival Calendar Section -->
-            <div class="calendar-section">
-                <h2 class="section-title">📅 2026 Festival Calendar</h2>
-                <p class="section-subtitle">Major events and festivals throughout the year</p>
-                
-                <div class="calendar-grid">
-                    <div class="month-box">
-                        <div class="month-name">January</div>
-                        <div class="event-count">2 Events</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">February</div>
-                        <div class="event-count">2 Events</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">March</div>
-                        <div class="event-count">1 Event</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">April</div>
-                        <div class="event-count">2 Events</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">May</div>
-                        <div class="event-count">1 Event</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">June</div>
-                        <div class="event-count">1 Event</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">July</div>
-                        <div class="event-count">2 Events</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">August</div>
-                        <div class="event-count">1 Event</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">September</div>
-                        <div class="event-count">1 Event</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">October</div>
-                        <div class="event-count">2 Events</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">November</div>
-                        <div class="event-count">1 Event</div>
-                    </div>
-                    <div class="month-box">
-                        <div class="month-name">December</div>
-                        <div class="event-count">2 Events</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- All Year Events Timeline -->
-            <h2 class="section-title" style="margin-top: 60px;">📆 Complete Year Timeline</h2>
-            
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">December 18</div>
-                        <div class="timeline-title">Araw ng Batangas</div>
-                        <div class="timeline-text">Grand celebration of Batangas founding with parades and cultural shows.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">December 31 - January 1</div>
-                        <div class="timeline-title">New Year Dive Celebration</div>
-                        <div class="timeline-text">Special underwater celebrations and beach parties to welcome the New Year.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">January 19</div>
-                        <div class="timeline-title">Sinulog Festival</div>
-                        <div class="timeline-text">Street dances, cultural performances, and grand celebration of faith and culture.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">February 2</div>
-                        <div class="timeline-title">Mabini Fish Festival</div>
-                        <div class="timeline-text">Celebrate fishing heritage with seafood feasts, competitions, and performances.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">March 14</div>
-                        <div class="timeline-title">Underwater Photography Contest</div>
-                        <div class="timeline-text">Showcase underwater photography skills with prizes and recognition.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">April 13-20</div>
-                        <div class="timeline-title">Holy Week Observance</div>
-                        <div class="timeline-text">Religious processions and church services. Note reduced operations during this period.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">May 30</div>
-                        <div class="timeline-title">Flores de Mayo</div>
-                        <div class="timeline-text">Traditional Filipino celebration honoring the Virgin Mary with religious ceremonies.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">June 24</div>
-                        <div class="timeline-title">Ati-Atihan Festival</div>
-                        <div class="timeline-text">Regional festival with tribal dances, parades, and cultural celebrations.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">July 25</div>
-                        <div class="timeline-title">Dive Festival & Competition</div>
-                        <div class="timeline-text">International diving competition attracting divers from around the world.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">August 21</div>
-                        <div class="timeline-title">Araw ng Kababaihan</div>
-                        <div class="timeline-text">Celebration honoring women with special activities and performances.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">September 1</div>
-                        <div class="timeline-title">Foundation Day</div>
-                        <div class="timeline-text">Mabini's founding anniversary celebrated with community activities.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">October 30</div>
-                        <div class="timeline-title">Fiesta of the Reformist</div>
-                        <div class="timeline-text">Religious and cultural celebration honoring Mabini's patron saint.</div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">November 1</div>
-                        <div class="timeline-title">All Saints' Day</div>
-                        <div class="timeline-text">Religious observance with cemeteries open for remembrance activities.</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Highlights Section -->
-            <div class="highlight-section">
-                <h2>💌 Stay Updated</h2>
-                <p>
-                    Events and dates may change. Always check with local tourism offices before planning your trip. 
-                    Contact us at info@divemabini.com or visit our social media for the latest announcements!
-                </p>
-                <a href="mailto:info@divemabini.com" style="display: inline-block; background: #e6c200; color: #002037; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; margin-top: 15px;">Subscribe to Updates</a>
-            </div>
-
-            <!-- Tips for Event Attendance -->
-            <div class="info-box">
-                <h3>Tips for Attending Events in Mabini</h3>
-                <ul class="facts-list">
-                    <li>Book accommodations early during festival season (December-January)</li>
-                    <li>Expect crowded roads and public transportation during major events</li>
-                    <li>Bring cash - not all vendors accept cards during street festivals</li>
-                    <li>Wear comfortable shoes and sun protection for outdoor events</li>
-                    <li>Respect local customs and traditions during religious celebrations</li>
-                    <li>Try local food and snacks offered at festival stalls</li>
-                    <li>Bring a camera to capture memorable moments</li>
-                    <li>Check weather forecasts and plan accordingly</li>
-                    <li>Follow instructions from event organizers and local authorities</li>
-                    <li>Stay hydrated and take breaks during long outdoor events</li>
-                </ul>
-            </div>
+            <div class="featured-meta" id="featured-meta"></div>
+            <p class="featured-body" id="featured-body"></p>
         </section>
-    </main>
+
+        <div class="controls-grid">
+            <div>
+                <div class="filters-card">
+                    <button class="filter-tab active" data-status="upcoming">Upcoming</button>
+                    <button class="filter-tab" data-status="ongoing">Ongoing</button>
+                    <button class="filter-tab" data-status="past">Past</button>
+                    <select id="categoryFilter" class="select-input" aria-label="Filter by category">
+                        <option value="all">All categories</option>
+                        <option value="festival">Festival</option>
+                        <option value="diving">Diving</option>
+                        <option value="advisory">Advisory</option>
+                        <option value="training">Training</option>
+                        <option value="culture">Culture</option>
+                        <option value="lgu">LGU Program</option>
+                    </select>
+                </div>
+
+                <div id="events-list" class="list-stack"></div>
+                <div id="pagination" class="pagination"></div>
+                <div id="empty-state" class="empty" style="display:none;">
+                    <h3>No events found</h3>
+                    <p>Adjust your filters or check back later. Newly approved posts will appear here automatically.</p>
+                </div>
+
+                <div class="admin-card">
+                    <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <strong>Quick Add (admin only)</strong>
+                        <span class="muted">Temporary helper; secure via auth rules in Firestore.</span>
+                    </div>
+                    <form id="add-event-form" style="margin-top:12px; display:grid; gap:12px;">
+                        <div class="form-grid">
+                            <label>Title<input type="text" id="add-title" required></label>
+                            <label>Category
+                                <select id="add-category" required>
+                                    <option value="festival">Festival</option>
+                                    <option value="diving">Diving</option>
+                                    <option value="advisory" selected>Advisory</option>
+                                    <option value="training">Training</option>
+                                    <option value="culture">Culture</option>
+                                    <option value="lgu">LGU Program</option>
+                                </select>
+                            </label>
+                            <label>Type
+                                <select id="add-type" required>
+                                    <option value="advisory" selected>Advisory</option>
+                                    <option value="festival">Festival</option>
+                                    <option value="competition">Competition</option>
+                                    <option value="religious">Religious</option>
+                                    <option value="training">Training</option>
+                                </select>
+                            </label>
+                            <label>Start Date<input type="date" id="add-start" required></label>
+                            <label>End Date<input type="date" id="add-end"></label>
+                            <label>Time (text)<input type="text" id="add-time" placeholder="e.g. 8:00 AM - 3:00 PM"></label>
+                            <label>Location<input type="text" id="add-location" required></label>
+                            <label>Featured?
+                                <select id="add-featured">
+                                    <option value="false" selected>No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </label>
+                        </div>
+                        <label>Description<textarea id="add-description" rows="3" required></textarea></label>
+                        <div class="form-actions">
+                            <button class="btn-primary" type="submit" id="add-submit">Save event</button>
+                            <span class="muted" id="add-status"></span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <div class="calendar-card">
+                    <div class="calendar-head">
+                        <h3 id="calendarLabel" style="margin:0;">Month</h3>
+                        <div class="calendar-nav">
+                            <button class="nav-btn" id="prevMonth" aria-label="Previous month">‹</button>
+                            <button class="nav-btn" id="nextMonth" aria-label="Next month">›</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="day-name">Sun</div><div class="day-name">Mon</div><div class="day-name">Tue</div><div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div><div class="day-name">Sat</div>
+                    </div>
+                    <div class="calendar-grid" id="calendar-days"></div>
+                    <div class="day-events" id="day-events" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const db = firebase.firestore();
+
+            const fallbackEvents = [
+                {
+                    id: 'evt-001',
+                    title: 'Coastal Clean-Up Weekend',
+                    description: 'Barangay-led shoreline clean-up with divers and volunteers. Bring reusable gloves and water containers.',
+                    startDate: '2025-11-22T08:00:00',
+                    endDate: '2025-11-22T11:30:00',
+                    time: '8:00 AM - 11:30 AM',
+                    location: 'Anilao Pier',
+                    category: 'lgu',
+                    type: 'advisory',
+                    isFeatured: true
+                },
+                {
+                    id: 'evt-002',
+                    title: 'Araw ng Batangas',
+                    description: 'Parade, cultural performances, and local food stalls celebrating the founding of Batangas.',
+                    startDate: '2025-12-18T06:00:00',
+                    endDate: '2025-12-18T18:00:00',
+                    time: '6:00 AM - 6:00 PM',
+                    location: 'Mabini Town Plaza',
+                    category: 'festival',
+                    type: 'festival'
+                },
+                {
+                    id: 'evt-003',
+                    title: 'New Year Dive Celebration',
+                    description: 'Group dives and shoreline countdown. Coordinate with partner dive shops for slots.',
+                    startDate: '2025-12-31T14:00:00',
+                    endDate: '2026-01-01T01:00:00',
+                    time: '2:00 PM - 1:00 AM',
+                    location: 'Various Dive Sites',
+                    category: 'diving',
+                    type: 'festival'
+                },
+                {
+                    id: 'evt-004',
+                    title: 'Underwater Photography Contest',
+                    description: 'One-day shootout with marine life briefing and award night. Pre-register with LGU Tourism.',
+                    startDate: '2026-01-20T08:00:00',
+                    endDate: '2026-01-20T18:00:00',
+                    time: '8:00 AM - 6:00 PM',
+                    location: 'Anilao Dive Sites',
+                    category: 'diving',
+                    type: 'competition'
+                },
+                {
+                    id: 'evt-005',
+                    title: 'Marine Wildlife Advisory',
+                    description: 'Temporary no-anchor zone while marine biologists tag juvenile whale sharks.',
+                    startDate: '2025-11-10T00:00:00',
+                    endDate: '2025-11-17T23:59:00',
+                    time: 'Full day advisory',
+                    location: 'Ligpo Island West',
+                    category: 'advisory',
+                    type: 'advisory'
+                },
+                {
+                    id: 'evt-006',
+                    title: 'LGU Dive Safety Refresher',
+                    description: 'Resort safety officers refresher on protocols, oxygen kits, and tourist briefing standards.',
+                    startDate: '2026-02-08T09:00:00',
+                    endDate: '2026-02-08T12:00:00',
+                    time: '9:00 AM - 12:00 PM',
+                    location: 'Mabini Tourism Office',
+                    category: 'training',
+                    type: 'training'
+                },
+                {
+                    id: 'evt-007',
+                    title: 'Town Fiesta Novena & Procession',
+                    description: 'Nine-day novena leading to the town procession. Expect rerouted traffic near the plaza.',
+                    startDate: '2026-03-10T17:00:00',
+                    endDate: '2026-03-18T21:00:00',
+                    time: '5:00 PM - 9:00 PM',
+                    location: 'Mabini Town Proper',
+                    category: 'culture',
+                    type: 'religious'
+                },
+                {
+                    id: 'evt-008',
+                    title: 'Barangay Health Mission',
+                    description: 'Free consultations and vaccines for senior citizens and fisherfolk families.',
+                    startDate: '2026-01-08T08:00:00',
+                    endDate: '2026-01-08T15:00:00',
+                    time: '8:00 AM - 3:00 PM',
+                    location: 'Barangay Solo Covered Court',
+                    category: 'lgu',
+                    type: 'advisory'
+                },
+                {
+                    id: 'evt-009',
+                    title: 'Water Safety Advisory',
+                    description: 'Temporary swimming restriction while LGU tests water quality. Diving allowed with DM supervision.',
+                    startDate: '2025-12-05T00:00:00',
+                    endDate: '2025-12-09T23:59:00',
+                    time: 'All day advisory',
+                    location: 'Masasa Beachfront',
+                    category: 'advisory',
+                    type: 'advisory'
+                },
+                {
+                    id: 'evt-010',
+                    title: 'Tourism Permit Renewal Clinic',
+                    description: 'One-stop window for resort and dive shop permit renewals. Bring previous permit and barangay clearance.',
+                    startDate: '2026-01-15T09:00:00',
+                    endDate: '2026-01-15T16:00:00',
+                    time: '9:00 AM - 4:00 PM',
+                    location: 'Mabini Municipal Hall Lobby',
+                    category: 'lgu',
+                    type: 'advisory'
+                }
+            ];
+
+            let events = [];
+
+            let statusFilter = 'upcoming';
+            let categoryFilter = 'all';
+            let currentPage = 1;
+            const pageSize = 5;
+            let currentMonth = new Date();
+            let selectedDate = null;
+
+            const listEl = document.getElementById('events-list');
+            const emptyEl = document.getElementById('empty-state');
+            const paginationEl = document.getElementById('pagination');
+            const featuredTitle = document.getElementById('featured-title');
+            const featuredBody = document.getElementById('featured-body');
+            const featuredMeta = document.getElementById('featured-meta');
+            const featuredType = document.getElementById('featured-type');
+            const calendarLabel = document.getElementById('calendarLabel');
+            const calendarDays = document.getElementById('calendar-days');
+            const dayEvents = document.getElementById('day-events');
+            const addForm = document.getElementById('add-event-form');
+            const addStatus = document.getElementById('add-status');
+            const addSubmit = document.getElementById('add-submit');
+            const adminCard = document.querySelector('.admin-card');
+
+            const formatDate = (date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            const parseDate = (value) => new Date(value);
+
+            const getStatus = (event) => {
+                const now = new Date();
+                const start = parseDate(event.startDate);
+                const end = event.endDate ? parseDate(event.endDate) : parseDate(event.startDate);
+                const endOfEnd = new Date(end);
+                endOfEnd.setHours(23, 59, 59, 999);
+                if (now < start) return 'upcoming';
+                if (now > endOfEnd) return 'past';
+                return 'ongoing';
+            };
+
+            const formatDateRange = (event) => {
+                const start = parseDate(event.startDate);
+                const end = event.endDate ? parseDate(event.endDate) : start;
+                const startStr = start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                const endStr = end.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                if (startStr === endStr) return startStr;
+                return `${startStr} – ${endStr}`;
+            };
+
+            const withStatus = () => events.map((evt) => ({ ...evt, status: getStatus(evt) }));
+
+            const loadEvents = async () => {
+                addStatus.textContent = '';
+                try {
+                    const snap = await db.collection('events').orderBy('startDate', 'asc').get();
+                    if (!snap.empty) {
+                        events = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+                    } else {
+                        events = fallbackEvents;
+                    }
+                } catch (err) {
+                    console.error('Failed to load events from Firestore, using fallback.', err);
+                    addStatus.textContent = 'Using fallback data (Firestore unavailable).';
+                    events = fallbackEvents;
+                }
+                renderFeatured();
+                renderList();
+                renderCalendar();
+            };
+
+            const filterEvents = () => {
+                const base = withStatus();
+                return base
+                    .filter((evt) => statusFilter ? evt.status === statusFilter : true)
+                    .filter((evt) => (categoryFilter === 'all' ? true : evt.category === categoryFilter))
+                    .sort((a, b) => parseDate(a.startDate) - parseDate(b.startDate));
+            };
+
+            const renderFeatured = () => {
+                const candidates = withStatus();
+                let featured = candidates.find((e) => e.isFeatured && e.status !== 'past');
+                if (!featured) {
+                    featured = candidates.find((e) => e.status === 'ongoing') || candidates.find((e) => e.status === 'upcoming');
+                }
+                if (!featured) featured = candidates[0];
+                if (!featured) return;
+
+                featuredTitle.textContent = featured.title;
+                featuredBody.textContent = featured.description;
+                featuredType.textContent = featured.type ? featured.type.toUpperCase() : 'FEATURED';
+                featuredMeta.innerHTML = `
+                    <span class="pill midnight">${formatDateRange(featured)}</span>
+                    <span class="pill">${featured.time || 'Time to be announced'}</span>
+                    <span class="pill">📍 ${featured.location}</span>
+                    <span class="pill success">${featured.status.toUpperCase()}</span>
+                `;
+            };
+
+            const renderPagination = (total) => {
+                const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                currentPage = Math.min(currentPage, totalPages);
+                const buttons = [];
+                for (let p = 1; p <= totalPages; p += 1) {
+                    buttons.push(`<button class="page-btn ${p === currentPage ? 'active' : ''}" data-page="${p}">${p}</button>`);
+                }
+                paginationEl.innerHTML = buttons.join('');
+            };
+
+            const renderList = () => {
+                const rows = filterEvents();
+                if (!rows.length) {
+                    listEl.innerHTML = '';
+                    paginationEl.innerHTML = '';
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+                emptyEl.style.display = 'none';
+
+                const start = (currentPage - 1) * pageSize;
+                const page = rows.slice(start, start + pageSize);
+                listEl.innerHTML = page.map((evt) => `
+                    <article class="list-card">
+                        <div class="title-row">
+                            <div>
+                                <div class="list-meta">
+                                    <span class="date-badge">${formatDateRange(evt)}</span>
+                                    <span>${evt.time || 'Schedule TBA'}</span>
+                                    <span>📍 ${evt.location}</span>
+                                </div>
+                                <h3 class="event-title">${evt.title}</h3>
+                                <p class="event-desc">${evt.description}</p>
+                                <div class="chips">
+                                    <span class="chip status ${evt.status}">${evt.status.toUpperCase()}</span>
+                                    <span class="chip">${evt.category}</span>
+                                    <span class="chip">${evt.type}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `).join('');
+
+                renderPagination(rows.length);
+            };
+
+            const renderDayEvents = (dateISO, pool) => {
+                const matches = pool.filter((evt) => {
+                    const startISO = parseDate(evt.startDate).toISOString().slice(0, 10);
+                    const endISO = evt.endDate ? parseDate(evt.endDate).toISOString().slice(0, 10) : startISO;
+                    return dateISO >= startISO && dateISO <= endISO;
+                });
+
+                if (!matches.length) {
+                    dayEvents.style.display = 'none';
+                    return;
+                }
+
+                const readableDate = new Date(dateISO).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+                dayEvents.innerHTML = `
+                    <h4>Events on ${readableDate}</h4>
+                    ${matches.map((evt) => `
+                        <div class="mini-event">
+                            <strong>${evt.title}</strong>
+                            <span>${evt.time || 'Schedule TBA'}</span>
+                            <span>📍 ${evt.location}</span>
+                        </div>
+                    `).join('')}
+                `;
+                dayEvents.style.display = 'block';
+            };
+
+            const renderCalendar = () => {
+                const pool = withStatus();
+                const year = currentMonth.getFullYear();
+                const month = currentMonth.getMonth();
+                const first = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0).getDate();
+                const startPad = first.getDay();
+
+                calendarLabel.textContent = first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                calendarDays.innerHTML = '';
+
+                for (let i = 0; i < startPad; i += 1) {
+                    calendarDays.innerHTML += '<div></div>';
+                }
+
+                for (let day = 1; day <= lastDay; day += 1) {
+                    const cellDate = new Date(year, month, day);
+                    const dateISO = cellDate.toISOString().slice(0, 10);
+                    const hasEvent = pool.some((evt) => {
+                        const startISO = parseDate(evt.startDate).toISOString().slice(0, 10);
+                        const endISO = evt.endDate ? parseDate(evt.endDate).toISOString().slice(0, 10) : startISO;
+                        return dateISO >= startISO && dateISO <= endISO;
+                    });
+                    const isToday = new Date().toDateString() === cellDate.toDateString();
+                    const isSelected = selectedDate === dateISO;
+
+                    calendarDays.innerHTML += `
+                        <div class="day-cell ${hasEvent ? 'has-event' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" data-date="${dateISO}">
+                            <div class="day-number">${day}</div>
+                            ${hasEvent ? '<span class="dot"></span>' : ''}
+                        </div>
+                    `;
+                }
+
+                if (selectedDate) renderDayEvents(selectedDate, pool);
+            };
+
+            document.querySelectorAll('.filter-tab').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab').forEach((el) => el.classList.remove('active'));
+                    btn.classList.add('active');
+                    statusFilter = btn.dataset.status;
+                    currentPage = 1;
+                    renderList();
+                });
+            });
+
+            document.getElementById('categoryFilter').addEventListener('change', (e) => {
+                categoryFilter = e.target.value;
+                currentPage = 1;
+                renderList();
+            });
+
+            paginationEl.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.matches('.page-btn')) {
+                    currentPage = Number(target.dataset.page);
+                    renderList();
+                }
+            });
+
+            calendarDays.addEventListener('click', (e) => {
+                const cell = e.target.closest('.day-cell');
+                if (!cell) return;
+                selectedDate = cell.dataset.date;
+                renderCalendar();
+            });
+
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+                renderCalendar();
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+                renderCalendar();
+            });
+
+            if (addForm) {
+                addForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    addStatus.textContent = '';
+                    addSubmit.disabled = true;
+                    try {
+                        const title = document.getElementById('add-title').value.trim();
+                        const description = document.getElementById('add-description').value.trim();
+                        const start = document.getElementById('add-start').value;
+                        const end = document.getElementById('add-end').value;
+                        const time = document.getElementById('add-time').value.trim();
+                        const location = document.getElementById('add-location').value.trim();
+                        const category = document.getElementById('add-category').value;
+                        const type = document.getElementById('add-type').value;
+                        const isFeatured = document.getElementById('add-featured').value === 'true';
+
+                        if (!title || !description || !start || !location) {
+                            addStatus.textContent = 'Title, description, start date, and location are required.';
+                            addSubmit.disabled = false;
+                            return;
+                        }
+
+                        const startDate = `${start}T00:00:00`;
+                        const endDate = end ? `${end}T23:59:00` : startDate;
+                        const payload = {
+                            title,
+                            description,
+                            startDate,
+                            endDate,
+                            time: time || 'Schedule TBA',
+                            location,
+                            category,
+                            type,
+                            isFeatured,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+
+                        await db.collection('events').add(payload);
+                        addStatus.textContent = 'Saved to Firestore.';
+                        addForm.reset();
+                        await loadEvents();
+                    } catch (err) {
+                        console.error('Add event failed', err);
+                        addStatus.textContent = 'Failed to save. Check console.';
+                    } finally {
+                        addSubmit.disabled = false;
+                    }
+                });
+            }
+
+            if (adminCard) {
+                adminCard.style.display = 'none';
+                firebase.auth().onAuthStateChanged(async (user) => {
+                    if (!user) {
+                        adminCard.style.display = 'none';
+                        addStatus.textContent = 'Admin login required to add events.';
+                        return;
+                    }
+                    try {
+                        const token = await user.getIdTokenResult();
+                        const isAdmin = !!token.claims.admin;
+                        const isHardcodedAdminEmail = user.email === 'domaycoselaine@gmail.com';
+                        if (isAdmin || isHardcodedAdminEmail) {
+                            adminCard.style.display = 'block';
+                            addStatus.textContent = '';
+                        } else {
+                            adminCard.style.display = 'none';
+                            addStatus.textContent = 'Your account is not approved for event posting.';
+                        }
+                    } catch (err) {
+                        console.error('Auth check failed', err);
+                        adminCard.style.display = 'none';
+                        addStatus.textContent = 'Could not verify admin access.';
+                    }
+                });
+            }
+
+            loadEvents();
+        });
+    </script>
 
     <!-- Footer -->
     <footer>
@@ -775,41 +971,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
     <script src="firebase-config.js"></script>
     
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-
-<!-- User Auth Modal (moved to end of body for proper overlay) -->
-<div id="user-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" id="close-user-modal">&times;</span>
-        <h2 id="modal-title">Log In</h2>
-        <form id="modal-login-form">
-            <input type="email" id="modal-login-email" placeholder="Email" required>
-            <input type="password" id="modal-login-password" placeholder="Password" required>
-            <button type="submit">Log In</button>
-        </form>
-        <form id="modal-signup-form" style="display:none;">
-            <input type="email" id="modal-signup-email" placeholder="Email" required>
-            <input type="password" id="modal-signup-password" placeholder="Password" required>
-            <button type="submit">Sign Up</button>
-        </form>
-        <p style="text-align:center; margin: 10px 0;">or</p>
-        <button id="modal-google-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" style="width:20px;height:20px;vertical-align:middle;"> Continue with Google
-        </button>
-        <button id="modal-facebook-login" class="social-login-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" style="width:20px;height:20px;vertical-align:middle;"> Continue with Facebook
-        </button>
-        <hr>
-        <p id="toggle-auth-mode" style="cursor:pointer;color:#003d5c;font-weight:500;">Don't have an account? <span style="color:#e6c200;">Sign up</span></p>
-    </div>
-</div>
-<script src="main.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
 

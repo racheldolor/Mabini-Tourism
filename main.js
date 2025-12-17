@@ -119,8 +119,39 @@ const changeSliderImage = () => {
 
 //navbar
 
+function loadScriptOnce(src) {
+    return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) return resolve();
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Failed to load ' + src));
+        document.head.appendChild(s);
+    });
+}
+
+async function loadFirebaseIfNeeded() {
+    if (window.firebase && window.firebase.apps && window.firebase.apps.length) return;
+    if (window.__firebaseLoading) return window.__firebaseLoading;
+    window.__firebaseLoading = (async () => {
+        const scripts = [
+            'https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js',
+            'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js',
+            'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js',
+            'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js',
+            'firebase-config.js'
+        ];
+        for (const src of scripts) {
+            await loadScriptOnce(src);
+        }
+    })();
+    return window.__firebaseLoading;
+}
+
 // --- Modern OAuth Modal Logic ---
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadFirebaseIfNeeded().catch(err => console.warn('Firebase load failed', err));
+
     function ensureProviders() {
         const fb = window.firebase || (typeof firebase !== 'undefined' ? firebase : null);
         if (fb) {
@@ -353,11 +384,16 @@ document.addEventListener('DOMContentLoaded', function() {
 const navbar = document.querySelector('.navbar');
 
 window.addEventListener('scroll', () =>{
-    if(scrollY >= 188){
-        navbar.classList.add('bg');
-    }
-    else{
-        navbar.classList.remove('bg');
+    // Only apply bg class if NOT on index page (index.html or root)
+    const isIndexPage = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
+    
+    if(!isIndexPage){
+        if(scrollY >= 188){
+            navbar.classList.add('bg');
+        }
+        else{
+            navbar.classList.remove('bg');
+        }
     }
 })
 
@@ -856,6 +892,299 @@ document.addEventListener('DOMContentLoaded', function() {
             appendMessage('Network error. Please try again.', 'bot');
         } finally {
             setLoading(false);
+        }
+    });
+});
+
+// Marine Life Modal Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const marineModal = document.getElementById('marineModal');
+    const marineModalBody = document.getElementById('marineModalBody');
+    const marineModalClose = document.querySelector('.marine-modal-close');
+    const tourCards = document.querySelectorAll('.tour-card[data-marine]');
+    
+    // Marine life information database
+    const marineInfo = {
+        shark: {
+            title: 'Blacktip Reef Shark',
+            image: 'a1.jpg',
+            content: `
+                <h3>Overview</h3>
+                <p>The Blacktip Reef Shark is one of the most commonly encountered sharks in the shallow waters around Mabini. These graceful predators are easily identified by the distinctive black tips on their fins.</p>
+                
+                <h3>Characteristics</h3>
+                <ul>
+                    <li><strong>Size:</strong> Typically 1.5 to 1.8 meters (5-6 feet) in length</li>
+                    <li><strong>Appearance:</strong> Grey-brown body with prominent black markings on fin tips</li>
+                    <li><strong>Behavior:</strong> Generally timid and poses little threat to divers</li>
+                    <li><strong>Diet:</strong> Small fish, crustaceans, and mollusks</li>
+                </ul>
+                
+                <h3>Where to Spot Them</h3>
+                <p>Blacktip Reef Sharks are commonly seen in shallow coral reefs and lagoons around Anilao. The best time to encounter them is during early morning dives when they're most active hunting for food.</p>
+                
+                <h3>Conservation Status</h3>
+                <p>Listed as <strong>Near Threatened</strong> by the IUCN. These sharks face threats from overfishing and habitat degradation. When diving, maintain a respectful distance and never attempt to touch or feed them.</p>
+            `
+        },
+        dolphin: {
+            title: 'Dolphin',
+            image: 'a2.jpg',
+            content: `
+                <h3>Overview</h3>
+                <p>Dolphins are among the most intelligent and playful marine mammals you might encounter while boating or island hopping around Mabini. These magnificent creatures often travel in pods and delight visitors with their acrobatic displays.</p>
+                
+                <h3>Species in Mabini</h3>
+                <ul>
+                    <li><strong>Spinner Dolphins:</strong> Known for their spectacular spinning leaps</li>
+                    <li><strong>Bottlenose Dolphins:</strong> Recognizable by their distinctive "smile"</li>
+                    <li><strong>Fraser's Dolphins:</strong> Smaller species with distinctive striping</li>
+                </ul>
+                
+                <h3>Behavior</h3>
+                <p>Dolphins are highly social animals that communicate through clicks, whistles, and body language. They often approach boats out of curiosity and may swim alongside vessels, performing jumps and flips.</p>
+                
+                <h3>Best Viewing Times</h3>
+                <p>Early morning and late afternoon are the best times to spot dolphins. They're most commonly seen during island hopping tours, especially in deeper waters between islands.</p>
+                
+                <h3>Responsible Viewing</h3>
+                <p>If you're lucky enough to encounter dolphins, remember to:</p>
+                <ul>
+                    <li>Never chase or disturb them</li>
+                    <li>Keep boats at a safe distance</li>
+                    <li>Avoid sudden movements or loud noises</li>
+                    <li>Never attempt to feed them</li>
+                </ul>
+            `
+        },
+        pawikan: {
+            title: 'Pawikan (Sea Turtle)',
+            image: 'a3.jpg',
+            content: `
+                <h3>Overview</h3>
+                <p>Pawikan (Sea Turtles) are ancient mariners that have graced our oceans for over 100 million years. Mabini's waters are home to several species of these magnificent creatures, making it a prime location for turtle encounters.</p>
+                
+                <h3>Species Found in Mabini</h3>
+                <ul>
+                    <li><strong>Green Sea Turtle (Chelonia mydas):</strong> The most common species, can weigh up to 180 kg</li>
+                    <li><strong>Hawksbill Turtle (Eretmochelys imbricata):</strong> Smaller species with a distinctive bird-like beak</li>
+                    <li><strong>Olive Ridley Turtle (Lepidochelys olivacea):</strong> Occasionally spotted in deeper waters</li>
+                </ul>
+                
+                <h3>Life Cycle</h3>
+                <p>Female turtles return to the same beaches where they were born to lay their eggs. After a 45-70 day incubation period, hatchlings emerge and make their perilous journey to the sea, guided by moonlight.</p>
+                
+                <h3>Conservation Efforts</h3>
+                <p>All sea turtle species are <strong>Endangered or Critically Endangered</strong>. Local communities and dive shops in Mabini actively participate in:</p>
+                <ul>
+                    <li>Beach clean-up activities</li>
+                    <li>Nest monitoring and protection</li>
+                    <li>Educational programs for tourists and locals</li>
+                    <li>Reporting injured or trapped turtles</li>
+                </ul>
+                
+                <h3>Diving Etiquette</h3>
+                <p>When encountering sea turtles while diving or snorkeling:</p>
+                <ul>
+                    <li>Maintain a distance of at least 3 meters</li>
+                    <li>Never touch, ride, or chase turtles</li>
+                    <li>Avoid blocking their path to the surface (they need to breathe)</li>
+                    <li>Don't use flash photography</li>
+                </ul>
+            `
+        },
+        corals: {
+            title: 'Corals',
+            image: 'a4.jpg',
+            content: `
+                <h3>Overview</h3>
+                <p>Mabini, particularly Anilao, is renowned for having some of the most diverse and vibrant coral reefs in the Philippines. These underwater gardens are home to thousands of marine species and are considered one of the world's premier macro photography destinations.</p>
+                
+                <h3>Types of Corals</h3>
+                <ul>
+                    <li><strong>Hard Corals (Stony Corals):</strong> Build the reef structure; includes brain coral, staghorn, and table corals</li>
+                    <li><strong>Soft Corals:</strong> Flexible and sway with currents; includes sea fans, whips, and leather corals</li>
+                    <li><strong>Fire Coral:</strong> Actually a hydrozoan, not true coral; can cause painful stings</li>
+                </ul>
+                
+                <h3>The Coral Triangle</h3>
+                <p>Mabini sits within the <strong>Coral Triangle</strong>, the global center of marine biodiversity. This region contains:</p>
+                <ul>
+                    <li>76% of all known coral species</li>
+                    <li>Over 3,000 species of reef fish</li>
+                    <li>Six of the world's seven marine turtle species</li>
+                </ul>
+                
+                <h3>Importance of Coral Reefs</h3>
+                <p>Coral reefs are vital ecosystems that:</p>
+                <ul>
+                    <li>Provide habitat for 25% of all marine species</li>
+                    <li>Protect coastlines from erosion and storms</li>
+                    <li>Support local fishing communities</li>
+                    <li>Generate tourism revenue</li>
+                </ul>
+                
+                <h3>Threats to Reefs</h3>
+                <p>Coral reefs face multiple threats including climate change, ocean acidification, pollution, and destructive fishing practices. Even slight increases in water temperature can cause coral bleaching.</p>
+                
+                <h3>How You Can Help</h3>
+                <ul>
+                    <li>Practice good buoyancy control while diving</li>
+                    <li>Never touch or stand on corals</li>
+                    <li>Use reef-safe sunscreen (zinc oxide or titanium dioxide)</li>
+                    <li>Don't collect coral or shells</li>
+                    <li>Participate in reef clean-up activities</li>
+                    <li>Support eco-friendly dive operations</li>
+                </ul>
+            `
+        },
+        starfish: {
+            title: 'Starfish',
+            image: 'a5.jpg',
+            content: `
+                <h3>Overview</h3>
+                <p>Starfish, also called sea stars, are fascinating echinoderms that come in a dazzling array of colors and patterns. Mabini's rich marine environment hosts numerous species, making them a common and delightful sight for snorkelers and divers.</p>
+                
+                <h3>Characteristics</h3>
+                <ul>
+                    <li><strong>Anatomy:</strong> Most have five arms, but some species have up to 40</li>
+                    <li><strong>Regeneration:</strong> Can regrow lost arms and even grow a new body from a severed limb</li>
+                    <li><strong>Movement:</strong> Use hundreds of tiny tube feet on their underside to move and grip surfaces</li>
+                    <li><strong>Feeding:</strong> Some can extend their stomach outside their body to digest prey</li>
+                </ul>
+                
+                <h3>Common Species in Mabini</h3>
+                <ul>
+                    <li><strong>Blue Sea Star (Linckia laevigata):</strong> Vibrant blue color, often seen in shallow reefs</li>
+                    <li><strong>Chocolate Chip Sea Star:</strong> Named for its brown "chip-like" nodules</li>
+                    <li><strong>Crown-of-Thorns Starfish:</strong> Large predatory species that feeds on coral (can be problematic in large numbers)</li>
+                    <li><strong>Cushion Star:</strong> Short, thick arms giving a cushion-like appearance</li>
+                </ul>
+                
+                <h3>Ecological Role</h3>
+                <p>Starfish play important roles in maintaining reef health by:</p>
+                <ul>
+                    <li>Controlling populations of mussels and barnacles</li>
+                    <li>Cleaning up dead organic matter</li>
+                    <li>Serving as prey for larger animals</li>
+                </ul>
+                
+                <h3>Interesting Facts</h3>
+                <ul>
+                    <li>Starfish have no brain or blood; instead, they have a water vascular system</li>
+                    <li>They can live for up to 35 years</li>
+                    <li>Each arm has an eye spot that can detect light and dark</li>
+                    <li>Some species can reproduce by splitting in half</li>
+                </ul>
+                
+                <h3>Viewing Guidelines</h3>
+                <p>While starfish are beautiful, remember to:</p>
+                <ul>
+                    <li><strong>Never remove starfish from water</strong> - Air gets trapped in their structure, often proving fatal</li>
+                    <li>Look but don't touch - oils from human skin can harm them</li>
+                    <li>Leave them where you find them</li>
+                    <li>Report any mass die-offs to local marine conservation groups</li>
+                </ul>
+            `
+        },
+        stingray: {
+            title: 'Stingray',
+            image: 'a6.jpg',
+            content: `
+                <h3>Overview</h3>
+                <p>Stingrays are graceful, flat-bodied cartilaginous fish closely related to sharks. These fascinating creatures glide elegantly through the water and can often be spotted resting on sandy bottoms around Mabini's dive sites.</p>
+                
+                <h3>Physical Characteristics</h3>
+                <ul>
+                    <li><strong>Body Shape:</strong> Flattened, diamond-shaped body with wing-like pectoral fins</li>
+                    <li><strong>Size:</strong> Species range from 25 cm to over 2 meters in width</li>
+                    <li><strong>Tail:</strong> Long, whip-like tail with one or more venomous barbs</li>
+                    <li><strong>Eyes:</strong> Located on top of head; spiracles behind eyes help them breathe while buried</li>
+                </ul>
+                
+                <h3>Species in Mabini Waters</h3>
+                <ul>
+                    <li><strong>Blue-spotted Stingray:</strong> Beautiful blue spots on khaki background</li>
+                    <li><strong>Jenkins Whipray:</strong> Large species often seen in deeper waters</li>
+                    <li><strong>Marbled Stingray:</strong> Ornate patterns on their disc</li>
+                    <li><strong>Eagle Ray:</strong> Spotted eagle rays occasionally visit Mabini's reefs</li>
+                </ul>
+                
+                <h3>Behavior</h3>
+                <p>Stingrays are generally peaceful creatures that:</p>
+                <ul>
+                    <li>Feed on mollusks, crustaceans, and small fish buried in sand</li>
+                    <li>Use electroreceptors to detect prey hidden in substrate</li>
+                    <li>Often bury themselves in sand with only eyes and spiracles visible</li>
+                    <li>Are most active during dusk and dawn</li>
+                </ul>
+                
+                <h3>Safety Information</h3>
+                <p>Stingrays are not aggressive and rarely sting unless stepped on or threatened. To avoid accidents:</p>
+                <ul>
+                    <li><strong>Do the "stingray shuffle"</strong> - Shuffle feet when walking in sandy shallows</li>
+                    <li>Maintain a safe distance while diving (at least 1-2 meters)</li>
+                    <li>Never attempt to touch or grab a stingray</li>
+                    <li>Watch where you place your hands on sandy bottoms</li>
+                </ul>
+                
+                <h3>First Aid</h3>
+                <p>If stung by a stingray:</p>
+                <ul>
+                    <li>Immediately seek medical attention</li>
+                    <li>Immerse the wound in hot water (as hot as can be tolerated) to help break down venom</li>
+                    <li>Do not attempt to remove the barb yourself</li>
+                    <li>Keep the affected area still to prevent venom spread</li>
+                </ul>
+                
+                <h3>Conservation</h3>
+                <p>Many stingray species face threats from overfishing and habitat loss. They're caught for their meat, leather, and gill plates. Supporting sustainable tourism and reporting any illegal fishing activities helps protect these magnificent animals.</p>
+            `
+        }
+    };
+    
+    // Function to open modal
+    function openModal(marineType) {
+        const info = marineInfo[marineType];
+        if (info) {
+            marineModalBody.innerHTML = `
+                <img src="${info.image}" alt="${info.title}" class="marine-modal-image">
+                <h2>${info.title}</h2>
+                ${info.content}
+            `;
+            marineModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+    }
+    
+    // Function to close modal
+    function closeModal() {
+        marineModal.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+    
+    // Add click event to each tour card
+    tourCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const marineType = this.getAttribute('data-marine');
+            openModal(marineType);
+        });
+    });
+    
+    // Close modal when clicking the close button
+    marineModalClose.addEventListener('click', closeModal);
+    
+    // Close modal when clicking the backdrop
+    marineModal.addEventListener('click', function(e) {
+        if (e.target === this || e.target.classList.contains('marine-modal-backdrop')) {
+            closeModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && marineModal.classList.contains('active')) {
+            closeModal();
         }
     });
 });
