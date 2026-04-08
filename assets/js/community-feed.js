@@ -10,15 +10,25 @@ let IMGBB_API_KEY = '';
 
 // Fetch API key from backend on initialization
 async function initializeConfig() {
+    const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const configUrls = isLocalHost
+        ? ['http://localhost:3001/api/config', '/api/config']
+        : ['/api/config'];
+
     try {
-        // Try to fetch from backend (localhost:3001 for local dev, or same domain in production)
-        const configUrl = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3001/api/config'
-            : '/api/config';
-        
-        const response = await fetch(configUrl);
-        const data = await response.json();
-        IMGBB_API_KEY = data.imgbbApiKey;
+        // Try multiple config endpoints so local static servers (including 127.0.0.1) still work.
+        for (const configUrl of configUrls) {
+            try {
+                const response = await fetch(configUrl);
+                if (!response.ok) continue;
+
+                const data = await response.json();
+                IMGBB_API_KEY = data.imgbbApiKey || '';
+                if (IMGBB_API_KEY) break;
+            } catch (err) {
+                // Keep trying the next candidate URL.
+            }
+        }
         
         if (IMGBB_API_KEY) {
             console.log('✅ Config loaded from backend');
@@ -191,6 +201,11 @@ createPostForm?.addEventListener('submit', async (e) => {
         const content = document.getElementById('postContent').value.trim();
         const category = document.getElementById('postCategory').value;
         const location = document.getElementById('postLocation').value.trim();
+
+        if (selectedImages.length > 0 && !IMGBB_API_KEY) {
+            alert('Image upload is not configured yet. Start the backend server and set IMGBB_API_KEY in your .env file.');
+            return;
+        }
         
         // Upload images to Imgbb
         const imageUrls = [];
@@ -220,7 +235,8 @@ createPostForm?.addEventListener('submit', async (e) => {
                 }
             } catch (error) {
                 console.error('Error uploading image:', error);
-                alert(`Failed to upload image ${i + 1}. Please try again.`);
+                const reason = error && error.message ? ` (${error.message})` : '';
+                alert(`Failed to upload image ${i + 1}. Please try again.${reason}`);
                 throw error;
             }
         }

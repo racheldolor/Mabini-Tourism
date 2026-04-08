@@ -26,7 +26,7 @@ npm install
 ### 3) Run the API server
 
 ```powershell
-node ai-itinerary-api.js
+node scripts/ai-itinerary-api.js
 ```
 
 The server listens on `http://localhost:3001`. The frontend already posts to `/generate-itinerary`.
@@ -40,4 +40,10 @@ The server listens on `http://localhost:3001`. The frontend already posts to `/g
 
 - If you see `OPENAI_API_KEY is missing`, ensure your `.env` file exists and contains a valid key.
 - Firewalls or ad-blockers can block `localhost` calls; allow `http://localhost:3001`.
-- Adjust the `PORT` in `.env` if 3001 is taken; the frontend URL can remain the same if you use a proxy, otherwise change the fetch URL in `main.js`.
+- Adjust the `PORT` in `.env` if 3001 is taken; the frontend URL can remain the same if you use a proxy, otherwise change the fetch URL in `assets/js/main.js`.
+
+## Admin announcements
+
+- The announcements page uses Firebase custom claims to decide who can create new announcements.
+- Run `scripts/set-admin-claim.js` after replacing the target UID to assign `admin: true` and `role: 'admin'`.
+- The admin user signs in through the same login portal as everyone else, but the announcements composer only appears for users with the admin claim.

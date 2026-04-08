@@ -81,7 +81,7 @@ function formatItinerary(text) {
 }
 
 //background image slider
-const sliderImage = ["bg.jpg", "5.jpg", "1.jpg", "3.jpg", "2.jpg", "4.jpg", "6.jpg"];
+const sliderImage = ["assets/images/bg.jpg", "assets/images/5.jpg", "assets/images/1.jpg", "assets/images/3.jpg", "assets/images/2.jpg", "assets/images/4.jpg", "assets/images/6.jpg"];
 let slider = document.querySelector('.background-image');
 let sliderGridItems = [...document.querySelectorAll('.grid-item')];
 let currentImage = 0;
@@ -139,13 +139,191 @@ async function loadFirebaseIfNeeded() {
             'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js',
             'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js',
             'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js',
-            'firebase-config.js'
+            window.location.pathname.includes('/pages/') ? '../assets/js/firebase-config.js' : 'assets/js/firebase-config.js'
         ];
         for (const src of scripts) {
             await loadScriptOnce(src);
         }
     })();
     return window.__firebaseLoading;
+}
+
+function showAuthError(error, providerName) {
+    const code = error && error.code ? error.code : '';
+    if (code === 'auth/configuration-not-found') {
+        alert(
+            `${providerName} sign-in is not configured in Firebase yet. ` +
+            'Enable the provider in Firebase Authentication and make sure the current domain is listed in Authorized domains.'
+        );
+        return;
+    }
+
+    alert(`${providerName} sign-in failed: ${error && error.message ? error.message : 'Unknown error'}`);
+}
+
+function getFirebaseInstance() {
+    return window.firebase || (typeof firebase !== 'undefined' ? firebase : null);
+}
+
+function getNavbarUserDisplayName(user) {
+    return user?.displayName || user?.email || 'Login';
+}
+
+function getNavbarUserInitial(user) {
+    const source = user?.displayName || user?.email || 'U';
+    return source.charAt(0).toUpperCase();
+}
+
+function getNavbarUserAvatarMarkup(user) {
+    if (user?.photoURL) {
+        const displayName = user.displayName || user.email || 'Account';
+        return `<img src="${user.photoURL}" alt="${displayName}">`;
+    }
+
+    return `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-7 8-7s8 3 8 7"/>
+        </svg>
+    `;
+}
+
+function closeNavbarUserMenu() {
+    const openMenuItem = document.querySelector('.user-btn-item.user-menu-open');
+    if (!openMenuItem) return;
+
+    openMenuItem.classList.remove('user-menu-open');
+    const button = openMenuItem.querySelector('#user-btn');
+    if (button) {
+        button.setAttribute('aria-expanded', 'false');
+    }
+}
+
+function ensureNavbarUserMenu() {
+    const userButton = document.getElementById('user-btn');
+    if (!userButton) return null;
+
+    const userItem = userButton.closest('.user-btn-item');
+    if (!userItem) return null;
+
+    let userMenu = userItem.querySelector('.user-menu');
+    if (!userMenu) {
+        userMenu = document.createElement('div');
+        userMenu.className = 'user-menu';
+        userMenu.innerHTML = `
+            <button type="button" id="logout-btn" class="user-menu-btn">Log out</button>
+        `;
+        userItem.appendChild(userMenu);
+    }
+
+    const logoutButton = userMenu.querySelector('#logout-btn');
+    if (logoutButton && !logoutButton.dataset.bound) {
+        logoutButton.addEventListener('click', async function(event) {
+            event.stopPropagation();
+            closeNavbarUserMenu();
+            const fb = getFirebaseInstance();
+            if (!fb || !fb.auth) return;
+            try {
+                await fb.auth().signOut();
+            } catch (error) {
+                alert(`Logout failed: ${error && error.message ? error.message : 'Unknown error'}`);
+            }
+        });
+        logoutButton.dataset.bound = 'true';
+    }
+
+    return { userButton, userItem, userMenu };
+}
+
+function removeNavbarAdminBadge(userButton) {
+    if (!userButton) return;
+    const badge = userButton.querySelector('.user-role-badge');
+    if (badge) {
+        badge.remove();
+    }
+}
+
+function showNavbarAdminBadge(userButton) {
+    if (!userButton) return;
+    let badge = userButton.querySelector('.user-role-badge');
+    if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'user-role-badge';
+        badge.textContent = 'ADMIN';
+        userButton.appendChild(badge);
+    }
+}
+
+async function syncNavbarAdminBadge(user) {
+    const userButton = document.getElementById('user-btn');
+    if (!userButton) return;
+
+    const requestId = String(Date.now());
+    userButton.dataset.adminBadgeRequestId = requestId;
+    removeNavbarAdminBadge(userButton);
+
+    if (!user) return;
+
+    try {
+        const token = await user.getIdTokenResult();
+        if (userButton.dataset.adminBadgeRequestId !== requestId) {
+            return;
+        }
+
+        const claims = token && token.claims ? token.claims : {};
+        const role = typeof claims.role === 'string' ? claims.role.toLowerCase() : '';
+        const isAdmin = Boolean(claims.admin) || role === 'admin';
+
+        if (isAdmin) {
+            showNavbarAdminBadge(userButton);
+        }
+    } catch (error) {
+        console.warn('Unable to resolve admin badge claims.', error);
+    }
+}
+
+function syncNavbarUserState(user) {
+    const userButton = document.getElementById('user-btn');
+    if (!userButton) return;
+
+    const userLabel = userButton.querySelector('.user-btn-label, #user-display-name');
+    const userAvatar = userButton.querySelector('.user-btn-avatar');
+    const userControls = ensureNavbarUserMenu();
+
+    if (user) {
+        userButton.title = `${getNavbarUserDisplayName(user)} (${user.email || 'signed in'})`;
+        userButton.setAttribute('aria-haspopup', 'true');
+        userButton.setAttribute('aria-expanded', userControls && userControls.userItem.classList.contains('user-menu-open') ? 'true' : 'false');
+        userButton.dataset.authState = 'signed-in';
+
+        if (userAvatar) {
+            userAvatar.innerHTML = getNavbarUserAvatarMarkup(user);
+        }
+        if (userLabel) {
+            userLabel.textContent = getNavbarUserDisplayName(user);
+        }
+        if (userControls) {
+            userControls.userItem.classList.add('is-signed-in');
+        }
+        syncNavbarAdminBadge(user);
+        return;
+    }
+
+    userButton.title = 'Log in';
+    userButton.removeAttribute('aria-haspopup');
+    userButton.setAttribute('aria-expanded', 'false');
+    userButton.dataset.authState = 'signed-out';
+
+    if (userAvatar) {
+        userAvatar.innerHTML = getNavbarUserAvatarMarkup(null);
+    }
+    if (userLabel) {
+        userLabel.textContent = 'Login';
+    }
+    if (userControls) {
+        userControls.userItem.classList.remove('is-signed-in', 'user-menu-open');
+    }
+    removeNavbarAdminBadge(userButton);
 }
 
 // --- Modern OAuth Modal Logic ---
@@ -199,7 +377,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const facebookBtn = document.getElementById('auth-facebook-btn');
 
     function getFirebase() {
-        return window.firebase || (typeof firebase !== 'undefined' ? firebase : null);
+        return getFirebaseInstance();
     }
     function getGoogleProvider() {
         return window.googleProvider || (typeof googleProvider !== 'undefined' ? googleProvider : null);
@@ -242,7 +420,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     if (userBtn) {
-        userBtn.addEventListener('click', openAuth);
+        userBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const fb = getFirebase();
+            const currentUser = fb && fb.auth ? fb.auth().currentUser : null;
+            if (!currentUser) {
+                closeNavbarUserMenu();
+                openAuth();
+                return;
+            }
+
+            const userControls = ensureNavbarUserMenu();
+            if (!userControls) return;
+
+            const isOpen = userControls.userItem.classList.toggle('user-menu-open');
+            userBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
     }
     if (authClose) {
         authClose.addEventListener('click', closeAuth);
@@ -259,7 +454,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const fb = getFirebase();
             const gp = getGoogleProvider();
             if (fb && gp) {
-                fb.auth().signInWithPopup(gp).catch(err => alert('Google sign-in failed: ' + err.message));
+                fb.auth().signInWithPopup(gp).catch(err => showAuthError(err, 'Google'));
             } else {
                 alert('Google login is not available.');
             }
@@ -270,15 +465,30 @@ document.addEventListener('DOMContentLoaded', async function() {
             const fb = getFirebase();
             const fp = getFacebookProvider();
             if (fb && fp) {
-                fb.auth().signInWithPopup(fp).catch(err => alert('Facebook sign-in failed: ' + err.message));
+                fb.auth().signInWithPopup(fp).catch(err => showAuthError(err, 'Facebook'));
             } else {
                 alert('Facebook login is not available.');
             }
         });
     }
+
+    syncNavbarUserState(getFirebase()?.auth?.().currentUser || null);
+
+    firebase.auth().onAuthStateChanged(user => {
+        syncNavbarUserState(user);
+    });
+
     // Escape key closes modal
     document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeNavbarUserMenu();
         if (e.key === 'Escape') closeAuth();
+    });
+
+    document.addEventListener('click', function(event) {
+        const openMenuItem = document.querySelector('.user-btn-item.user-menu-open');
+        if (openMenuItem && !openMenuItem.contains(event.target)) {
+            closeNavbarUserMenu();
+        }
     });
 });
 
@@ -454,26 +664,15 @@ window.addEventListener('scroll', () => {
     }
 });
 
-function initMap() {
-    const mabini = { lat: 13.7539, lng: 120.9083 }; // Mabini, Batangas
-    const map = new google.maps.Map(document.getElementById("map"), {
-      center: mabini,
-      zoom: 12,
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    const getDirectionsBtn = document.getElementById('get-directions-btn');
 
-    new google.maps.Marker({
-      position: mabini,
-      map: map,
-      title: "Mabini, Batangas"
-    });
-
-    // Button click → open Google Maps directions
-    document.getElementById("get-directions-btn").addEventListener("click", () => {
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${mabini.lat},${mabini.lng}`, "_blank");
-    });
-  }
-
-  window.onload = initMap;
+    if (getDirectionsBtn) {
+        getDirectionsBtn.addEventListener('click', function() {
+            window.open('https://www.google.com/maps/dir/?api=1&destination=Mabini%2C%20Batangas', '_blank');
+        });
+    }
+});
     
 // --- AI Itinerary Modal Logic ---
 document.addEventListener('DOMContentLoaded', function() {
@@ -563,10 +762,10 @@ document.addEventListener('DOMContentLoaded', function() {
                           <div style="margin-top: 30px; border-top: 2px solid rgba(230,194,0,0.3); padding-top: 20px;">
                             <h3 style="color: #e6c200; font-size: 18px; margin-bottom: 15px;">📸 Inspiration Gallery</h3>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                              <img src="d.jpg" alt="Diving in Mabini" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
-                              <img src="s.jpg" alt="Snorkeling" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
-                              <img src="ih.jpg" alt="Island Hopping" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
-                              <img src="rs.jpg" alt="Resorts" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                              <img src="assets/images/d.jpg" alt="Diving in Mabini" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                              <img src="assets/images/s.jpg" alt="Snorkeling" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                              <img src="assets/images/ih.jpg" alt="Island Hopping" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                              <img src="assets/images/rs.jpg" alt="Resorts" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
                             </div>
                           </div>
                         `;
@@ -679,6 +878,7 @@ if (window.location.pathname.includes('community.html')) {
 
     // Show/hide sections based on auth state
     firebase.auth().onAuthStateChanged(user => {
+        syncNavbarUserState(user);
         if (user) {
             if (authSection) authSection.style.display = 'none';
             if (userSection) {
@@ -907,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const marineInfo = {
         shark: {
             title: 'Blacktip Reef Shark',
-            image: 'a1.jpg',
+            image: 'assets/images/a1.jpg',
             content: `
                 <h3>Overview</h3>
                 <p>The Blacktip Reef Shark is one of the most commonly encountered sharks in the shallow waters around Mabini. These graceful predators are easily identified by the distinctive black tips on their fins.</p>
@@ -929,7 +1129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         dolphin: {
             title: 'Dolphin',
-            image: 'a2.jpg',
+            image: 'assets/images/a2.jpg',
             content: `
                 <h3>Overview</h3>
                 <p>Dolphins are among the most intelligent and playful marine mammals you might encounter while boating or island hopping around Mabini. These magnificent creatures often travel in pods and delight visitors with their acrobatic displays.</p>
@@ -959,7 +1159,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         pawikan: {
             title: 'Pawikan (Sea Turtle)',
-            image: 'a3.jpg',
+            image: 'assets/images/a3.jpg',
             content: `
                 <h3>Overview</h3>
                 <p>Pawikan (Sea Turtles) are ancient mariners that have graced our oceans for over 100 million years. Mabini's waters are home to several species of these magnificent creatures, making it a prime location for turtle encounters.</p>
@@ -995,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         corals: {
             title: 'Corals',
-            image: 'a4.jpg',
+            image: 'assets/images/a4.jpg',
             content: `
                 <h3>Overview</h3>
                 <p>Mabini, particularly Anilao, is renowned for having some of the most diverse and vibrant coral reefs in the Philippines. These underwater gardens are home to thousands of marine species and are considered one of the world's premier macro photography destinations.</p>
@@ -1040,7 +1240,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         starfish: {
             title: 'Starfish',
-            image: 'a5.jpg',
+            image: 'assets/images/a5.jpg',
             content: `
                 <h3>Overview</h3>
                 <p>Starfish, also called sea stars, are fascinating echinoderms that come in a dazzling array of colors and patterns. Mabini's rich marine environment hosts numerous species, making them a common and delightful sight for snorkelers and divers.</p>
@@ -1089,7 +1289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         stingray: {
             title: 'Stingray',
-            image: 'a6.jpg',
+            image: 'assets/images/a6.jpg',
             content: `
                 <h3>Overview</h3>
                 <p>Stingrays are graceful, flat-bodied cartilaginous fish closely related to sharks. These fascinating creatures glide elegantly through the water and can often be spotted resting on sandy bottoms around Mabini's dive sites.</p>

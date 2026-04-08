@@ -6,10 +6,10 @@
     <title>Announcements & Events | Dive in Mabini</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="service-template.css" />
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/service-template.css" />
     <style>
         :root {
             --midnight: #002037;
@@ -105,6 +105,10 @@
             display: grid;
             grid-template-columns: 1fr 360px;
             gap: 20px;
+        }
+
+        .controls-grid > div {
+            min-width: 0;
         }
 
         .filters-card {
@@ -231,7 +235,8 @@
             gap: 10px;
         }
 
-        .list-stack { display: grid; gap: 16px; }
+        .list-stack { display: grid; gap: 16px; min-width: 0; }
+        .list-stack > * { width: 100%; box-sizing: border-box; }
 
         /* Admin add form */
         .admin-card {
@@ -241,6 +246,20 @@
             border-radius: 14px;
             padding: 16px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .page-shell > .admin-card {
+            width: 100%;
+            display: block;
+        }
+
+        .controls-grid > .admin-card,
+        .controls-grid .admin-card {
+            grid-column: 1 / -1;
+            width: 100%;
         }
 
         .form-grid {
@@ -255,7 +274,33 @@
             border-radius: 10px;
             padding: 10px;
             font-size: 14px;
+            font-family: 'Poppins', sans-serif;
             background: white;
+        }
+
+        .form-row label {
+            display: grid;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--midnight);
+        }
+
+        .form-row {
+            width: 100%;
+        }
+
+        .form-row textarea {
+            width: 100%;
+            min-height: 96px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.4;
+            background: white;
+            resize: vertical;
+            box-sizing: border-box;
         }
 
         .form-actions { margin-top: 12px; display: flex; gap: 12px; align-items: center; }
@@ -279,8 +324,15 @@
             align-items: flex-start;
         }
 
-        .event-title { margin: 0; font-size: 18px; color: var(--midnight); }
-        .event-desc { color: var(--muted); margin: 0; line-height: 1.6; }
+        .title-row > div {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .list-meta > span { min-width: 0; overflow-wrap: break-word; }
+
+        .event-title { margin: 0; font-size: 18px; color: var(--midnight); overflow-wrap: break-word; }
+        .event-desc { color: var(--muted); margin: 0; line-height: 1.6; overflow-wrap: break-word; }
 
         .chips { display: flex; gap: 8px; flex-wrap: wrap; }
         .chip { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); font-weight: 600; font-size: 12px; color: var(--midnight); background: #f7f9fc; }
@@ -330,21 +382,21 @@
         <div class="navbar-flex">
             <!-- Left Column: Navigation Links -->
             <ul class="links-left">
-                <li class="link-item"><a href="index.html#about-section">About</a></li>
-                <li class="link-item"><a href="index.html#marine-life">Marine Life</a></li>
-                <li class="link-item"><a href="index.html#service-section">Services</a></li>
+                <li class="link-item"><a href="../index.html#about-section">About</a></li>
+                <li class="link-item"><a href="../index.html#marine-life">Marine Life</a></li>
+                <li class="link-item"><a href="../index.html#service-section">Services</a></li>
                 <li class="link-item"><a href="announcements.html">Announcements</a></li>
             </ul>
 
             <!-- Center Column: Logo -->
             <div class="logo-center">
-                <a href="index.html#hero-section"><img src="logo.png" alt="logo" class="logo"></a>
+                <a href="../index.html#hero-section"><img src="../assets/images/logo.png" alt="logo" class="logo"></a>
             </div>
 
             <!-- Right Column: Navigation Links + Search + Login -->
             <ul class="links-right">
                 <li class="link-item"><a href="community.html">Community</a></li>
-                <li class="link-item"><a href="index.html#find-section">Find Us</a></li>
+                <li class="link-item"><a href="../index.html#find-section">Find Us</a></li>
                 <li class="link-item navbar-search-item">
                     <form id="navbar-search-form" autocomplete="off">
                         <span class="search-icon" aria-hidden="true">
@@ -410,52 +462,6 @@
                     <h3>No events found</h3>
                     <p>Adjust your filters or check back later. Newly approved posts will appear here automatically.</p>
                 </div>
-
-                <div class="admin-card">
-                    <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-                        <strong>Quick Add (admin only)</strong>
-                        <span class="muted">Temporary helper; secure via auth rules in Firestore.</span>
-                    </div>
-                    <form id="add-event-form" style="margin-top:12px; display:grid; gap:12px;">
-                        <div class="form-grid">
-                            <label>Title<input type="text" id="add-title" required></label>
-                            <label>Category
-                                <select id="add-category" required>
-                                    <option value="festival">Festival</option>
-                                    <option value="diving">Diving</option>
-                                    <option value="advisory" selected>Advisory</option>
-                                    <option value="training">Training</option>
-                                    <option value="culture">Culture</option>
-                                    <option value="lgu">LGU Program</option>
-                                </select>
-                            </label>
-                            <label>Type
-                                <select id="add-type" required>
-                                    <option value="advisory" selected>Advisory</option>
-                                    <option value="festival">Festival</option>
-                                    <option value="competition">Competition</option>
-                                    <option value="religious">Religious</option>
-                                    <option value="training">Training</option>
-                                </select>
-                            </label>
-                            <label>Start Date<input type="date" id="add-start" required></label>
-                            <label>End Date<input type="date" id="add-end"></label>
-                            <label>Time (text)<input type="text" id="add-time" placeholder="e.g. 8:00 AM - 3:00 PM"></label>
-                            <label>Location<input type="text" id="add-location" required></label>
-                            <label>Featured?
-                                <select id="add-featured">
-                                    <option value="false" selected>No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </label>
-                        </div>
-                        <label>Description<textarea id="add-description" rows="3" required></textarea></label>
-                        <div class="form-actions">
-                            <button class="btn-primary" type="submit" id="add-submit">Save event</button>
-                            <span class="muted" id="add-status"></span>
-                        </div>
-                    </form>
-                </div>
             </div>
 
             <div>
@@ -474,6 +480,53 @@
                     <div class="day-events" id="day-events" style="display:none;"></div>
                 </div>
             </div>
+        </div>
+
+        <div class="admin-card">
+            <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                <strong>Create New Announcement/Event</strong>
+            </div>
+            <form id="add-event-form" style="margin-top:12px; display:grid; gap:12px;">
+                <div class="form-grid">
+                    <label>Title<input type="text" id="add-title" required></label>
+                    <label>Category
+                        <select id="add-category" required>
+                            <option value="festival">Festival</option>
+                            <option value="diving">Diving</option>
+                            <option value="advisory" selected>Advisory</option>
+                            <option value="training">Training</option>
+                            <option value="culture">Culture</option>
+                            <option value="lgu">LGU Program</option>
+                        </select>
+                    </label>
+                    <label>Type
+                        <select id="add-type" required>
+                            <option value="advisory" selected>Advisory</option>
+                            <option value="festival">Festival</option>
+                            <option value="competition">Competition</option>
+                            <option value="religious">Religious</option>
+                            <option value="training">Training</option>
+                        </select>
+                    </label>
+                    <label>Start Date<input type="date" id="add-start" required></label>
+                    <label>End Date<input type="date" id="add-end"></label>
+                    <label>Time (text)<input type="text" id="add-time" placeholder="e.g. 8:00 AM - 3:00 PM"></label>
+                    <label>Location<input type="text" id="add-location" required></label>
+                    <label>Featured?
+                        <select id="add-featured">
+                            <option value="false" selected>No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-row">
+                    <label>Description<textarea id="add-description" rows="4" required></textarea></label>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-primary" type="submit" id="add-submit">Save event</button>
+                    <span class="muted" id="add-status"></span>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -621,6 +674,20 @@
 
             const formatDate = (date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
             const parseDate = (value) => new Date(value);
+
+            const isAdminUser = async (user) => {
+                if (!user) return false;
+
+                try {
+                    const token = await user.getIdTokenResult();
+                    const claims = token.claims || {};
+                    const role = typeof claims.role === 'string' ? claims.role.toLowerCase() : '';
+                    return Boolean(claims.admin) || role === 'admin';
+                } catch (err) {
+                    console.error('Failed to read admin claims', err);
+                    return false;
+                }
+            };
 
             const getStatus = (event) => {
                 const now = new Date();
@@ -901,15 +968,13 @@
                         return;
                     }
                     try {
-                        const token = await user.getIdTokenResult();
-                        const isAdmin = !!token.claims.admin;
-                        const isHardcodedAdminEmail = user.email === 'domaycoselaine@gmail.com';
-                        if (isAdmin || isHardcodedAdminEmail) {
+                        const isAdmin = await isAdminUser(user);
+                        if (isAdmin) {
                             adminCard.style.display = 'block';
                             addStatus.textContent = '';
                         } else {
                             adminCard.style.display = 'none';
-                            addStatus.textContent = 'Your account is not approved for event posting.';
+                            addStatus.textContent = 'Your account does not have admin access to create announcements.';
                         }
                     } catch (err) {
                         console.error('Auth check failed', err);
@@ -927,14 +992,14 @@
     <footer>
         <div class="footer-container">
             <div class="footer-section">
-                <img src="logo.png" alt="Logo" class="footer-logo">
+                <img src="../assets/images/logo.png" alt="Logo" class="footer-logo">
                 <h3>Dive in Mabini</h3>
                 <p>Stay updated with events and celebrations happening in Mabini, Batangas.</p>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul class="footer-links">
-                    <li><a href="index.html#about-section">About Us</a></li>
+                    <li><a href="../index.html#about-section">About Us</a></li>
                     <li><a href="diving.html">Diving</a></li>
                     <li><a href="snorkeling.html">Snorkeling</a></li>
                     <li><a href="resorts.html">Resorts</a></li>
@@ -971,12 +1036,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
+    <script src="../assets/js/firebase-config.js"></script>
     
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="main.js"></script>
+    <script src="../assets/js/main.js"></script>
 </body>
 </html>
 
