@@ -738,7 +738,24 @@
             const adminCard = document.querySelector('.admin-card');
 
             const formatDate = (date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-            const parseDate = (value) => new Date(value);
+            const parseDate = (value) => {
+                if (!value) return null;
+                if (value instanceof Date) return new Date(value.getTime());
+                if (typeof value.toDate === 'function') return value.toDate();
+                return new Date(value);
+            };
+            const toLocalDateKey = (value) => {
+                const date = value instanceof Date ? value : parseDate(value);
+                if (!date || Number.isNaN(date.getTime())) return '';
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+            const fromDateKey = (dateKey) => {
+                const [year, month, day] = dateKey.split('-').map(Number);
+                return new Date(year, month - 1, day);
+            };
 
             const isAdminUser = async (user) => {
                 if (!user) return false;
@@ -871,8 +888,8 @@
 
             const renderDayEvents = (dateISO, pool) => {
                 const matches = pool.filter((evt) => {
-                    const startISO = parseDate(evt.startDate).toISOString().slice(0, 10);
-                    const endISO = evt.endDate ? parseDate(evt.endDate).toISOString().slice(0, 10) : startISO;
+                    const startISO = toLocalDateKey(evt.startDate);
+                    const endISO = evt.endDate ? toLocalDateKey(evt.endDate) : startISO;
                     return dateISO >= startISO && dateISO <= endISO;
                 });
 
@@ -881,7 +898,7 @@
                     return;
                 }
 
-                const readableDate = new Date(dateISO).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+                const readableDate = fromDateKey(dateISO).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
                 dayEvents.innerHTML = `
                     <h4>Events on ${readableDate}</h4>
                     ${matches.map((evt) => `
@@ -914,10 +931,10 @@
 
                 for (let day = 1; day <= lastDay; day += 1) {
                     const cellDate = new Date(year, month, day);
-                    const dateISO = cellDate.toISOString().slice(0, 10);
+                    const dateISO = toLocalDateKey(cellDate);
                     const hasEvent = pool.some((evt) => {
-                        const startISO = parseDate(evt.startDate).toISOString().slice(0, 10);
-                        const endISO = evt.endDate ? parseDate(evt.endDate).toISOString().slice(0, 10) : startISO;
+                        const startISO = toLocalDateKey(evt.startDate);
+                        const endISO = evt.endDate ? toLocalDateKey(evt.endDate) : startISO;
                         return dateISO >= startISO && dateISO <= endISO;
                     });
                     const isToday = new Date().toDateString() === cellDate.toDateString();
