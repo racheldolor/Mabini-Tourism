@@ -989,6 +989,10 @@ if (window.location.pathname.includes('community.html')) {
 
 // --- Floating Gemini Chatbot ---
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.pathname.includes('announcements.html')) {
+        return;
+    }
+
     // Build chatbot container so it appears on every page that loads main.js
     const chatContainer = document.createElement('div');
     chatContainer.className = 'chatbot';

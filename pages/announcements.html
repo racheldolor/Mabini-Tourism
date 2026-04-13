@@ -29,24 +29,37 @@
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .page-shell {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px 20px 80px;
+            width: 100%;
+            box-sizing: border-box;
+            flex: 1 0 auto;
+        }
+
+        footer {
+            margin-top: auto;
+            width: 100%;
         }
 
         /* Featured announcement */
         .featured-card {
             background: var(--card);
             border-radius: 18px;
-            padding: 24px;
+            padding: 32px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border);
             display: grid;
             gap: 12px;
             margin-top: 24px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .featured-top {
@@ -103,17 +116,28 @@
         .controls-grid {
             margin: 32px 0;
             display: grid;
-            grid-template-columns: 1fr 360px;
+            grid-template-columns: 1fr;
             gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .controls-grid > div {
-            min-width: 0;
+        .controls-grid > div:first-child {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-grid > div:last-child {
+            width: 100%;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr 360px;
+            align-items: stretch;
         }
 
         .filters-card {
             background: var(--card);
-            padding: 16px;
+            padding: 20px;
             border-radius: 14px;
             border: 1px solid var(--border);
             box-shadow: 0 4px 20px rgba(0,0,0,0.06);
@@ -121,6 +145,8 @@
             gap: 10px;
             flex-wrap: wrap;
             align-items: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .filter-tab {
@@ -156,7 +182,11 @@
             border-radius: 14px;
             border: 1px solid var(--border);
             box-shadow: 0 6px 22px rgba(0,0,0,0.06);
-            padding: 16px;
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-rows: auto auto minmax(0, 1fr) auto;
         }
 
         .calendar-head {
@@ -187,22 +217,35 @@
             gap: 6px;
         }
 
+        #calendar-days {
+            min-height: 0;
+            align-content: stretch;
+        }
+
         .day-name {
             text-align: center;
             font-size: 12px;
             color: var(--muted);
             font-weight: 700;
+            margin-bottom: 7px;
         }
 
         .day-cell {
             border: 1px solid var(--border);
             border-radius: 10px;
-            min-height: 70px;
+            min-height: 0;
+            height: 100%;
             padding: 6px;
             background: white;
             cursor: pointer;
             position: relative;
             transition: all 0.2s ease;
+        }
+
+        .blank-day {
+            border: none;
+            background: transparent;
+            pointer-events: none;
         }
 
         .day-cell:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
@@ -229,22 +272,36 @@
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 18px;
+            padding: 24px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.06);
             display: grid;
             gap: 10px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .list-stack { display: grid; gap: 16px; min-width: 0; }
+        .list-stack { 
+            display: grid;
+            gap: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
         .list-stack > * { width: 100%; box-sizing: border-box; }
+
+        #events-list,
+        #empty-state,
+        #pagination {
+            width: 100%;
+            box-sizing: border-box;
+        }
 
         /* Admin add form */
         .admin-card {
-            margin-top: 28px;
+            margin-top: 0;
             background: var(--card);
             border: 1px dashed var(--border);
             border-radius: 14px;
-            padding: 16px;
+            padding: 20px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.05);
             width: 100%;
             max-width: 100%;
@@ -258,13 +315,13 @@
 
         .controls-grid > .admin-card,
         .controls-grid .admin-card {
-            grid-column: 1 / -1;
+            grid-column: auto;
             width: 100%;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
 
@@ -287,6 +344,7 @@
 
         .form-row {
             width: 100%;
+            grid-column: 1 / -1;
         }
 
         .form-row textarea {
@@ -303,7 +361,7 @@
             box-sizing: border-box;
         }
 
-        .form-actions { margin-top: 12px; display: flex; gap: 12px; align-items: center; }
+        .form-actions { margin-top: 12px; display: flex; gap: 12px; align-items: center; width: 100%; }
         .btn-primary { background: var(--midnight); color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; }
         .muted { color: var(--muted); font-size: 13px; }
 
@@ -322,11 +380,13 @@
             justify-content: space-between;
             gap: 12px;
             align-items: flex-start;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .title-row > div {
             width: 100%;
-            min-width: 0;
+            box-sizing: border-box;
         }
 
         .list-meta > span { min-width: 0; overflow-wrap: break-word; }
@@ -353,7 +413,7 @@
         /* Empty state */
         .empty {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             background: var(--card);
             border-radius: 14px;
             border: 1px solid var(--border);
@@ -367,6 +427,11 @@
         /* Responsive */
         @media (max-width: 960px) {
             .controls-grid { grid-template-columns: 1fr; }
+            .controls-grid > div:last-child {
+                max-width: none;
+                justify-self: stretch;
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 640px) {
@@ -465,6 +530,53 @@
             </div>
 
             <div>
+                <div class="admin-card">
+                    <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <strong>Create New Announcement/Event</strong>
+                    </div>
+                    <form id="add-event-form" style="margin-top:12px; display:grid; gap:12px;">
+                        <div class="form-grid">
+                            <label>Title<input type="text" id="add-title" required></label>
+                            <label>Category
+                                <select id="add-category" required>
+                                    <option value="festival">Festival</option>
+                                    <option value="diving">Diving</option>
+                                    <option value="advisory" selected>Advisory</option>
+                                    <option value="training">Training</option>
+                                    <option value="culture">Culture</option>
+                                    <option value="lgu">LGU Program</option>
+                                </select>
+                            </label>
+                            <label>Type
+                                <select id="add-type" required>
+                                    <option value="advisory" selected>Advisory</option>
+                                    <option value="festival">Festival</option>
+                                    <option value="competition">Competition</option>
+                                    <option value="religious">Religious</option>
+                                    <option value="training">Training</option>
+                                </select>
+                            </label>
+                            <label>Start Date<input type="date" id="add-start" required></label>
+                            <label>End Date<input type="date" id="add-end"></label>
+                            <label>Time (text)<input type="text" id="add-time" placeholder="e.g. 8:00 AM - 3:00 PM"></label>
+                            <label>Location<input type="text" id="add-location" required></label>
+                            <label>Featured?
+                                <select id="add-featured">
+                                    <option value="false" selected>No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <label>Description<textarea id="add-description" rows="4" required></textarea></label>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-primary" type="submit" id="add-submit">Save event</button>
+                            <span class="muted" id="add-status"></span>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="calendar-card">
                     <div class="calendar-head">
                         <h3 id="calendarLabel" style="margin:0;">Month</h3>
@@ -480,53 +592,6 @@
                     <div class="day-events" id="day-events" style="display:none;"></div>
                 </div>
             </div>
-        </div>
-
-        <div class="admin-card">
-            <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-                <strong>Create New Announcement/Event</strong>
-            </div>
-            <form id="add-event-form" style="margin-top:12px; display:grid; gap:12px;">
-                <div class="form-grid">
-                    <label>Title<input type="text" id="add-title" required></label>
-                    <label>Category
-                        <select id="add-category" required>
-                            <option value="festival">Festival</option>
-                            <option value="diving">Diving</option>
-                            <option value="advisory" selected>Advisory</option>
-                            <option value="training">Training</option>
-                            <option value="culture">Culture</option>
-                            <option value="lgu">LGU Program</option>
-                        </select>
-                    </label>
-                    <label>Type
-                        <select id="add-type" required>
-                            <option value="advisory" selected>Advisory</option>
-                            <option value="festival">Festival</option>
-                            <option value="competition">Competition</option>
-                            <option value="religious">Religious</option>
-                            <option value="training">Training</option>
-                        </select>
-                    </label>
-                    <label>Start Date<input type="date" id="add-start" required></label>
-                    <label>End Date<input type="date" id="add-end"></label>
-                    <label>Time (text)<input type="text" id="add-time" placeholder="e.g. 8:00 AM - 3:00 PM"></label>
-                    <label>Location<input type="text" id="add-location" required></label>
-                    <label>Featured?
-                        <select id="add-featured">
-                            <option value="false" selected>No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </label>
-                </div>
-                <div class="form-row">
-                    <label>Description<textarea id="add-description" rows="4" required></textarea></label>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-primary" type="submit" id="add-submit">Save event</button>
-                    <span class="muted" id="add-status"></span>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -837,12 +902,14 @@
                 const first = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0).getDate();
                 const startPad = first.getDay();
+                const weekRows = Math.ceil((startPad + lastDay) / 7);
 
                 calendarLabel.textContent = first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
                 calendarDays.innerHTML = '';
+                calendarDays.style.gridTemplateRows = `repeat(${weekRows}, minmax(0, 1fr))`;
 
                 for (let i = 0; i < startPad; i += 1) {
-                    calendarDays.innerHTML += '<div></div>';
+                    calendarDays.innerHTML += '<div class="blank-day" aria-hidden="true"></div>';
                 }
 
                 for (let day = 1; day <= lastDay; day += 1) {
@@ -862,6 +929,12 @@
                             ${hasEvent ? '<span class="dot"></span>' : ''}
                         </div>
                     `;
+                }
+
+                const totalCells = startPad + lastDay;
+                const trailingPad = (7 - (totalCells % 7)) % 7;
+                for (let i = 0; i < trailingPad; i += 1) {
+                    calendarDays.innerHTML += '<div class="blank-day" aria-hidden="true"></div>';
                 }
 
                 if (selectedDate) renderDayEvents(selectedDate, pool);
@@ -991,44 +1064,31 @@
     <!-- Footer -->
     <footer>
         <div class="footer-container">
-            <div class="footer-section">
-                <img src="../assets/images/logo.png" alt="Logo" class="footer-logo">
+            <div class="footer-section footer-logo-section">
+                <img src="../assets/images/logo.png" alt="Dive in Mabini Logo" class="footer-logo">
                 <h3>Dive in Mabini</h3>
-                <p>Stay updated with events and celebrations happening in Mabini, Batangas.</p>
+                <p class="footer-description">Discover the underwater paradise of Mabini, Batangas.</p>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul class="footer-links">
                     <li><a href="../index.html#about-section">About Us</a></li>
-                    <li><a href="diving.html">Diving</a></li>
-                    <li><a href="snorkeling.html">Snorkeling</a></li>
-                    <li><a href="resorts.html">Resorts</a></li>
-                    <li><a href="hiking.html">Hiking</a></li>
-                    <li><a href="cuisine.html">Cuisine</a></li>
+                    <li><a href="../index.html#marine-life">Marine Life</a></li>
+                    <li><a href="../index.html#service-section">Services</a></li>
+                    <li><a href="community.html">Community</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p>Email: info@divemabini.com</p>
-                <p>Phone: +63 912 345 6789</p>
-                <p>Location: Mabini, Batangas, Philippines</p>
-            </div>
-            <div class="footer-section">
-                <h3>Follow Us</h3>
-                <p>
-                    <a href="https://facebook.com/MabiniPIO" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Facebook</a> | 
-                    <a href="https://instagram.com/divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Instagram</a> | 
-                    <a href="https://youtube.com/@divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">YouTube</a>
-                </p>
+                <div class="contact-info">
+                    <p>📧 info@divemabini.com</p>
+                    <p>📞 +63 912 345 6789</p>
+                    <p>📍 Mabini, Batangas, Philippines</p>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
             <p class="copyright">© 2025 Dive in Mabini. All rights reserved.</p>
-            <ul class="footer-bottom-links">
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">Sitemap</a></li>
-            </ul>
         </div>
     </footer>
 

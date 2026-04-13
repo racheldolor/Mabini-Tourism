@@ -44,13 +44,20 @@
 /* Feed Wrapper */
 .feed-wrapper {
     background: #f0f2f5;
-    min-height: 100vh;
+    flex: 1 0 auto;
+    min-height: 0;
     padding: 30px 20px 60px;
 }
 
 .feed-container {
     max-width: 680px;
     margin: 0 auto;
+}
+
+footer {
+    margin-top: auto;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
 }
 
 /* Filter Tabs */
