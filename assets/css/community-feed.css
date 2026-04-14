@@ -264,6 +264,12 @@ footer {
     background: #f0f2f5;
 }
 
+.post-owner-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .post-content {
     padding: 0 16px 12px;
     font-size: 15px;
@@ -359,6 +365,19 @@ footer {
 }
 
 .post-stats-item:hover {
+    text-decoration: underline;
+}
+
+.post-stats-link {
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+}
+
+.post-stats-link:hover {
     text-decoration: underline;
 }
 
@@ -808,6 +827,49 @@ footer {
 .loading-spinner p {
     color: #65676b;
     font-size: 14px;
+}
+
+.likes-popover {
+    position: fixed;
+    width: 260px;
+    max-height: 280px;
+    overflow: hidden;
+    background: white;
+    border: 1px solid #e4e6eb;
+    border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+    z-index: 11000;
+}
+
+.likes-popover-header {
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2d2f33;
+    border-bottom: 1px solid #eef0f3;
+    background: #f8fbff;
+}
+
+.likes-popover-list {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.likes-popover-item {
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #2d2f33;
+    border-bottom: 1px solid #f2f4f7;
+}
+
+.likes-popover-item:last-child {
+    border-bottom: none;
+}
+
+.likes-popover-empty {
+    padding: 14px 12px;
+    font-size: 13px;
+    color: #7b818a;
 }
 
 /* Responsive Design */

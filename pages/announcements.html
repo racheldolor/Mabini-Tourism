@@ -131,8 +131,21 @@
             width: 100%;
             display: grid;
             gap: 20px;
-            grid-template-columns: 1fr 360px;
             align-items: stretch;
+        }
+
+        .controls-grid.is-user-view > div:last-child {
+            grid-template-columns: minmax(0, 780px);
+            justify-content: center;
+        }
+
+        .controls-grid.is-user-view .calendar-card {
+            width: min(780px, 100%);
+            justify-self: center;
+        }
+
+        .controls-grid.is-admin-view > div:last-child {
+            grid-template-columns: 1fr 360px;
         }
 
         .filters-card {
@@ -729,6 +742,7 @@
             const featuredBody = document.getElementById('featured-body');
             const featuredMeta = document.getElementById('featured-meta');
             const featuredType = document.getElementById('featured-type');
+            const controlsGrid = document.querySelector('.controls-grid');
             const calendarLabel = document.getElementById('calendarLabel');
             const calendarDays = document.getElementById('calendar-days');
             const dayEvents = document.getElementById('day-events');
@@ -1051,9 +1065,16 @@
 
             if (adminCard) {
                 adminCard.style.display = 'none';
+                if (controlsGrid) {
+                    controlsGrid.classList.add('is-user-view');
+                }
                 firebase.auth().onAuthStateChanged(async (user) => {
                     if (!user) {
                         adminCard.style.display = 'none';
+                        if (controlsGrid) {
+                            controlsGrid.classList.remove('is-admin-view');
+                            controlsGrid.classList.add('is-user-view');
+                        }
                         addStatus.textContent = 'Admin login required to add events.';
                         return;
                     }
@@ -1061,14 +1082,26 @@
                         const isAdmin = await isAdminUser(user);
                         if (isAdmin) {
                             adminCard.style.display = 'block';
+                            if (controlsGrid) {
+                                controlsGrid.classList.remove('is-user-view');
+                                controlsGrid.classList.add('is-admin-view');
+                            }
                             addStatus.textContent = '';
                         } else {
                             adminCard.style.display = 'none';
+                            if (controlsGrid) {
+                                controlsGrid.classList.remove('is-admin-view');
+                                controlsGrid.classList.add('is-user-view');
+                            }
                             addStatus.textContent = 'Your account does not have admin access to create announcements.';
                         }
                     } catch (err) {
                         console.error('Auth check failed', err);
                         adminCard.style.display = 'none';
+                        if (controlsGrid) {
+                            controlsGrid.classList.remove('is-admin-view');
+                            controlsGrid.classList.add('is-user-view');
+                        }
                         addStatus.textContent = 'Could not verify admin access.';
                     }
                 });

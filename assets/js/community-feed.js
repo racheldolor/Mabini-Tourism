@@ -49,6 +49,12 @@ let currentUser = null;
 let currentFilter = 'all';
 let posts = [];
 let selectedImages = [];
+let editingPostId = null;
+let editingExistingImageUrls = [];
+const likedUserNameCache = {};
+let likesPopoverVisiblePostId = null;
+
+const MAX_POST_IMAGES = 10;
 
 // DOM Elements
 const createPostTrigger = document.getElementById('createPostTrigger');
@@ -63,6 +69,22 @@ const emptyState = document.getElementById('emptyState');
 const loadingSpinner = document.getElementById('loadingSpinner');
 const filterTabs = document.querySelectorAll('.filter-tab');
 const emptyStateCTA = document.getElementById('emptyStateCTA');
+const modalTitle = document.querySelector('#createPostModal .modal-header h2');
+const imageUploadArea = document.getElementById('imageUploadArea');
+const postContentInput = document.getElementById('postContent');
+const postCategorySelect = document.getElementById('postCategory');
+const postLocationInput = document.getElementById('postLocation');
+const postButtonText = document.getElementById('postButtonText');
+
+const likesPopover = document.createElement('div');
+likesPopover.className = 'likes-popover hidden';
+likesPopover.innerHTML = `
+    <div class="likes-popover-header">Liked by</div>
+    <div class="likes-popover-list" id="likesPopoverList"></div>
+`;
+document.body.appendChild(likesPopover);
+
+const likesPopoverList = document.getElementById('likesPopoverList');
 
 // Auth state listener
 auth.onAuthStateChanged((user) => {
@@ -73,6 +95,7 @@ auth.onAuthStateChanged((user) => {
             displayName: user.displayName || user.email?.split('@')[0] || 'Guest User',
             photoURL: user.photoURL
         };
+        upsertUserProfile(user);
         updateUIForUser();
     } else {
         currentUser = {
@@ -84,6 +107,24 @@ auth.onAuthStateChanged((user) => {
     }
     loadPosts();
 });
+
+async function upsertUserProfile(user) {
+    if (!user || !user.uid) return;
+
+    const profileData = {
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        email: user.email || null,
+        photoURL: user.photoURL || null,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        await db.collection('users').doc(user.uid).set(profileData, { merge: true });
+    } catch (error) {
+        // Non-blocking: the app can still work if profile writes are not permitted.
+        console.warn('Unable to persist user profile:', error);
+    }
+}
 
 // Update UI with user info
 function updateUIForUser() {
@@ -114,6 +155,7 @@ function getUserAvatarHTML(user) {
 
 // Modal controls
 function openModal() {
+    setPostFormMode('create');
     createPostModal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -123,7 +165,38 @@ function closeModal() {
     document.body.style.overflow = '';
     createPostForm.reset();
     selectedImages = [];
+    editingExistingImageUrls = [];
     imagePreviewContainer.innerHTML = '';
+    if (postImagesInput) {
+        postImagesInput.value = '';
+    }
+    setPostFormMode('create');
+}
+
+function setPostFormMode(mode, post = null) {
+    if (mode === 'edit' && post) {
+        editingPostId = post.id;
+        editingExistingImageUrls = Array.isArray(post.imageUrls) ? [...post.imageUrls] : [];
+        if (modalTitle) modalTitle.textContent = 'Edit Post';
+        if (postButtonText) postButtonText.textContent = 'Update';
+        if (imageUploadArea) imageUploadArea.classList.remove('hidden');
+
+        postContentInput.value = post.content || '';
+        postCategorySelect.value = post.category || '';
+        postLocationInput.value = post.location || '';
+        selectedImages = [];
+        renderImagePreviews();
+        if (postImagesInput) {
+            postImagesInput.value = '';
+        }
+        return;
+    }
+
+    editingPostId = null;
+    editingExistingImageUrls = [];
+    if (modalTitle) modalTitle.textContent = 'Create Post';
+    if (postButtonText) postButtonText.textContent = 'Post';
+    if (imageUploadArea) imageUploadArea.classList.remove('hidden');
 }
 
 createPostTrigger?.addEventListener('click', openModal);
@@ -137,21 +210,55 @@ createPostModal?.addEventListener('click', (e) => {
     }
 });
 
+document.addEventListener('click', (e) => {
+    const clickedLikeTrigger = e.target.closest('.post-stats-like-trigger');
+    if (!clickedLikeTrigger && !likesPopover.contains(e.target)) {
+        hideLikesPopover();
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        hideLikesPopover();
+    }
+});
+
+window.addEventListener('scroll', () => {
+    hideLikesPopover();
+}, true);
+
 // Image upload handling
 postImagesInput?.addEventListener('change', (e) => {
     const files = Array.from(e.target.files);
+    const currentTotal = selectedImages.length + editingExistingImageUrls.length;
     
-    if (files.length + selectedImages.length > 10) {
-        alert('Maximum 10 images allowed');
+    if (files.length + currentTotal > MAX_POST_IMAGES) {
+        alert(`Maximum ${MAX_POST_IMAGES} images allowed`);
+        if (postImagesInput) {
+            postImagesInput.value = '';
+        }
         return;
     }
     
     selectedImages = [...selectedImages, ...files];
     renderImagePreviews();
+    if (postImagesInput) {
+        postImagesInput.value = '';
+    }
 });
 
 function renderImagePreviews() {
     imagePreviewContainer.innerHTML = '';
+
+    editingExistingImageUrls.forEach((url, index) => {
+        const previewDiv = document.createElement('div');
+        previewDiv.className = 'image-preview';
+        previewDiv.innerHTML = `
+            <img src="${url}" alt="Existing image ${index + 1}">
+            <button type="button" class="image-remove-btn" data-kind="existing" data-index="${index}" title="Remove image">&times;</button>
+        `;
+        imagePreviewContainer.appendChild(previewDiv);
+    });
     
     selectedImages.forEach((file, index) => {
         const reader = new FileReader();
@@ -161,7 +268,7 @@ function renderImagePreviews() {
             previewDiv.className = 'image-preview';
             previewDiv.innerHTML = `
                 <img src="${e.target.result}" alt="Preview ${index + 1}">
-                <button type="button" class="image-remove-btn" data-index="${index}">&times;</button>
+                <button type="button" class="image-remove-btn" data-kind="new" data-index="${index}" title="Remove image">&times;</button>
             `;
             imagePreviewContainer.appendChild(previewDiv);
         };
@@ -174,10 +281,54 @@ function renderImagePreviews() {
 imagePreviewContainer?.addEventListener('click', (e) => {
     if (e.target.classList.contains('image-remove-btn')) {
         const index = parseInt(e.target.dataset.index);
-        selectedImages.splice(index, 1);
+        const kind = e.target.dataset.kind;
+
+        if (kind === 'existing') {
+            editingExistingImageUrls.splice(index, 1);
+        } else {
+            selectedImages.splice(index, 1);
+        }
+
         renderImagePreviews();
     }
 });
+
+async function uploadImages(files) {
+    const imageUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('key', IMGBB_API_KEY);
+
+        try {
+            const response = await fetch('https://api.imgbb.com/1/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Image upload failed: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                imageUrls.push(data.data.url);
+            } else {
+                throw new Error(data.error?.message || 'Image upload failed');
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            const reason = error && error.message ? ` (${error.message})` : '';
+            alert(`Failed to upload image ${i + 1}. Please try again.${reason}`);
+            throw error;
+        }
+    }
+
+    return imageUrls;
+}
 
 // Create post
 createPostForm?.addEventListener('submit', async (e) => {
@@ -195,7 +346,8 @@ createPostForm?.addEventListener('submit', async (e) => {
     
     try {
         submitBtn.disabled = true;
-        btnText.textContent = 'Posting...';
+        const isEditing = Boolean(editingPostId);
+        btnText.textContent = isEditing ? 'Updating...' : 'Posting...';
         btnSpinner.style.display = 'inline-block';
         
         const content = document.getElementById('postContent').value.trim();
@@ -206,40 +358,26 @@ createPostForm?.addEventListener('submit', async (e) => {
             alert('Image upload is not configured yet. Start the backend server and set IMGBB_API_KEY in your .env file.');
             return;
         }
+
+        if (editingPostId) {
+            const uploadedImageUrls = await uploadImages(selectedImages);
+
+            await db.collection('posts').doc(editingPostId).update({
+                content: content,
+                category: category,
+                location: location || null,
+                imageUrls: [...editingExistingImageUrls, ...uploadedImageUrls],
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            closeModal();
+            loadPosts();
+            alert('Post updated successfully!');
+            return;
+        }
         
         // Upload images to Imgbb
-        const imageUrls = [];
-        
-        for (let i = 0; i < selectedImages.length; i++) {
-            const file = selectedImages[i];
-            const formData = new FormData();
-            formData.append('image', file);
-            formData.append('key', IMGBB_API_KEY);
-            
-            try {
-                const response = await fetch('https://api.imgbb.com/1/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Image upload failed: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    imageUrls.push(data.data.url);
-                } else {
-                    throw new Error(data.error?.message || 'Image upload failed');
-                }
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                const reason = error && error.message ? ` (${error.message})` : '';
-                alert(`Failed to upload image ${i + 1}. Please try again.${reason}`);
-                throw error;
-            }
-        }
+        const imageUrls = await uploadImages(selectedImages);
         
         // Create post document
         const postData = {
@@ -269,7 +407,7 @@ createPostForm?.addEventListener('submit', async (e) => {
         alert('Failed to create post. Please try again.');
     } finally {
         submitBtn.disabled = false;
-        btnText.textContent = 'Post';
+        btnText.textContent = editingPostId ? 'Update' : 'Post';
         btnSpinner.style.display = 'none';
     }
 });
@@ -319,6 +457,125 @@ function renderPosts() {
     });
 }
 
+function hideLikesPopover() {
+    likesPopover.classList.add('hidden');
+    likesPopoverVisiblePostId = null;
+}
+
+function escapeHTML(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+async function resolveUserDisplayNameById(uid) {
+    if (!uid) return 'Unknown User';
+    if (likedUserNameCache[uid]) return likedUserNameCache[uid];
+
+    if (currentUser && currentUser.uid === uid && currentUser.displayName) {
+        likedUserNameCache[uid] = currentUser.displayName;
+        return currentUser.displayName;
+    }
+
+    const userPost = posts.find((post) => post.userId === uid && post.userDisplayName);
+    if (userPost?.userDisplayName) {
+        likedUserNameCache[uid] = userPost.userDisplayName;
+        return userPost.userDisplayName;
+    }
+
+    try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+            const userData = userDoc.data() || {};
+            const profileName = userData.displayName || userData.name || userData.email;
+            if (profileName) {
+                likedUserNameCache[uid] = profileName;
+                return profileName;
+            }
+        }
+    } catch (error) {
+        console.warn('Unable to resolve liker name from users collection:', error);
+    }
+
+    try {
+        const userPostSnapshot = await db
+            .collection('posts')
+            .where('userId', '==', uid)
+            .limit(1)
+            .get();
+
+        if (!userPostSnapshot.empty) {
+            const displayName = userPostSnapshot.docs[0].data().userDisplayName;
+            if (displayName) {
+                likedUserNameCache[uid] = displayName;
+                return displayName;
+            }
+        }
+    } catch (error) {
+        console.warn('Unable to resolve liker name from posts:', error);
+    }
+
+    const fallbackName = `User ${uid.slice(0, 6)}`;
+    likedUserNameCache[uid] = fallbackName;
+    return fallbackName;
+}
+
+window.showLikesPopover = async function(event, postId) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (likesPopoverVisiblePostId === postId && !likesPopover.classList.contains('hidden')) {
+        hideLikesPopover();
+        return;
+    }
+
+    const trigger = event.currentTarget || event.target;
+    const post = posts.find((p) => p.id === postId);
+    const likeUids = post?.likes || [];
+
+    likesPopoverList.innerHTML = '<div class="likes-popover-empty">Loading...</div>';
+    likesPopover.classList.remove('hidden');
+    likesPopoverVisiblePostId = postId;
+
+    const rect = trigger.getBoundingClientRect();
+    const popoverWidth = 260;
+    const margin = 10;
+    const left = Math.max(margin, Math.min(rect.left, window.innerWidth - popoverWidth - margin));
+    const top = Math.max(margin, rect.top - margin);
+
+    likesPopover.style.left = `${left}px`;
+    likesPopover.style.top = `${top}px`;
+    likesPopover.style.transform = 'translateY(-100%)';
+
+    if (!likeUids.length) {
+        likesPopoverList.innerHTML = '<div class="likes-popover-empty">No likes yet</div>';
+        return;
+    }
+
+    try {
+        const likerNames = await Promise.all(likeUids.map((uid) => resolveUserDisplayNameById(uid)));
+        likesPopoverList.innerHTML = likerNames
+            .map((name) => `<div class="likes-popover-item">${escapeHTML(name)}</div>`)
+            .join('');
+    } catch (error) {
+        console.error('Failed to load likes list:', error);
+        likesPopoverList.innerHTML = '<div class="likes-popover-empty">Unable to load likes right now</div>';
+    }
+};
+
+window.openCommentsFromCount = async function(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    if (!commentsSection) return;
+
+    commentsSection.classList.remove('hidden');
+    await loadComments(postId);
+
+    commentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
+
 // Create post card element
 function createPostCard(post) {
     const card = document.createElement('div');
@@ -352,12 +609,20 @@ function createPostCard(post) {
                 </div>
             </div>
             ${post.userId === currentUser?.uid ? `
-                <button class="post-menu-btn" onclick="deletePost('${post.id}')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                </button>
+                <div class="post-owner-actions">
+                    <button class="post-menu-btn" onclick="editPost('${post.id}')" title="Edit post" aria-label="Edit post">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                        </svg>
+                    </button>
+                    <button class="post-menu-btn" onclick="deletePost('${post.id}')" title="Delete post" aria-label="Delete post">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                </div>
             ` : ''}
         </div>
         
@@ -377,10 +642,10 @@ function createPostCard(post) {
         
         <div class="post-stats">
             <div class="post-stats-item">
-                <span>❤️ ${likeCount} ${likeCount === 1 ? 'like' : 'likes'}</span>
+                <button class="post-stats-link post-stats-like-trigger" onclick="showLikesPopover(event, '${post.id}')">❤️ ${likeCount} ${likeCount === 1 ? 'like' : 'likes'}</button>
             </div>
             <div class="post-stats-item">
-                <span>${post.commentCount || 0} ${post.commentCount === 1 ? 'comment' : 'comments'}</span>
+                <button class="post-stats-link" onclick="openCommentsFromCount('${post.id}')">${post.commentCount || 0} ${post.commentCount === 1 ? 'comment' : 'comments'}</button>
             </div>
         </div>
         
@@ -627,6 +892,25 @@ window.deletePost = async function(postId) {
         console.error('Error deleting post:', error);
         alert('Failed to delete post');
     }
+};
+
+// Open edit modal for own post
+window.editPost = function(postId) {
+    if (!currentUser || currentUser.uid === 'anonymous') {
+        alert('Please log in to edit posts');
+        document.getElementById('user-btn')?.click();
+        return;
+    }
+
+    const post = posts.find((p) => p.id === postId);
+    if (!post || post.userId !== currentUser.uid) {
+        alert('You can only edit your own posts.');
+        return;
+    }
+
+    setPostFormMode('edit', post);
+    createPostModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
 };
 
 // Filter handling

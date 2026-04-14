@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "backfill:user-profiles": "node scripts/backfill-user-profiles.js"
+  },
   "dependencies": {
     "axios": "^1.13.2",
     "body-parser": "^2.2.1",
