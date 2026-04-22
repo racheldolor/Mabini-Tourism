@@ -45,5 +45,6 @@ The server listens on `http://localhost:3001`. The frontend already posts to `/g
 ## Admin announcements
 
 - The announcements page uses Firebase custom claims to decide who can create new announcements.
-- Run `scripts/set-admin-claim.js` after replacing the target UID to assign `admin: true` and `role: 'admin'`.
+- Add `ADMIN_UIDS` and/or `ADMIN_EMAILS` in `.env` as comma-separated values, then run `node scripts/set-admin-claim.js` to assign `admin: true` and `role: 'admin'`.
+- Backward compatibility is supported: `ADMIN_UID` and `ADMIN_EMAIL` still work.
 - The admin user signs in through the same login portal as everyone else, but the announcements composer only appears for users with the admin claim.
