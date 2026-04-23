@@ -1904,6 +1904,13 @@ p{
     padding: 28px;
     box-shadow: 0 24px 60px rgba(0,0,0,0.35);
     border: 1px solid rgba(230, 194, 0, 0.2);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.itinerary-modal__dialog::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .itinerary-modal__close {
@@ -1957,6 +1964,13 @@ p{
     gap: 8px;
 }
 
+.itinerary-form fieldset.itinerary-form__row {
+    margin: 0;
+    padding: 10px 12px 14px 14px;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 12px;
+}
+
 .itinerary-form__label,
 .itinerary-form legend {
     font-weight: 600;
@@ -1978,7 +1992,18 @@ p{
 }
 
 .itinerary-form select option {
+    background: #0d2c4b;
     color: #f8f9fb;
+}
+
+.itinerary-form select option:checked,
+.itinerary-form select option:hover {
+    background: #123a60;
+    color: #ffffff;
+}
+
+.itinerary-form select option[value=""] {
+    color: #b7c7df;
 }
 
 .itinerary-form__choices {
@@ -1986,6 +2011,11 @@ p{
     flex-wrap: wrap;
     gap: 10px 16px;
     color: #e8f0ff;
+}
+
+.itinerary-form fieldset .itinerary-form__choices {
+    margin-left: 2px;
+    margin-bottom: 4px;
 }
 
 .itinerary-form__choices--chips {
