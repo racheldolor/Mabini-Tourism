@@ -2290,9 +2290,14 @@ p{
     border-radius: 20px;
     padding: 40px;
     overflow-y: auto;
+    scrollbar-width: none;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(230, 194, 0, 0.3);
     animation: slideUp 0.4s ease-out;
+}
+
+.marine-modal-content::-webkit-scrollbar {
+    display: none;
 }
 
 .marine-modal-close {
