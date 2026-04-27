@@ -526,7 +526,7 @@
                     <select id="categoryFilter" class="select-input" aria-label="Filter by category">
                         <option value="all">All categories</option>
                         <option value="festival">Festival</option>
-                        <option value="diving">Diving</option>
+                        <option value="diving">Free Diving</option>
                         <option value="advisory">Advisory</option>
                         <option value="training">Training</option>
                         <option value="culture">Culture</option>
@@ -553,7 +553,7 @@
                             <label>Category
                                 <select id="add-category" required>
                                     <option value="festival">Festival</option>
-                                    <option value="diving">Diving</option>
+                                    <option value="diving">Free Diving</option>
                                     <option value="advisory" selected>Advisory</option>
                                     <option value="training">Training</option>
                                     <option value="culture">Culture</option>
@@ -752,6 +752,15 @@
             const adminCard = document.querySelector('.admin-card');
 
             const formatDate = (date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            const categoryLabels = {
+                festival: 'Festival',
+                diving: 'Free Diving',
+                advisory: 'Advisory',
+                training: 'Training',
+                culture: 'Culture',
+                lgu: 'LGU Program'
+            };
+            const getCategoryLabel = (value) => categoryLabels[value] || value;
             const parseDate = (value) => {
                 if (!value) return null;
                 if (value instanceof Date) return new Date(value.getTime());
@@ -889,7 +898,7 @@
                                 <p class="event-desc">${evt.description}</p>
                                 <div class="chips">
                                     <span class="chip status ${evt.status}">${evt.status.toUpperCase()}</span>
-                                    <span class="chip">${evt.category}</span>
+                                    <span class="chip">${getCategoryLabel(evt.category)}</span>
                                     <span class="chip">${evt.type}</span>
                                 </div>
                             </div>
