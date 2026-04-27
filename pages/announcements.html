@@ -742,6 +742,7 @@
             const featuredBody = document.getElementById('featured-body');
             const featuredMeta = document.getElementById('featured-meta');
             const featuredType = document.getElementById('featured-type');
+            const featuredCard = document.getElementById('featured-card');
             const controlsGrid = document.querySelector('.controls-grid');
             const calendarLabel = document.getElementById('calendarLabel');
             const calendarDays = document.getElementById('calendar-days');
@@ -814,6 +815,42 @@
                 return `${startStr} – ${endStr}`;
             };
 
+            const isFinishedEvent = (event, referenceDate = new Date()) => {
+                const end = parseDate(event.endDate || event.startDate);
+                if (!end || Number.isNaN(end.getTime())) return false;
+                const endOfDay = new Date(end);
+                endOfDay.setHours(23, 59, 59, 999);
+                return referenceDate > endOfDay;
+            };
+
+            const autoUnfeatureFinishedEvents = async (eventDocs) => {
+                if (!Array.isArray(eventDocs) || !eventDocs.length) return new Set();
+
+                const staleFeaturedIds = eventDocs
+                    .filter((item) => item && item.data && item.data.isFeatured && isFinishedEvent(item.data))
+                    .map((item) => item.id);
+
+                if (!staleFeaturedIds.length) return new Set();
+
+                const batch = db.batch();
+                staleFeaturedIds.forEach((id) => {
+                    const docRef = db.collection('events').doc(id);
+                    batch.update(docRef, {
+                        isFeatured: false,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+
+                try {
+                    await batch.commit();
+                } catch (error) {
+                    console.warn('Could not auto-unfeature finished events.', error);
+                    return new Set();
+                }
+
+                return new Set(staleFeaturedIds);
+            };
+
             const withStatus = () => events.map((evt) => ({ ...evt, status: getStatus(evt) }));
 
             const loadEvents = async () => {
@@ -821,7 +858,13 @@
                 try {
                     const snap = await db.collection('events').orderBy('startDate', 'asc').get();
                     if (!snap.empty) {
-                        events = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+                        const eventDocs = snap.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+                        const autoUnfeaturedIds = await autoUnfeatureFinishedEvents(eventDocs);
+                        events = eventDocs.map((eventDoc) => ({
+                            id: eventDoc.id,
+                            ...eventDoc.data,
+                            isFeatured: autoUnfeaturedIds.has(eventDoc.id) ? false : Boolean(eventDoc.data.isFeatured)
+                        }));
                     } else {
                         events = fallbackEvents;
                     }
@@ -849,8 +892,16 @@
                 if (!featured) {
                     featured = candidates.find((e) => e.status === 'ongoing') || candidates.find((e) => e.status === 'upcoming');
                 }
-                if (!featured) featured = candidates[0];
-                if (!featured) return;
+                if (!featured) {
+                    if (featuredCard) {
+                        featuredCard.style.display = 'none';
+                    }
+                    return;
+                }
+
+                if (featuredCard) {
+                    featuredCard.style.display = 'grid';
+                }
 
                 featuredTitle.textContent = featured.title;
                 featuredBody.textContent = featured.description;

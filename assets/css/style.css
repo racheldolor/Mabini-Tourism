@@ -2228,6 +2228,159 @@ p{
     }
 }
 
+/* Homepage active announcements */
+.home-announcements {
+    position: relative;
+    width: 100%;
+    padding: 70px 10vw;
+    color: #fff;
+}
+
+.home-announcements__inner {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+}
+
+.home-announcements__head h2 {
+    color: #fff;
+    font-size: 36px;
+    margin: 0;
+    text-align: center;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.home-announcements__eyebrow {
+    margin: 0 0 8px;
+    color: #e6c200;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1.3px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.home-announcements__subtitle {
+    margin: 12px 0 0;
+    color: rgba(255, 255, 255, 0.8);
+    width: 50%;
+    min-width: 300px;
+    max-width: 840px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    line-height: 1.7;
+}
+
+.home-announcements__grid {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    width: min(1080px, 100%);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.home-announcement-card {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: none;
+    display: grid;
+    gap: 12px;
+    text-align: center;
+}
+
+.home-announcement-card--loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.home-announcement-card__badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.home-announcement-card__badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.home-announcement-card__badge.featured {
+    background: rgba(230, 194, 0, 0.18);
+    color: #725900;
+}
+
+.home-announcement-card__badge.ongoing {
+    background: rgba(0, 170, 105, 0.18);
+    color: #9fffd8;
+}
+
+.home-announcement-card h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #fff;
+    line-height: 1.35;
+}
+
+.home-announcement-card p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.home-announcement-card__meta {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.home-announcements__empty {
+    margin: 18px 0 0;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+    text-align: center;
+}
+
+.home-announcements__link {
+    margin-top: 22px;
+    display: table;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: #e6c200;
+    font-weight: 700;
+    transition: color 0.2s ease;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.home-announcements__link:hover {
+    color: #ffe08a;
+}
+
+@media (max-width: 768px) {
+    .home-announcements {
+        padding: 56px 14px;
+    }
+
+    .home-announcement-card h3 {
+        font-size: 18px;
+    }
+}
+
 /* --- Floating Chatbot --- */
 .chatbot {
     position: fixed;

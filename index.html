@@ -83,6 +83,25 @@
         </main>
     </header>
 
+    <section class="home-announcements" id="home-announcements" aria-labelledby="home-announcements-title">
+        <div class="home-announcements__inner">
+            <div class="home-announcements__head" data-aos="fade-up">
+                <p class="home-announcements__eyebrow">Community updates</p>
+                <h2 id="home-announcements-title">Active Announcements</h2>
+            </div>
+
+            <div id="home-announcements-list" class="home-announcements__grid" aria-live="polite">
+                <article class="home-announcement-card home-announcement-card--loading">
+                    <p>Loading active announcements...</p>
+                </article>
+            </div>
+
+            <p id="home-announcements-empty" class="home-announcements__empty" style="display:none;">No active announcements right now. Check back soon.</p>
+
+            <a href="pages/announcements.html" class="home-announcements__link" data-aos="fade-up">View all announcements</a>
+        </div>
+    </section>
+
     <section class="about-section" id="about-section">
       <div class="moving-icon" style="z-index: 1;">
           <img src="https://ruks2022.github.io/Travel-Experia/img/surfing.png" alt="">

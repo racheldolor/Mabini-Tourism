@@ -732,6 +732,165 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function parseAnnouncementDate(value) {
+    if (!value) return null;
+    if (value instanceof Date) return new Date(value.getTime());
+    if (typeof value.toDate === 'function') return value.toDate();
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function getHomepageAnnouncementVisibility(event, referenceDate = new Date()) {
+    const start = parseAnnouncementDate(event.startDate);
+    const endSource = event.endDate || event.startDate;
+    const end = parseAnnouncementDate(endSource);
+
+    if (!start || !end) {
+        return 'hidden';
+    }
+
+    const endOfDay = new Date(end);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    if (event.isFeatured) {
+        return referenceDate <= endOfDay ? 'featured' : 'hidden';
+    }
+
+    if (referenceDate >= start && referenceDate <= endOfDay) {
+        return 'ongoing';
+    }
+
+    return 'hidden';
+}
+
+function formatAnnouncementDateRange(event) {
+    const start = parseAnnouncementDate(event.startDate);
+    const end = parseAnnouncementDate(event.endDate || event.startDate);
+
+    if (!start || !end) return 'Date TBA';
+
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    const startLabel = start.toLocaleDateString(undefined, options);
+    const endLabel = end.toLocaleDateString(undefined, options);
+    return startLabel === endLabel ? startLabel : `${startLabel} - ${endLabel}`;
+}
+
+function isFinishedAnnouncement(event, referenceDate = new Date()) {
+    const end = parseAnnouncementDate(event.endDate || event.startDate);
+    if (!end) return false;
+    const endOfDay = new Date(end);
+    endOfDay.setHours(23, 59, 59, 999);
+    return referenceDate > endOfDay;
+}
+
+async function autoUnfeatureFinishedEvents(fb, eventDocs) {
+    if (!fb || !fb.firestore || !Array.isArray(eventDocs) || !eventDocs.length) return new Set();
+
+    const staleFeaturedIds = eventDocs
+        .filter((item) => item && item.data && item.data.isFeatured && isFinishedAnnouncement(item.data))
+        .map((item) => item.id);
+
+    if (!staleFeaturedIds.length) return new Set();
+
+    const batch = fb.firestore().batch();
+    staleFeaturedIds.forEach((id) => {
+        const docRef = fb.firestore().collection('events').doc(id);
+        batch.update(docRef, {
+            isFeatured: false,
+            updatedAt: fb.firestore.FieldValue.serverTimestamp()
+        });
+    });
+
+    try {
+        await batch.commit();
+    } catch (error) {
+        console.warn('Could not auto-unfeature finished events.', error);
+        return new Set();
+    }
+
+    return new Set(staleFeaturedIds);
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    const listEl = document.getElementById('home-announcements-list');
+    const emptyEl = document.getElementById('home-announcements-empty');
+
+    if (!listEl || !emptyEl) return;
+
+    listEl.innerHTML = `
+        <article class="home-announcement-card home-announcement-card--loading">
+            <p>Loading active announcements...</p>
+        </article>
+    `;
+    emptyEl.style.display = 'none';
+
+    try {
+        await loadFirebaseIfNeeded();
+        const fb = getFirebaseInstance();
+        if (!fb || !fb.firestore) {
+            throw new Error('Firebase Firestore is unavailable.');
+        }
+
+        const snapshot = await fb.firestore().collection('events').orderBy('startDate', 'asc').get();
+        const eventDocs = snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+        const autoUnfeaturedIds = await autoUnfeatureFinishedEvents(fb, eventDocs);
+
+        const visibleAnnouncements = eventDocs
+            .map((eventDoc) => ({
+                id: eventDoc.id,
+                ...eventDoc.data,
+                isFeatured: autoUnfeaturedIds.has(eventDoc.id) ? false : Boolean(eventDoc.data.isFeatured)
+            }))
+            .map((event) => ({
+                ...event,
+                visibilityStatus: getHomepageAnnouncementVisibility(event)
+            }))
+            .filter((event) => event.visibilityStatus !== 'hidden')
+            .sort((left, right) => {
+                if (left.visibilityStatus === 'featured' && right.visibilityStatus !== 'featured') return -1;
+                if (right.visibilityStatus === 'featured' && left.visibilityStatus !== 'featured') return 1;
+                return (parseAnnouncementDate(left.startDate) || 0) - (parseAnnouncementDate(right.startDate) || 0);
+            })
+            .slice(0, 4);
+
+        if (!visibleAnnouncements.length) {
+            listEl.innerHTML = '';
+            emptyEl.style.display = 'block';
+            return;
+        }
+
+        listEl.innerHTML = visibleAnnouncements.map((event, index) => {
+            const badgeLabel = event.visibilityStatus === 'featured' ? 'Featured Active' : 'Ongoing';
+            const delay = 80 + (index * 80);
+            return `
+                <article class="home-announcement-card" data-aos="fade-up" data-aos-delay="${delay}">
+                    <div class="home-announcement-card__badges">
+                        <span class="home-announcement-card__badge ${event.visibilityStatus}">${badgeLabel}</span>
+                    </div>
+                    <h3>${escapeHtml(event.title || 'Untitled announcement')}</h3>
+                    <p>${escapeHtml(event.description || 'No description available.')}</p>
+                    <div class="home-announcement-card__meta">
+                        <span>${escapeHtml(formatAnnouncementDateRange(event))}</span>
+                        <span>${escapeHtml(event.time || 'Schedule TBA')}</span>
+                        <span>${escapeHtml(event.location ? `Location: ${event.location}` : 'Location TBA')}</span>
+                    </div>
+                </article>
+            `;
+        }).join('');
+
+        if (window.AOS && typeof window.AOS.refreshHard === 'function') {
+            window.AOS.refreshHard();
+        } else if (window.AOS && typeof window.AOS.refresh === 'function') {
+            window.AOS.refresh();
+        }
+    } catch (error) {
+        console.error('Failed to load homepage announcements.', error);
+        listEl.innerHTML = '';
+        emptyEl.textContent = 'Unable to load announcements right now.';
+        emptyEl.style.display = 'block';
+    }
+});
     
 // --- AI Itinerary Modal Logic ---
 document.addEventListener('DOMContentLoaded', function() {
