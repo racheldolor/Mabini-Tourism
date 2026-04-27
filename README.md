@@ -4,14 +4,15 @@ A simple tourism site showcasing diving, snorkeling, and activities in Mabini, B
 
 ## AI Itinerary Setup
 
-The site can generate custom itineraries via a small Node.js server using OpenAI.
+The site can generate custom itineraries via a small Node.js server using Google Gemini.
 
 ### 1) Configure your environment
 
 - Copy `.env.example` to `.env` and set your key:
 
 ```powershell
-OPENAI_API_KEY=sk-your-key-here
+GEMINI_API_KEY=your-gemini-key-here
+GEMINI_MODEL=gemini-1.5-flash
 PORT=3001
 ```
 
@@ -38,7 +39,8 @@ The server listens on `http://localhost:3001`. The frontend already posts to `/g
 
 ### Troubleshooting
 
-- If you see `OPENAI_API_KEY is missing`, ensure your `.env` file exists and contains a valid key.
+- If you see `GEMINI_API_KEY is missing`, ensure your `.env` file exists and contains a valid key.
+- If you see a `403` from Gemini, verify your key restrictions and model access in Google AI Studio.
 - Firewalls or ad-blockers can block `localhost` calls; allow `http://localhost:3001`.
 - Adjust the `PORT` in `.env` if 3001 is taken; the frontend URL can remain the same if you use a proxy, otherwise change the fetch URL in `assets/js/main.js`.
 

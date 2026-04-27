@@ -97,12 +97,7 @@ const changeSliderImage = () => {
             
             setTimeout(() => {
                 if(index == sliderGridItems.length -1){
-                    if(currentImage > sliderImage.length -1){
-                        currentImage = 0;
-                    }
-                    else{
-                        currentImage++;
-                    }
+                    currentImage = (currentImage + 1) % sliderImage.length;
                     
                     slider.src = sliderImage[currentImage];
                     
@@ -716,15 +711,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const experience = formData.get('experience');
                 const tripLength = formData.get('tripLength') || '1-day';
 
-                // Collect activities - now just a single dropdown
-                let activities = [];
                 const activitiesSelect = itineraryForm.querySelector('#activitiesSelect');
-                if (activitiesSelect && activitiesSelect.value) {
-                    activities = [activitiesSelect.value];
-                }
-                
-                // Change to multiple selections
-                activities = Array.from(activitiesSelect.selectedOptions).map(opt => opt.value);
+                const activities = activitiesSelect
+                    ? Array.from(activitiesSelect.selectedOptions).map(opt => opt.value)
+                    : [];
 
                 if (!activities || activities.length === 0) {
                     if (loading) loading.style.display = 'none';
@@ -741,21 +731,35 @@ document.addEventListener('DOMContentLoaded', function() {
                         body: JSON.stringify({ budget, groupSize, experience, activities, tripLength })
                     });
                     console.log('Response status:', response.status);
-                    
+
+                    const contentType = response.headers.get('content-type') || '';
+                    const responseBody = contentType.includes('application/json')
+                        ? await response.json()
+                        : { error: await response.text() };
+
                     if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error('Server error:', errorData);
+                        console.error('Server error:', responseBody);
                         if (loading) loading.style.display = 'none';
-                        itineraryResult.innerHTML = `<p style="color:red;">Server error: ${errorData.error || 'Unknown error'}</p>`;
+
+                        const serverMessage = responseBody?.error || 'Unknown error';
+                        const detailMessage = responseBody?.details?.error?.message || '';
+                        const hint = response.status === 403
+                            ? ' Check your Gemini API key permissions and model access on the backend.'
+                            : '';
+
+                        itineraryResult.innerHTML = `<p style="color:red;">Server error (${response.status}): ${serverMessage}${detailMessage ? ` (${detailMessage})` : ''}${hint}</p>`;
                         return;
                     }
-                    
-                    const data = await response.json();
+
+                    const data = responseBody;
                     console.log('Response data:', data);
                     if (loading) loading.style.display = 'none';
                     if (data.itinerary) {
                         // Format the itinerary with better styling
                         const formattedItinerary = formatItinerary(data.itinerary);
+                        const fallbackNotice = data.source === 'local-fallback' && data.notice
+                            ? `<div style="margin-bottom: 18px; padding: 12px 14px; border-radius: 10px; background: rgba(230, 194, 0, 0.12); color: #f5e7a1; border: 1px solid rgba(230, 194, 0, 0.25); font-size: 13px; line-height: 1.6;">Using a local fallback itinerary because the Gemini API is currently out of quota. The plan below is still tailored to your selections.</div>`
+                            : '';
                         
                         // Add inspirational images gallery below itinerary
                         const imageGallery = `
@@ -770,7 +774,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           </div>
                         `;
                         
-                        itineraryResult.innerHTML = formattedItinerary + imageGallery;
+                        itineraryResult.innerHTML = fallbackNotice + formattedItinerary + imageGallery;
                         // Save to Firestore if user is logged in
                         if (window.firebase && window.firebase.auth().currentUser) {
                             try {
