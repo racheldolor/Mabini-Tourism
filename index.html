@@ -76,6 +76,7 @@
               <div class="hero-cta" data-aos="fade-up">
                 <button id="planVisitBtn" class="hero-btn" type="button">Plan Your Visit</button>
               </div>
+                            <button id="yourItinerariesBtn" class="hero-link-btn" type="button" data-aos="fade-up">Your Itineraries</button>
           </div>
     
             <img src="assets/images/arrow.png" class="scroll-down-icon" alt="scroll-down">
@@ -397,6 +398,27 @@
                 <p>Crafting your Mabini adventure...</p>
             </div>
             <div id="itineraryResult" class="itinerary-result" aria-live="polite"></div>
+        </div>
+    </div>
+
+    <!-- Your Itineraries Modal -->
+    <div id="itineraryHistoryModal" class="itinerary-modal itinerary-history-modal" role="dialog" aria-modal="true" aria-labelledby="itinerary-history-title" aria-describedby="itinerary-history-description" style="display:none;">
+        <div class="itinerary-modal__backdrop"></div>
+        <div class="itinerary-modal__dialog itinerary-history__dialog">
+            <button id="closeItineraryHistoryModal" class="itinerary-modal__close" aria-label="Close saved itineraries">&times;</button>
+            <div class="itinerary-modal__header">
+                <p class="itinerary-modal__eyebrow">Saved plans</p>
+                <h3 id="itinerary-history-title" class="itinerary-modal__title">Your Itineraries</h3>
+                <p id="itinerary-history-description" class="itinerary-modal__subtitle">All itineraries generated from your account are stored here.</p>
+            </div>
+            <div id="itineraryHistoryLoading" class="itinerary-loading" style="display:none;">
+                <div class="spinner"></div>
+                <p>Loading your saved itineraries...</p>
+            </div>
+            <div id="itineraryHistoryEmpty" class="itinerary-history__empty" style="display:none;">
+                No saved itineraries yet. Generate one to see it here.
+            </div>
+            <div id="itineraryHistoryList" class="itinerary-history__list" aria-live="polite"></div>
         </div>
     </div>
 

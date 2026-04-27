@@ -80,6 +80,69 @@ function formatItinerary(text) {
   return html;
 }
 
+function escapeHtml(text) {
+    return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatItineraryHistoryDate(value) {
+    if (!value) return 'Recently saved';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Recently saved';
+    return date.toLocaleString();
+}
+
+function getCurrentFirebaseUser() {
+    const fb = window.firebase || (typeof firebase !== 'undefined' ? firebase : null);
+    return fb && fb.auth ? fb.auth().currentUser : null;
+}
+
+function isLocalFallbackItinerary(item) {
+    const aiResult = String(item && item.aiResult ? item.aiResult : '');
+    return item?.source === 'local-fallback' || /\*\*Fallback itinerary\*\*/i.test(aiResult) || /Gemini quota is exhausted/i.test(aiResult);
+}
+
+function renderItineraryHistoryItem(item) {
+    const activities = Array.isArray(item.activities) && item.activities.length
+        ? item.activities.join(', ')
+        : 'No activities saved';
+    const sourceLabel = isLocalFallbackItinerary(item) ? 'Local fallback' : 'Gemini';
+    const details = item.aiResult ? formatItinerary(item.aiResult) : '<p>No itinerary content available.</p>';
+
+    return `
+        <details class="itinerary-history__item">
+            <summary class="itinerary-history__summary">
+                <div>
+                    <div class="itinerary-history__summary-title">${escapeHtml(item.tripLength || '1-day')} plan for ${escapeHtml(item.budget || 'Mid-range')}</div>
+                    <div class="itinerary-history__meta">${escapeHtml(formatItineraryHistoryDate(item.createdAt))} &bull; ${escapeHtml(item.experience || 'Experience not set')}</div>
+                    <div class="itinerary-history__meta">${escapeHtml(activities)}</div>
+                </div>
+                <span class="itinerary-history__badge">${escapeHtml(sourceLabel)}</span>
+            </summary>
+            <div class="itinerary-history__content">
+                ${details}
+            </div>
+        </details>
+    `;
+}
+
+function renderItineraryHistoryList(listElement, emptyElement, items) {
+    if (!listElement || !emptyElement) return;
+
+    if (!items.length) {
+        listElement.innerHTML = '';
+        emptyElement.style.display = 'block';
+        return;
+    }
+
+    emptyElement.style.display = 'none';
+    listElement.innerHTML = items.map(renderItineraryHistoryItem).join('');
+}
+
 //background image slider
 const sliderImage = ["assets/images/bg.jpg", "assets/images/5.jpg", "assets/images/1.jpg", "assets/images/gulugod.png", "assets/images/2.jpg", "assets/images/4.jpg", "assets/images/6.jpg"];
 let slider = document.querySelector('.background-image');
@@ -477,6 +540,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeNavbarUserMenu();
         if (e.key === 'Escape') closeAuth();
+        if (e.key === 'Escape') closeItineraryHistoryModalView();
     });
 
     document.addEventListener('click', function(event) {
@@ -672,10 +736,88 @@ document.addEventListener('DOMContentLoaded', function() {
 // --- AI Itinerary Modal Logic ---
 document.addEventListener('DOMContentLoaded', function() {
     const planVisitBtn = document.getElementById('planVisitBtn');
+    const yourItinerariesBtn = document.getElementById('yourItinerariesBtn');
     const aiItineraryModal = document.getElementById('aiItineraryModal');
     const closeModal = document.getElementById('closeModal');
     const itineraryForm = document.getElementById('itineraryForm');
     const itineraryResult = document.getElementById('itineraryResult');
+    const itineraryHistoryModal = document.getElementById('itineraryHistoryModal');
+    const closeItineraryHistoryModal = document.getElementById('closeItineraryHistoryModal');
+    const itineraryHistoryLoading = document.getElementById('itineraryHistoryLoading');
+    const itineraryHistoryEmpty = document.getElementById('itineraryHistoryEmpty');
+    const itineraryHistoryList = document.getElementById('itineraryHistoryList');
+
+    async function loadItineraryHistory() {
+        const fb = window.firebase || (typeof firebase !== 'undefined' ? firebase : null);
+        const currentUser = getCurrentFirebaseUser();
+
+        if (!itineraryHistoryModal || !itineraryHistoryLoading || !itineraryHistoryEmpty || !itineraryHistoryList) {
+            return;
+        }
+
+        if (!currentUser) {
+            itineraryHistoryLoading.style.display = 'none';
+            renderItineraryHistoryList(itineraryHistoryList, itineraryHistoryEmpty, []);
+            itineraryHistoryEmpty.textContent = 'Sign in to view itineraries saved to your account.';
+            itineraryHistoryEmpty.style.display = 'block';
+            return;
+        }
+
+        if (!fb || !fb.firestore) {
+            itineraryHistoryLoading.style.display = 'none';
+            renderItineraryHistoryList(itineraryHistoryList, itineraryHistoryEmpty, []);
+            itineraryHistoryEmpty.textContent = 'Firebase is not available right now.';
+            itineraryHistoryEmpty.style.display = 'block';
+            return;
+        }
+
+        itineraryHistoryEmpty.textContent = 'No saved itineraries yet. Generate one to see it here.';
+        itineraryHistoryLoading.style.display = 'flex';
+        itineraryHistoryEmpty.style.display = 'none';
+        itineraryHistoryList.innerHTML = '';
+
+        try {
+            const snapshot = await fb.firestore().collection('itineraries').where('userId', '==', currentUser.uid).get();
+            const items = snapshot.docs
+                .map((doc) => ({ id: doc.id, ...doc.data() }))
+                .sort((left, right) => {
+                    const leftTime = new Date(left.createdAt || 0).getTime();
+                    const rightTime = new Date(right.createdAt || 0).getTime();
+                    return rightTime - leftTime;
+                });
+
+            renderItineraryHistoryList(itineraryHistoryList, itineraryHistoryEmpty, items);
+        } catch (error) {
+            itineraryHistoryList.innerHTML = '';
+            itineraryHistoryEmpty.textContent = `Unable to load saved itineraries: ${error.message}`;
+            itineraryHistoryEmpty.style.display = 'block';
+        } finally {
+            itineraryHistoryLoading.style.display = 'none';
+        }
+    }
+
+    function openItineraryHistoryModal() {
+        if (!itineraryHistoryModal) return;
+
+        const currentUser = getCurrentFirebaseUser();
+        if (!currentUser) {
+            const userBtn = document.getElementById('user-btn');
+            if (userBtn) {
+                userBtn.click();
+            }
+            return;
+        }
+
+        itineraryHistoryModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        void loadItineraryHistory();
+    }
+
+    function closeItineraryHistoryModalView() {
+        if (!itineraryHistoryModal) return;
+        itineraryHistoryModal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
 
     if (planVisitBtn && aiItineraryModal) {
         planVisitBtn.addEventListener('click', function() {
@@ -684,17 +826,30 @@ document.addEventListener('DOMContentLoaded', function() {
             itineraryResult.innerHTML = '';
         });
     }
+    if (yourItinerariesBtn) {
+        yourItinerariesBtn.addEventListener('click', openItineraryHistoryModal);
+    }
     if (closeModal && aiItineraryModal) {
         closeModal.addEventListener('click', function() {
             aiItineraryModal.style.display = 'none';
             document.body.style.overflow = '';
         });
     }
+    if (closeItineraryHistoryModal && itineraryHistoryModal) {
+        closeItineraryHistoryModal.addEventListener('click', closeItineraryHistoryModalView);
+    }
     if (aiItineraryModal) {
         aiItineraryModal.addEventListener('click', function(e) {
             if (e.target === aiItineraryModal) {
                 aiItineraryModal.style.display = 'none';
                 document.body.style.overflow = '';
+            }
+        });
+    }
+    if (itineraryHistoryModal) {
+        itineraryHistoryModal.addEventListener('click', function(e) {
+            if (e.target === itineraryHistoryModal) {
+                closeItineraryHistoryModalView();
             }
         });
     }
@@ -778,17 +933,33 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Save to Firestore if user is logged in
                         if (window.firebase && window.firebase.auth().currentUser) {
                             try {
-                                await window.firebase.firestore().collection('itineraries').add({
+                                const itineraryRecord = {
                                     budget,
                                     groupSize,
                                     experience,
                                     tripLength,
                                     activities,
                                     aiResult: data.itinerary,
+                                    source: data.source || 'gemini',
+                                    model: data.model || '',
+                                    version: data.version || '',
                                     createdAt: new Date().toISOString(),
                                     userId: window.firebase.auth().currentUser.uid,
                                     userEmail: window.firebase.auth().currentUser.email
-                                });
+                                };
+
+                                const db = window.firebase.firestore();
+                                const sharedWrite = db.collection('itineraries').add(itineraryRecord);
+                                const accountWrite = db.collection('users').doc(window.firebase.auth().currentUser.uid).collection('itineraries').add(itineraryRecord);
+                                const [sharedResult, accountResult] = await Promise.allSettled([sharedWrite, accountWrite]);
+
+                                if (sharedResult.status === 'rejected') {
+                                    throw sharedResult.reason;
+                                }
+
+                                if (accountResult.status === 'rejected') {
+                                    console.warn('Saved to the shared itineraries collection, but the account subcollection write failed.', accountResult.reason);
+                                }
                                 itineraryResult.innerHTML += '<p style="color:green;">Itinerary saved to your account!</p>';
                             } catch (err) {
                                 itineraryResult.innerHTML += `<p style="color:red;">Error saving itinerary: ${err.message}</p>`;
