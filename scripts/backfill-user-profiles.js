@@ -110,20 +110,8 @@ async function collectFromPosts(profileMap) {
 }
 
 async function collectFromLegacyCommunityPosts(profileMap) {
-  const legacySnap = await db.collection('community_posts').get();
-
-  for (const doc of legacySnap.docs) {
-    const post = doc.data() || {};
-    mergeProfile(profileMap, post.userId, {
-      displayName: post.userDisplayName,
-      email: post.userEmail,
-      photoURL: post.userPhotoURL,
-    }, 'community_posts');
-  }
-
-  return {
-    legacyPostsCount: legacySnap.size,
-  };
+  // Community module has been removed; skip legacy community_posts collection.
+  return { legacyPostsCount: 0 };
 }
 
 async function enrichFromAuth(profileMap) {
@@ -181,7 +169,7 @@ async function writeProfiles(profileMap) {
     const profileMap = new Map();
 
     const fromPosts = await collectFromPosts(profileMap);
-    const fromLegacy = await collectFromLegacyCommunityPosts(profileMap);
+    const fromLegacy = { legacyPostsCount: 0 };
     const fromAuth = await enrichFromAuth(profileMap);
     const writeResult = await writeProfiles(profileMap);
 
