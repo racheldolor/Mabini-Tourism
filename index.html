@@ -83,6 +83,17 @@
         </main>
     </header>
 
+    <div id="home-flash-announcement" class="home-flash-announcement" aria-live="polite" aria-hidden="true" style="display:none;">
+        <a id="home-flash-announcement-link" class="home-flash-announcement__link" href="pages/announcements.html?status=upcoming">
+            <span class="home-flash-announcement__label">New upcoming event</span>
+            <div id="home-flash-announcement-items" class="home-flash-announcement__items">
+                <strong class="home-flash-announcement__empty-state">Loading upcoming announcements...</strong>
+            </div>
+            <span class="home-flash-announcement__cta">Tap to view announcements</span>
+        </a>
+        <button id="home-flash-announcement-close" class="home-flash-announcement__close" type="button" aria-label="Dismiss upcoming event alert">×</button>
+    </div>
+
     <section class="home-announcements" id="home-announcements" aria-labelledby="home-announcements-title">
         <div class="home-announcements__inner">
             <div class="home-announcements__head" data-aos="fade-up">

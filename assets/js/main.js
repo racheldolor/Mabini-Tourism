@@ -764,6 +764,12 @@ function getHomepageAnnouncementVisibility(event, referenceDate = new Date()) {
     return 'hidden';
 }
 
+function isUpcomingAnnouncement(event, referenceDate = new Date()) {
+    const start = parseAnnouncementDate(event.startDate);
+    if (!start) return false;
+    return referenceDate < start;
+}
+
 function formatAnnouncementDateRange(event) {
     const start = parseAnnouncementDate(event.startDate);
     const end = parseAnnouncementDate(event.endDate || event.startDate);
@@ -815,6 +821,51 @@ async function autoUnfeatureFinishedEvents(fb, eventDocs) {
 document.addEventListener('DOMContentLoaded', async function() {
     const listEl = document.getElementById('home-announcements-list');
     const emptyEl = document.getElementById('home-announcements-empty');
+    const flashEl = document.getElementById('home-flash-announcement');
+    const flashLinkEl = document.getElementById('home-flash-announcement-link');
+    const flashItemsEl = document.getElementById('home-flash-announcement-items');
+    const flashCloseBtn = document.getElementById('home-flash-announcement-close');
+
+    const hideFlashAnnouncement = () => {
+        if (!flashEl) return;
+        flashEl.classList.remove('is-visible');
+        window.setTimeout(() => {
+            if (!flashEl.classList.contains('is-visible')) {
+                flashEl.style.display = 'none';
+            }
+        }, 380);
+        flashEl.setAttribute('aria-hidden', 'true');
+    };
+
+    const showFlashAnnouncement = (upcomingAnnouncements) => {
+        if (!flashEl || !flashLinkEl || !flashItemsEl || !upcomingAnnouncements.length) {
+            hideFlashAnnouncement();
+            return;
+        }
+
+        flashLinkEl.href = 'pages/announcements.html?status=upcoming';
+        flashItemsEl.innerHTML = upcomingAnnouncements.map((event) => `
+            <div class="home-flash-announcement__item">
+                <div class="home-flash-announcement__item-title">${escapeHtml(event.title || 'Upcoming announcement')}</div>
+                <div class="home-flash-announcement__item-meta">${escapeHtml(formatAnnouncementDateRange(event))} • ${escapeHtml(event.location || 'Location TBA')}</div>
+            </div>
+        `).join('');
+
+        flashEl.style.display = 'flex';
+        flashEl.setAttribute('aria-hidden', 'false');
+        window.setTimeout(() => {
+            flashEl.classList.add('is-visible');
+        }, 70);
+    };
+
+    if (flashCloseBtn && !flashCloseBtn.dataset.bound) {
+        flashCloseBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            hideFlashAnnouncement();
+        });
+        flashCloseBtn.dataset.bound = 'true';
+    }
 
     if (!listEl || !emptyEl) return;
 
@@ -841,7 +892,16 @@ document.addEventListener('DOMContentLoaded', async function() {
                 id: eventDoc.id,
                 ...eventDoc.data,
                 isFeatured: autoUnfeaturedIds.has(eventDoc.id) ? false : Boolean(eventDoc.data.isFeatured)
-            }))
+            }));
+
+        const upcomingAnnouncements = visibleAnnouncements
+            .filter((event) => isUpcomingAnnouncement(event))
+            .sort((left, right) => (parseAnnouncementDate(left.startDate) || 0) - (parseAnnouncementDate(right.startDate) || 0))
+            .slice(0, 6);
+
+        showFlashAnnouncement(upcomingAnnouncements);
+
+        const activeAnnouncements = visibleAnnouncements
             .map((event) => ({
                 ...event,
                 visibilityStatus: getHomepageAnnouncementVisibility(event)
@@ -854,13 +914,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             })
             .slice(0, 4);
 
-        if (!visibleAnnouncements.length) {
+        if (!activeAnnouncements.length) {
             listEl.innerHTML = '';
             emptyEl.style.display = 'block';
             return;
         }
 
-        listEl.innerHTML = visibleAnnouncements.map((event, index) => {
+        listEl.innerHTML = activeAnnouncements.map((event, index) => {
             const badgeLabel = event.visibilityStatus === 'featured' ? 'Featured Active' : 'Ongoing';
             const delay = 80 + (index * 80);
             return `
@@ -886,6 +946,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     } catch (error) {
         console.error('Failed to load homepage announcements.', error);
+        hideFlashAnnouncement();
         listEl.innerHTML = '';
         emptyEl.textContent = 'Unable to load announcements right now.';
         emptyEl.style.display = 'block';
