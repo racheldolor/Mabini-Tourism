@@ -379,18 +379,17 @@
                         <label><input type="radio" name="experience" value="Advanced" /> Advanced / certified diver</label>
                     </div>
                 </fieldset>
-                <div class="itinerary-form__row">
-                    <label for="activitiesSelect" class="itinerary-form__label">Preferred activities</label>
-                    <select id="activitiesSelect" name="activities" multiple required>
-                        <option value="Scuba diving">Scuba diving</option>
-                        <option value="Snorkeling">Snorkeling</option>
-                        <option value="Island hopping">Island hopping</option>
-                        <option value="Beach time">Beach time</option>
-                        <option value="Hiking">Hiking / viewpoints</option>
-                        <option value="Food crawl">Food crawl / local eats</option>
-                    </select>
-                    <p class="itinerary-form__hint">Hold Ctrl/Cmd to select multiple.</p>
-                </div>
+                <fieldset class="itinerary-form__row">
+                    <legend class="itinerary-form__label">Preferred activities</legend>
+                    <div class="itinerary-form__choices">
+                        <label><input type="checkbox" name="activities" value="Scuba diving" /> Scuba diving</label>
+                        <label><input type="checkbox" name="activities" value="Snorkeling" /> Snorkeling</label>
+                        <label><input type="checkbox" name="activities" value="Island hopping" /> Island hopping</label>
+                        <label><input type="checkbox" name="activities" value="Beach time" /> Beach time</label>
+                        <label><input type="checkbox" name="activities" value="Hiking" /> Hiking / viewpoints</label>
+                        <label><input type="checkbox" name="activities" value="Food crawl" /> Food crawl / local eats</label>
+                    </div>
+                </fieldset>
                 <fieldset class="itinerary-form__row">
                     <legend class="itinerary-form__label">Trip length</legend>
                     <div class="itinerary-form__choices itinerary-form__choices--chips">

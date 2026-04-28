@@ -1086,10 +1086,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const experience = formData.get('experience');
                 const tripLength = formData.get('tripLength') || '1-day';
 
-                const activitiesSelect = itineraryForm.querySelector('#activitiesSelect');
-                const activities = activitiesSelect
-                    ? Array.from(activitiesSelect.selectedOptions).map(opt => opt.value)
-                    : [];
+                const activities = Array.from(
+                    itineraryForm.querySelectorAll('input[name="activities"]:checked')
+                ).map((checkbox) => checkbox.value);
 
                 if (!activities || activities.length === 0) {
                     if (loading) loading.style.display = 'none';
