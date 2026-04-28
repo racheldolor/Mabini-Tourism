@@ -117,7 +117,7 @@ function buildLocalItinerary({ budget, groupSize, experience, activities, tripLe
     `* Arrive early in Mabini and have breakfast near Anilao before heading to a beginner-friendly beach or dive orientation spot.`,
     `* Focus on ${activityLine} with a pace matched to your ${experience.toLowerCase()} level.`,
     '**Afternoon**',
-    `* Choose one main activity: snorkeling at a calm reef, a short island hop, or a resort lunch break with sea views.`,
+    `* Choose one main activity: snorkeling at a calm reef, a short island hop, or an establishment lunch break with sea views.`,
     `* Budget hint: ${budget} usually fits a simple lunch, transfer, and one paid activity for ${sizeLabel}.`,
     '**Evening**',
     '* Return to your accommodation, rinse gear, and have a relaxed seafood dinner. Rest early for the next day.'
@@ -208,7 +208,7 @@ app.post('/generate-itinerary', async (req, res) => {
 Requirements:
 1) Clear Day/Time breakdown (Morning/Afternoon/Evening). If 2 days, include Day 1 and Day 2.
 2) Recommend specific places (dive spots, reefs, beaches, viewpoints) with short why-notes.
-3) Suggest dive shops or resorts for the activities; include location and a price hint when possible.
+3) Suggest dive shops or establishments for the activities; include location and a price hint when possible.
 4) Estimated costs: give per-person and rough group total aligned to the stated budget. Mention rentals/boat fees/park fees when relevant.
 5) Tips: adapt to the experience level (beginner vs advanced), safety notes, and what to bring.
 Keep it concise but actionable.`;

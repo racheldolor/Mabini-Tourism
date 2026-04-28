@@ -961,7 +961,7 @@ function getCategoryEmoji(category) {
 function formatCategory(category) {
     const formats = {
         'dive-spots': 'Dive Spot',
-        'resorts': 'Resort',
+        'resorts': 'Establishment',
         'food': 'Food',
         'tips': 'Tips',
         'general': 'General'

@@ -1144,7 +1144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                               <img src="assets/images/d.jpg" alt="Diving in Mabini" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
                               <img src="assets/images/s.jpg" alt="Snorkeling" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
                               <img src="assets/images/ih.jpg" alt="Island Hopping" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
-                              <img src="assets/images/rs.jpg" alt="Resorts" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
+                              <img src="assets/images/rs.jpg" alt="Establishments" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(230,194,0,0.3);" />
                             </div>
                           </div>
                         `;
