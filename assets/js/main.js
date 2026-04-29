@@ -667,45 +667,42 @@ window.addEventListener('scroll', () =>{
 })
 
 // Swiper Configuration for Services Section
-const swiper = new Swiper('.mySwiper', {
-    slidesPerView: 3,
-    spaceBetween: 20,  // 🔥 SPACE BETWEEN CARDS - Change this number (try 30, 40, 50)
-    loop: true,
-    centeredSlides: true,
-    grabCursor: true,
-    slideToClickedSlide: true,
-    speed: 600,  // Smooth transition speed
-    
-    // 🔥 CRITICAL: Prevent extra slides from showing
-    watchSlidesProgress: true,
-    watchSlidesVisibility: true,
-    
-    breakpoints: {
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20  // Space for mobile
-      },
-      768: {
-        slidesPerView: 2,
-        spaceBetween: 20  // Space for tablet
-      },
-      1024: {
-        slidesPerView: 3,
-        spaceBetween: 20  // 🔥 Space for desktop - CHANGE THIS
-      }
-    },
-  
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-  
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-      dynamicBullets: true
-    }
-});
+if (typeof Swiper !== 'undefined' && document.querySelector('.mySwiper')) {
+        const swiper = new Swiper('.mySwiper', {
+                slidesPerView: 3,
+                spaceBetween: 20,
+                loop: true,
+                centeredSlides: true,
+                grabCursor: true,
+                slideToClickedSlide: true,
+                speed: 600,
+                watchSlidesProgress: true,
+                watchSlidesVisibility: true,
+                breakpoints: {
+                        320: {
+                                slidesPerView: 1,
+                                spaceBetween: 20
+                        },
+                        768: {
+                                slidesPerView: 2,
+                                spaceBetween: 20
+                        },
+                        1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 20
+                        }
+                },
+                navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev'
+                },
+                pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                        dynamicBullets: true
+                }
+        });
+}
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const heroImage = document.querySelector('.background-image');
@@ -1343,6 +1340,602 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         dolphin: {
             title: 'Dolphin',
+
+/*
+// Service card editor for admin users on service pages.
+document.addEventListener('DOMContentLoaded', async function() {
+    const serviceCardTypes = {
+        'spot-card': {
+            titleSelector: '.spot-name',
+            descriptionSelector: '.spot-desc',
+            imageSelector: '.spot-image',
+            extras: [
+                { key: 'meta', label: 'Meta text', selector: '.spot-meta', type: 'text' }
+            ]
+        },
+        'product-card': {
+            titleSelector: '.product-name',
+            descriptionSelector: '.product-desc',
+            imageSelector: '.product-image',
+            extras: [
+                { key: 'where', label: 'Where text', selector: '.product-where', type: 'text' },
+                { key: 'note', label: 'Additional note', selector: '.product-content > p:not(.product-desc):not(.product-where)', type: 'text', allowCreate: true }
+            ]
+        },
+        'resort-card': {
+            titleSelector: '.resort-name',
+            descriptionSelector: '.resort-desc',
+            imageSelector: '.resort-image',
+            extras: [
+                { key: 'badges', label: 'Badge text', selector: '.resort-meta', type: 'list', itemSelector: '.resort-badge', itemClass: 'resort-badge' },
+                { key: 'amenities', label: 'Amenities', selector: '.amenities', type: 'list', itemSelector: '.amenity', itemClass: 'amenity' }
+            ]
+        }
+    };
+
+    const editorStorageKey = 'mabini-service-card-edits';
+    const editorModalId = 'service-card-editor-modal';
+    const editorStyleId = 'service-card-editor-styles';
+    const adminRequests = { current: 0 };
+    const hasServiceCards = Object.keys(serviceCardTypes).some((className) => document.querySelector(`.${className}`));
+
+    if (!hasServiceCards) return;
+
+    function getFirebase() {
+        return getFirebaseInstance();
+    }
+
+    function isServicePage() {
+        return Boolean(document.querySelector('.spot-card, .product-card, .resort-card'));
+    }
+
+    function ensureEditorStyles() {
+        if (document.getElementById(editorStyleId)) return;
+
+        const style = document.createElement('style');
+        style.id = editorStyleId;
+        style.textContent = `
+            .service-card-editable { position: relative; }
+            .service-card-edit-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                z-index: 3;
+                width: 30px;
+                height: 30px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border: 0;
+                border-radius: 999px;
+                background: rgba(0, 32, 55, 0.9);
+                color: #fff;
+                box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+                cursor: pointer;
+                transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+                opacity: 0.96;
+            }
+            .service-card-edit-btn:hover { transform: translateY(-1px) scale(1.03); background: rgba(230, 194, 0, 0.98); color: #002037; }
+            .service-card-edit-btn svg { width: 15px; height: 15px; display: block; }
+            .service-card-editor-modal {
+                position: fixed;
+                inset: 0;
+                z-index: 4000;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                background: rgba(0, 16, 28, 0.68);
+                backdrop-filter: blur(6px);
+            }
+            .service-card-editor-modal.is-open { display: flex; }
+            .service-card-editor-modal__dialog {
+                width: min(720px, 100%);
+                max-height: min(88vh, 920px);
+                overflow: auto;
+                background: #fff;
+                border-radius: 22px;
+                box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+                border: 1px solid rgba(223, 230, 238, 0.8);
+            }
+            .service-card-editor-modal__header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 16px;
+                padding: 22px 24px 16px;
+                border-bottom: 1px solid #e9eef4;
+                background: linear-gradient(135deg, rgba(0, 32, 55, 0.04), rgba(230, 194, 0, 0.05));
+            }
+            .service-card-editor-modal__eyebrow {
+                margin: 0 0 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
+                font-size: 11px;
+                font-weight: 700;
+                color: #5a6a80;
+            }
+            .service-card-editor-modal__title { margin: 0; color: #002037; font-size: 22px; line-height: 1.2; }
+            .service-card-editor-modal__subtitle { margin: 8px 0 0; color: #5a6a80; font-size: 14px; line-height: 1.5; }
+            .service-card-editor-modal__close {
+                border: 0;
+                background: transparent;
+                color: #002037;
+                font-size: 30px;
+                line-height: 1;
+                cursor: pointer;
+                padding: 0;
+                margin: -4px 0 0;
+            }
+            .service-card-editor-modal__body { padding: 22px 24px 24px; }
+            .service-card-editor-modal__grid { display: grid; gap: 14px; }
+            .service-card-editor-modal__field { display: grid; gap: 8px; }
+            .service-card-editor-modal__field label { font-size: 13px; font-weight: 700; color: #002037; }
+            .service-card-editor-modal__field input,
+            .service-card-editor-modal__field textarea {
+                width: 100%;
+                border: 1px solid #dfe6ee;
+                border-radius: 12px;
+                padding: 12px 14px;
+                font: inherit;
+                color: #0d1b2a;
+                background: #fff;
+                outline: none;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            }
+            .service-card-editor-modal__field textarea { min-height: 96px; resize: vertical; }
+            .service-card-editor-modal__field input:focus,
+            .service-card-editor-modal__field textarea:focus {
+                border-color: #e6c200;
+                box-shadow: 0 0 0 4px rgba(230, 194, 0, 0.15);
+            }
+            .service-card-editor-modal__hint { margin: 0; color: #66758a; font-size: 12px; line-height: 1.5; }
+            .service-card-editor-modal__footer {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                padding-top: 6px;
+            }
+            .service-card-editor-modal__button {
+                border: 0;
+                border-radius: 10px;
+                padding: 11px 16px;
+                font: inherit;
+                font-weight: 700;
+                cursor: pointer;
+                transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+            }
+            .service-card-editor-modal__button:hover { transform: translateY(-1px); }
+            .service-card-editor-modal__button--secondary { background: #e9eef4; color: #002037; }
+            .service-card-editor-modal__button--primary { background: #002037; color: #fff; }
+            .service-card-editor-modal__button--primary:hover { background: #e6c200; color: #002037; }
+            .service-card-editor-modal__preview {
+                margin-top: 16px;
+                border: 1px solid #e9eef4;
+                border-radius: 14px;
+                overflow: hidden;
+                background: #f8fafc;
+            }
+            .service-card-editor-modal__preview img { width: 100%; height: 180px; object-fit: cover; display: block; }
+            .service-card-editor-modal__preview-caption { padding: 10px 14px; font-size: 12px; color: #5a6a80; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function ensureEditorModal() {
+        let modal = document.getElementById(editorModalId);
+        if (modal) return modal;
+
+        modal = document.createElement('div');
+        modal.id = editorModalId;
+        modal.className = 'service-card-editor-modal';
+        modal.innerHTML = `
+            <div class="service-card-editor-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="service-card-editor-title">
+                <div class="service-card-editor-modal__header">
+                    <div>
+                        <p class="service-card-editor-modal__eyebrow">Admin editing</p>
+                        <h3 id="service-card-editor-title" class="service-card-editor-modal__title">Edit card</h3>
+                        <p class="service-card-editor-modal__subtitle">Update the visible text and photo for this service card.</p>
+                    </div>
+                    <button type="button" class="service-card-editor-modal__close" data-editor-close aria-label="Close editor">&times;</button>
+                </div>
+                <form class="service-card-editor-modal__body" data-editor-form>
+                    <div class="service-card-editor-modal__grid" data-editor-fields></div>
+                    <div class="service-card-editor-modal__preview" data-editor-preview hidden>
+                        <img data-editor-preview-image alt="Card preview" />
+                        <div class="service-card-editor-modal__preview-caption" data-editor-preview-caption></div>
+                    </div>
+                    <p class="service-card-editor-modal__hint">Changes are saved locally in this browser for the current card order.</p>
+                    <div class="service-card-editor-modal__footer">
+                        <button type="button" class="service-card-editor-modal__button service-card-editor-modal__button--secondary" data-editor-cancel>Cancel</button>
+                        <button type="submit" class="service-card-editor-modal__button service-card-editor-modal__button--primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        return modal;
+    }
+
+    function getEditorStore() {
+        try {
+            return JSON.parse(localStorage.getItem(editorStorageKey) || '{}') || {};
+        } catch (error) {
+            console.warn('Service editor storage is unreadable.', error);
+            return {};
+        }
+    }
+
+    function setEditorStore(store) {
+        localStorage.setItem(editorStorageKey, JSON.stringify(store));
+    }
+
+    function getCardType(card) {
+        return Object.keys(serviceCardTypes).find((className) => card.classList.contains(className)) || null;
+    }
+
+    function getPageKey() {
+        return window.location.pathname.replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '') || 'home';
+    }
+
+    function getCardKey(card, index) {
+        const type = getCardType(card) || 'card';
+        const namedKey = card.dataset.name ? card.dataset.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') : '';
+        return `${getPageKey()}::${type}::${namedKey || index + 1}`;
+    }
+
+    function readListValues(container, itemSelector) {
+        if (!container) return [];
+        return Array.from(container.querySelectorAll(itemSelector)).map((item) => item.textContent.trim()).filter(Boolean);
+    }
+
+    function parseLines(value) {
+        return String(value || '')
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter(Boolean);
+    }
+
+    function escapeAttribute(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function collectCardState(card) {
+        const type = getCardType(card);
+        const config = type ? serviceCardTypes[type] : null;
+        if (!config) return null;
+
+        const image = card.querySelector(config.imageSelector);
+        const title = card.querySelector(config.titleSelector);
+        const description = card.querySelector(config.descriptionSelector);
+        const state = {
+            title: title ? title.textContent.trim() : '',
+            description: description ? description.textContent.trim() : '',
+            imageSrc: image ? image.getAttribute('src') || '' : '',
+            imageAlt: image ? image.getAttribute('alt') || '' : '',
+            extras: {}
+        };
+
+        config.extras.forEach((extra) => {
+            const container = card.querySelector(extra.selector);
+            if (!container) {
+                state.extras[extra.key] = '';
+                return;
+            }
+
+            if (extra.type === 'list') {
+                state.extras[extra.key] = readListValues(container, extra.itemSelector).join('\n');
+                return;
+            }
+
+            state.extras[extra.key] = container.textContent.trim();
+        });
+
+        return state;
+    }
+
+    function applyCardState(card, state) {
+        const type = getCardType(card);
+        const config = type ? serviceCardTypes[type] : null;
+        if (!config || !state) return;
+
+        const title = card.querySelector(config.titleSelector);
+        const description = card.querySelector(config.descriptionSelector);
+        const image = card.querySelector(config.imageSelector);
+
+        if (title && typeof state.title === 'string') title.textContent = state.title;
+        if (description && typeof state.description === 'string') description.textContent = state.description;
+        if (image) {
+            if (typeof state.imageSrc === 'string' && state.imageSrc.trim()) image.setAttribute('src', state.imageSrc.trim());
+            if (typeof state.imageAlt === 'string') image.setAttribute('alt', state.imageAlt);
+        }
+
+        config.extras.forEach((extra) => {
+            const container = card.querySelector(extra.selector);
+            const value = state.extras && Object.prototype.hasOwnProperty.call(state.extras, extra.key) ? state.extras[extra.key] : '';
+
+            if (!container) {
+                if (extra.allowCreate && value) {
+                    const content = card.querySelector('.product-content');
+                    if (!content) return;
+
+                    const paragraph = document.createElement('p');
+                    paragraph.textContent = value;
+                    content.appendChild(paragraph);
+                }
+                return;
+            }
+
+            if (extra.type === 'list') {
+                const lines = parseLines(value);
+                const className = extra.itemClass || '';
+                container.innerHTML = lines.map((line) => `<span class="${className}">${escapeAttribute(line)}</span>`).join('');
+                return;
+            }
+
+            container.textContent = value || '';
+        });
+    }
+
+    function createEditorButton() {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'service-card-edit-btn';
+        button.setAttribute('aria-label', 'Edit card');
+        button.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0 0-3L16.5 4.5a2.1 2.1 0 0 0-3 0L3 15v5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M13.5 5.5l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        `;
+        return button;
+    }
+
+    function ensureEditButtons() {
+        document.querySelectorAll('.spot-card, .product-card, .resort-card').forEach((card, index) => {
+            const type = getCardType(card);
+            const config = type ? serviceCardTypes[type] : null;
+            if (!config) return;
+
+            card.classList.add('service-card-editable');
+            card.dataset.editorKey = getCardKey(card, index);
+            card.querySelectorAll('.service-card-edit-btn').forEach((button) => button.remove());
+
+            const button = createEditorButton();
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                openEditor(card);
+            });
+            card.appendChild(button);
+        });
+    }
+
+    function clearEditButtons() {
+        document.querySelectorAll('.service-card-edit-btn').forEach((button) => button.remove());
+        document.querySelectorAll('.service-card-editable').forEach((card) => card.classList.remove('service-card-editable'));
+    }
+
+    function buildFieldMarkup(field) {
+        const value = escapeHtml(field.value || '');
+        if (field.type === 'textarea') {
+            return `
+                <div class="service-card-editor-modal__field">
+                    <label for="${field.id}">${escapeHtml(field.label)}</label>
+                    <textarea id="${field.id}" name="${field.name}">${value}</textarea>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="service-card-editor-modal__field">
+                <label for="${field.id}">${escapeHtml(field.label)}</label>
+                <input id="${field.id}" name="${field.name}" type="text" value="${value}" />
+            </div>
+        `;
+    }
+
+    function openEditor(card) {
+        const modal = ensureEditorModal();
+        const form = modal.querySelector('[data-editor-form]');
+        const fieldsContainer = modal.querySelector('[data-editor-fields]');
+        const preview = modal.querySelector('[data-editor-preview]');
+        const previewImage = modal.querySelector('[data-editor-preview-image]');
+        const previewCaption = modal.querySelector('[data-editor-preview-caption]');
+        const titleNode = modal.querySelector('#service-card-editor-title');
+        const subtitleNode = modal.querySelector('.service-card-editor-modal__subtitle');
+        const type = getCardType(card);
+        const config = type ? serviceCardTypes[type] : null;
+
+        if (!config) return;
+
+        const currentState = collectCardState(card) || {};
+        const fields = [
+            { name: 'title', label: 'Card title', value: currentState.title || '', type: 'text' },
+            { name: 'description', label: 'Card text', value: currentState.description || '', type: 'textarea' },
+            { name: 'imageSrc', label: 'Image URL', value: currentState.imageSrc || '', type: 'text' },
+            { name: 'imageAlt', label: 'Image alt text', value: currentState.imageAlt || '', type: 'text' }
+        ];
+
+        config.extras.forEach((extra) => {
+            fields.push({
+                name: `extra_${extra.key}`,
+                label: extra.label,
+                value: currentState.extras ? currentState.extras[extra.key] || '' : '',
+                type: extra.type === 'list' ? 'textarea' : 'text',
+                extra
+            });
+        });
+
+        fields.forEach((field, index) => {
+            field.id = `service-card-field-${index}-${Date.now()}`;
+        });
+
+        titleNode.textContent = currentState.title ? `Edit “${currentState.title}”` : 'Edit card';
+        subtitleNode.textContent = 'Update the visible text and photo for this service card.';
+        fieldsContainer.innerHTML = fields.map(buildFieldMarkup).join('');
+
+        if (currentState.imageSrc) {
+            preview.hidden = false;
+            previewImage.src = currentState.imageSrc;
+            previewImage.alt = currentState.imageAlt || currentState.title || 'Card preview';
+            previewCaption.textContent = currentState.imageAlt || currentState.imageSrc;
+        } else {
+            preview.hidden = true;
+        }
+
+        modal.dataset.editingCardKey = card.dataset.editorKey || '';
+        modal.dataset.editingCardType = type;
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+
+        const closeEditor = () => {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+            modal.dataset.editingCardKey = '';
+            modal.dataset.editingCardType = '';
+        };
+
+        modal._closeEditor = closeEditor;
+        modal._currentCard = card;
+        modal._currentFields = fields;
+
+        const firstInput = modal.querySelector('input, textarea');
+        if (firstInput) firstInput.focus();
+    }
+
+    function saveEditor(event) {
+        event.preventDefault();
+        const modal = document.getElementById(editorModalId);
+        if (!modal || !modal._currentCard || !Array.isArray(modal._currentFields)) return;
+
+        const card = modal._currentCard;
+        const fields = modal._currentFields;
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        const state = {
+            title: String(formData.get('title') || '').trim(),
+            description: String(formData.get('description') || '').trim(),
+            imageSrc: String(formData.get('imageSrc') || '').trim(),
+            imageAlt: String(formData.get('imageAlt') || '').trim(),
+            extras: {}
+        };
+
+        fields.slice(4).forEach((field) => {
+            const extra = field.extra;
+            if (!extra) return;
+            const value = String(formData.get(field.name) || '').trim();
+            state.extras[extra.key] = value;
+        });
+
+        applyCardState(card, state);
+
+        const store = getEditorStore();
+        store[card.dataset.editorKey] = state;
+        setEditorStore(store);
+
+        if (typeof modal._closeEditor === 'function') modal._closeEditor();
+    }
+
+    function restoreSavedEdits() {
+        const store = getEditorStore();
+        document.querySelectorAll('.spot-card, .product-card, .resort-card').forEach((card, index) => {
+            const key = card.dataset.editorKey || getCardKey(card, index);
+            const saved = store[key];
+            if (saved) {
+                applyCardState(card, saved);
+            }
+        });
+    }
+
+    function closeEditorModal() {
+        const modal = document.getElementById(editorModalId);
+        if (!modal) return;
+        if (typeof modal._closeEditor === 'function') modal._closeEditor();
+    }
+
+    function bindModalEvents() {
+        const modal = ensureEditorModal();
+        if (modal.dataset.editorEventsBound === 'true') return;
+        modal.dataset.editorEventsBound = 'true';
+
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal || event.target.classList.contains('service-card-editor-modal__close')) {
+                closeEditorModal();
+            }
+            if (event.target && event.target.hasAttribute('data-editor-cancel')) {
+                closeEditorModal();
+            }
+        });
+
+        const form = modal.querySelector('[data-editor-form]');
+        if (form) {
+            form.addEventListener('submit', saveEditor);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+                closeEditorModal();
+            }
+        });
+    }
+
+    async function syncEditorForUser(user) {
+        const requestId = ++adminRequests.current;
+        if (!isServicePage()) return;
+
+        if (!user) {
+            clearEditButtons();
+            return;
+        }
+
+        try {
+            const token = await user.getIdTokenResult();
+            if (requestId !== adminRequests.current) return;
+
+            const claims = token && token.claims ? token.claims : {};
+            const role = typeof claims.role === 'string' ? claims.role.toLowerCase() : '';
+            const isAdmin = Boolean(claims.admin) || role === 'admin';
+
+            if (isAdmin) {
+                ensureEditorStyles();
+                ensureEditorModal();
+                bindModalEvents();
+                restoreSavedEdits();
+                ensureEditButtons();
+            } else {
+                clearEditButtons();
+            }
+        } catch (error) {
+            console.warn('Unable to determine service editor access.', error);
+            clearEditButtons();
+        }
+    }
+
+    await loadFirebaseIfNeeded().catch((error) => console.warn('Firebase load failed for service editor', error));
+    ensureEditorStyles();
+    ensureEditorModal();
+    bindModalEvents();
+    restoreSavedEdits();
+
+    const fb = getFirebase();
+    const currentUser = fb && fb.auth ? fb.auth().currentUser : null;
+    if (currentUser) {
+        syncEditorForUser(currentUser);
+    }
+
+    if (fb && fb.auth) {
+        fb.auth().onAuthStateChanged((user) => {
+            syncEditorForUser(user);
+        });
+    }
+});
+*/
             image: 'assets/images/a2.jpg',
             content: `
                 <h3>Overview</h3>
@@ -1602,3 +2195,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+if (!window.__mabiniServiceCardEditorLoaded) {
+    window.__mabiniServiceCardEditorLoaded = true;
+    const serviceCardEditorScript = document.createElement('script');
+    serviceCardEditorScript.src = window.location.pathname.includes('/pages/')
+        ? '../assets/js/service-card-editor.js'
+        : 'assets/js/service-card-editor.js';
+    document.head.appendChild(serviceCardEditorScript);
+}
