@@ -10,6 +10,11 @@ const axios = require('axios');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(path.resolve(__dirname, '..')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '..', 'index.html'));
+});
 
 const GEMINI_API_VERSIONS = ['v1beta', 'v1'];
 const DEFAULT_GEMINI_MODELS = [

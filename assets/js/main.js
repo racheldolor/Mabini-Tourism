@@ -223,6 +223,10 @@ function getFirebaseInstance() {
     return window.firebase || (typeof firebase !== 'undefined' ? firebase : null);
 }
 
+function getApiPath(pathname) {
+    return pathname;
+}
+
 function getNavbarUserDisplayName(user) {
     return user?.displayName || user?.email || 'Login';
 }
@@ -1096,7 +1100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     // Call Node.js backend for AI itinerary
                     console.log('Sending request to backend:', { budget, groupSize, experience, activities, tripLength });
-                    const response = await fetch('http://localhost:3001/generate-itinerary', {
+                    const response = await fetch(getApiPath('/generate-itinerary'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ budget, groupSize, experience, activities, tripLength })
@@ -1285,7 +1289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3001/chat', {
+            const response = await fetch(getApiPath('/chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message })
