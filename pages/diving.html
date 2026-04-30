@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" class="service-edits-loading">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diving in Mabini | Dive in Mabini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <style>
+        :root {
+            --midnight: #002037;
+            --deep-blue: #003d5c;
+            --marine: #005580;
+            --gold: #e6c200;
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #0d1b2a;
+            --muted: #5a6a80;
+            --border: #dfe6ee;
+        }
+
+        body { background: var(--bg); color: var(--text); }
+    html.service-edits-loading .spots-grid { visibility: hidden; }
+        .service-shell { max-width: 1200px; margin: 0 auto; padding: 0 20px 80px; }
+
+        .service-hero {
+            position: relative;
+            overflow: hidden;
+            margin: 0 calc(50% - 50vw);
+            width: 100vw;
+            background: linear-gradient(135deg, var(--midnight) 0%, var(--deep-blue) 50%, var(--marine) 100%);
+            border-radius: 0; padding: 120px 24px 80px; color: white; box-shadow: 0 12px 40px rgba(0,0,0,0.22); display: grid; gap: 16px; text-align: center;
+        }
+        .service-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/></svg>');
+            opacity: 0.32;
+        }
+        .service-hero > * { position: relative; z-index: 1; max-width: 960px; width: min(960px, calc(100% - 32px)); justify-self: center; }
+        .service-hero h1 { font-size: clamp(28px, 4vw, 42px); margin: 0; font-weight: 700; }
+        .service-hero p { margin: 0; font-size: 16px; max-width: 600px; opacity: 0.95; line-height: 1.6; }
+
+        .service-back {
+            position: absolute;
+            top: 96px;
+            left: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            width: fit-content;
+            transition: background 0.2s ease, transform 0.2s ease;
+            z-index: 2;
+        }
+        .service-back:hover { background: rgba(255,255,255,0.22); transform: translateY(-1px); }
+        .service-back svg { width: 18px; height: 18px; }
+
+        .overview-card {
+            background: var(--card); border-radius: 18px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-top: 32px; display: grid; gap: 20px;
+        }
+        .overview-card h2 { margin: 0; color: var(--midnight); font-size: 24px; }
+        .overview-card p { margin: 0; color: var(--muted); line-height: 1.8; }
+
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 32px 0; }
+        .info-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.06); display: grid; gap: 12px;
+        }
+        .info-icon { font-size: 32px; }
+        .info-label { color: var(--muted); font-weight: 600; font-size: 14px; }
+        .info-value { color: var(--midnight); font-size: 18px; font-weight: 700; }
+
+        .section-head { margin-top: 48px; margin-bottom: 24px; }
+        .section-head h2 { margin: 0 0 8px; color: var(--midnight); font-size: 28px; }
+        .section-head p { margin: 0; color: var(--muted); font-size: 15px; }
+
+        .spots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; margin-bottom: 40px; }
+        .spot-card {
+            background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.08); border: 1px solid var(--border); transition: all 0.3s ease; display: grid; gap: 0;
+        }
+        .spot-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.14); }
+        .spot-image { width: 100%; height: 180px; object-fit: cover; display: block; }
+        .spot-content { padding: 20px; display: grid; gap: 12px; }
+        .spot-name { margin: 0; font-size: 18px; color: var(--midnight); font-weight: 700; }
+        .spot-desc { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+        .spot-meta { font-size: 13px; color: var(--muted); display: flex; gap: 8px; }
+
+        .timeline-steps { display: grid; gap: 20px; margin-bottom: 40px; }
+        .step { display: grid; grid-template-columns: 60px 1fr; gap: 20px; align-items: start; }
+        .step-icon {
+            width: 60px; height: 60px; border-radius: 12px; background: rgba(230, 194, 0, 0.14); color: var(--midnight);
+            display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+        }
+        .step-content h3 { margin: 0 0 6px; color: var(--midnight); font-size: 18px; }
+        .step-content p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+        .tips-box {
+            background: linear-gradient(135deg, rgba(0, 32, 55, 0.04), rgba(230, 194, 0, 0.04)); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin: 40px 0;
+        }
+        .tips-box h3 { margin: 0 0 16px; color: var(--midnight); font-size: 20px; }
+        .tips-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+        .tips-list li { color: var(--muted); font-size: 14px; padding-left: 24px; position: relative; line-height: 1.6; }
+        .tips-list li:before { content: "✓"; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--midnight) 0%, var(--deep-blue) 100%); color: white; padding: 40px; border-radius: 14px; text-align: center; margin: 60px 0;
+        }
+        .cta-section h2 { margin: 0 0 12px; font-size: 28px; }
+        .cta-section p { margin: 0 0 20px; opacity: 0.95; }
+        .cta-btn { display: inline-block; background: var(--gold); color: var(--midnight); padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: all 0.2s ease; }
+        .cta-btn:hover { transform: scale(1.05); }
+
+        @media (max-width: 768px) {
+            .service-shell { padding: 0 16px 60px; }
+            .service-hero { padding: 80px 20px 60px; }
+            .overview-card { padding: 24px; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+            .spots-grid { grid-template-columns: 1fr; }
+            .step { grid-template-columns: 50px 1fr; gap: 16px; }
+        }
+
+        @media (max-width: 480px) {
+            .info-grid { grid-template-columns: 1fr; }
+            .step { gap: 12px; }
+            .cta-section { padding: 28px 16px; }
+            .service-hero { padding: 72px 16px 52px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-flex">
+            <ul class="links-left">
+                <li class="link-item"><a href="../index.html#about-section">About</a></li>
+                <li class="link-item"><a href="../index.html#marine-life">Marine Life</a></li>
+                <li class="link-item"><a href="../index.html#service-section">Services</a></li>
+                <li class="link-item"><a href="announcements.html">Announcements</a></li>
+            </ul>
+            <div class="logo-center">
+                <a href="../index.html#hero-section"><img src="../assets/images/logo.png" alt="logo" class="logo"></a>
+            </div>
+            <ul class="links-right">
+                <li class="link-item"><a href="../index.html#find-section">Find Us</a></li>
+                <li class="link-item navbar-search-item">
+                    <form id="navbar-search-form" autocomplete="off">
+                        <span class="search-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </span>
+                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search site">
+                        <button type="button" id="navbar-search-clear" aria-label="Clear search">&times;</button>
+                        <button id="navbar-search-go" type="submit" tabindex="-1">Search</button>
+                    </form>
+                </li>
+                <li class="link-item user-btn-item">
+                    <button id="user-btn" title="Log in" class="user-btn-inline">
+                        <span class="user-btn-avatar">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                        </span>
+                        <span class="user-btn-label">Login</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="service-shell">
+        <section class="service-hero">
+            <h1>🤿 Free Diving in Mabini</h1>
+            <p>Explore world-class dive sites with vibrant coral reefs, diverse marine life, and underwater photography opportunities.</p>
+        </section>
+
+        <section class="overview-card">
+            <h2>What is Free Diving in Mabini?</h2>
+            <p>Mabini, particularly Anilao, is one of Southeast Asia's premier diving destinations. With depths ranging from beginner-friendly 5–8 meters to advanced 30+ meter sites, divers encounter colorful coral gardens, schools of tropical fish, nudibranchs, and occasional larger species like rays and groupers. The calm waters and professional dive shops make it ideal for all skill levels.</p>
+            <div style="padding-top: 12px; border-top: 1px solid var(--border);">
+                <p><strong>Why Mabini?</strong> Close proximity to Manila (90 min drive), year-round diving season, affordable rates, and experienced local guides.</p>
+                <p><strong>Best For:</strong> Certification courses, underwater photography, macro life exploration, recreational diving, and group trips.</p>
+            </div>
+        </section>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">🗓️</div>
+                <div class="info-label">Best Time</div>
+                <div class="info-value">Year-round</div>
+                <div style="font-size: 12px; color: var(--muted);">Peak Nov–May</div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">💰</div>
+                <div class="info-label">Cost (2 dives)</div>
+                <div class="info-value">₱2,500–₱3,500</div>
+                <div style="font-size: 12px; color: var(--muted);">Incl. guides & gear</div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">📊</div>
+                <div class="info-label">Skill Level</div>
+                <div class="info-value">Beginner–Advanced</div>
+                <div style="font-size: 12px; color: var(--muted);">Certifications available</div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">⏱️</div>
+                <div class="info-label">Duration</div>
+                <div class="info-value">3–8 hours</div>
+                <div style="font-size: 12px; color: var(--muted);">Per trip</div>
+            </div>
+        </div>
+
+        <section class="section-head">
+            <h2>🌊 Top Free Dive Sites</h2>
+            <p>Anilao's famous shallow and deep-water reef systems</p>
+        </section>
+        <div class="spots-grid">
+            <div class="spot-card">
+                <img src="../assets/images/layag.jpg" alt="Anilao Reef" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Layag-Layag Reef</h3>
+                    <p class="spot-desc">One of the top reef dive sites with large rocks, coral formations, and abundant marine life. Known for good visibility. </p>
+                    <div class="spot-meta">Depth: 5–12m | ⭐⭐</div>
+                </div>
+            </div>
+            <div class="spot-card">
+                <img src="../assets/images/secret bay.jpg" alt="Secret Lagoon" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Secret Bay</h3>
+                    <p class="spot-desc">A shallow sandy site known for muck diving, where you can find rare creatures like nudibranchs, frogfish, and mimic octopus.</p>
+                    <div class="spot-meta">Depth: 8–15m | ⭐⭐</div>
+                </div>
+            </div>
+            <div class="spot-card">
+                <img src="../assets/images/cathedral.jpg" alt="Cathedral" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Cathedral Rock</h3>
+                    <p class="spot-desc">A famous dive site that features soft corals, sponges, and many reef fish. A cross placed between the rocks makes it iconic.</p>
+                    <div class="spot-meta">Depth: 20–35m | ⭐⭐⭐⭐</div>
+                </div>
+            </div>
+            <div class="spot-card">
+                <img src="../assets/images/mainit point.png" alt="Ligpo Island" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Mainit Point</h3>
+                    <p class="spot-desc">A rocky reef with strong currents and rich coral life. Home to many reef fish and best suited for intermediate to advanced divers. </p>
+                    <div class="spot-meta">Depth: 12–25m | ⭐⭐⭐</div>
+                </div>
+            </div>
+            <div class="spot-card">
+                <img src="../assets/images/mainit bubbles.jpg" alt="Sombrero Island" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Mainit Bubbles</h3>
+                    <p class="spot-desc">A unique dive site where hot volcanic bubbles rise from the seabed, creating a rare underwater experience.</p>
+                    <div class="spot-meta">Depth: 15–30m | ⭐⭐⭐⭐</div>
+                </div>
+            </div>
+            <div class="spot-card">
+                <img src="../assets/images/caban.jpg" alt="Twin Rocks" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Caban Cove</h3>
+                    <p class="spot-desc">A calm and sheltered dive site perfect for beginners and training. It has sandy bottoms, coral bommies, and gradual drop-offs. </p>
+                    <div class="spot-meta">Depth: 10–22m | ⭐⭐⭐</div>
+                </div>
+            </div>
+            <div class="spot-card">
+                <img src="../assets/images/kirby.jpg" alt="Arthur's Rock" class="spot-image">
+                <div class="spot-content">
+                    <h3 class="spot-name">Kirby’s Rock</h3>
+                    <p class="spot-desc">A macro diving hotspot where you can see pygmy seahorses, frogfish, and lionfish. Ideal for underwater photography. </p>
+                    <div class="spot-meta">Depth: 14–28m | ⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+
+        <section class="section-head">
+            <h2>📋 What to Expect</h2>
+            <p>A typical diving experience in Mabini</p>
+        </section>
+        <div class="timeline-steps">
+            <div class="step">
+                <div class="step-icon">1️⃣</div>
+                <div class="step-content">
+                    <h3>Meet at Dive Shop</h3>
+                    <p>Arrive 30 min early. Briefing on conditions, site, and safety. Equipment fitting (tank, BCD, wetsuit, fins).</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">2️⃣</div>
+                <div class="step-content">
+                    <h3>Boat Ride</h3>
+                    <p>15–30 min trip to the dive site. Relax, chat with crew, and prepare mentally. Final descent briefing on the boat.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">3️⃣</div>
+                <div class="step-content">
+                    <h3>First Dive</h3>
+                    <p>40–50 minutes underwater. Guided tour with your DivesMaster. Check buoyancy, explore reef, enjoy the view.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">4️⃣</div>
+                <div class="step-content">
+                    <h3>Surface Interval</h3>
+                    <p>45 min break on boat. Light snacks, hydration, and log entry (for certification). Decompression time observed.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">5️⃣</div>
+                <div class="step-content">
+                    <h3>Second Dive</h3>
+                    <p>Another 40–50 minutes. Often shallower than the first dive. More relaxed and exploratory.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">6️⃣</div>
+                <div class="step-content">
+                    <h3>Return & Debrief</h3>
+                    <p>Back to shore, rinse gear. Grab a meal. Log book signed. Photos shared. Plan next dive!</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="tips-box">
+            <h3>🎯 Free Diving Tips & Guidelines</h3>
+            <ul class="tips-list">
+                <li><strong>Get Certified First:</strong> PADI/SSI certification (OW/AOW) required for independent diving. Courses available locally.</li>
+                <li><strong>Use Reef-Safe Sunscreen:</strong> Oxybenzone and octinoxate harm coral. Bring zinc-based sunscreen.</li>
+                <li><strong>Don't Touch the Reef:</strong> Look but don't grab. Gloves often banned in Marine Protected Areas.</li>
+                <li><strong>Respect Marine Life:</strong> No chasing, feeding, or harassing animals. Observe from distance.</li>
+                <li><strong>Plan Your Depth & Air:</strong> Discuss dive profile with DivesMaster. Monitor air consumption and ascend safely.</li>
+                <li><strong>Log Every Dive:</strong> Keep a logbook. Track sites, depth, marine life, and conditions for certification progress.</li>
+                <li><strong>Stay Hydrated:</strong> Dive dehydration is real. Drink water between dives.</li>
+                <li><strong>Check Weather:</strong> Strong winds and currents can cancel dives. Early morning dives often have best conditions.</li>
+            </ul>
+        </section>
+
+        <section class="cta-section">
+            <h2>Ready to Free Dive?</h2>
+            <p>Book your free dive trip with one of our trusted local operators. Whether you're certified or new to free diving, we have something for everyone.</p>
+            <a href="../index.html#find-section" class="cta-btn">Find Free Dive Shops</a>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <img src="../assets/images/logo.png" alt="Logo" class="footer-logo">
+                <h3>Dive in Mabini</h3>
+                <p>Discover the best free diving and tourism experiences in Mabini, Batangas.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="../index.html#about-section">About Us</a></li>
+                    <li><a href="diving.html">Free Diving</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="resorts.html">Establishments</a></li>
+                    <li><a href="hiking.html">Hiking</a></li>
+                    <li><a href="cuisine.html">Cuisine</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@divemabini.com</p>
+                <p>Phone: +63 912 345 6789</p>
+                <p>Location: Mabini, Batangas, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <p>
+                    <a href="https://facebook.com/MabiniPIO" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Facebook</a> | 
+                    <a href="https://instagram.com/divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">Instagram</a> | 
+                    <a href="https://youtube.com/@divemabini" target="_blank" style="color: rgba(255,255,255,0.8); text-decoration: none;">YouTube</a>
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="copyright">© 2025 Dive in Mabini. All rights reserved.</p>
+            <ul class="footer-bottom-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Sitemap</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>
+

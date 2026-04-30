@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" class="service-edits-loading">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Establishments in Mabini | Dive in Mabini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/service-template.css" />
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--bg); }
+        footer { background: var(--midnight); color: var(--card); padding: 40px 20px; text-align: center; margin-top: 60px; font-size: 14px; }
+        .filter-tabs { display: flex; gap: 12px; flex-wrap: wrap; margin: 24px 0; }
+        .filter-tab { padding: 8px 16px; border-radius: 20px; background: var(--border); color: var(--text); cursor: pointer; border: none; font-weight: 600; transition: all 0.2s ease; }
+        .filter-tab.active { background: var(--midnight); color: white; }
+        .filter-tab:hover { background: var(--deep-blue); color: white; }
+        .resort-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px; }
+        .amenities { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .amenity { font-size: 12px; background: rgba(0,61,92,0.08); padding: 4px 8px; border-radius: 4px; color: var(--midnight); }
+    </style>
+</head>
+<body>
+     <nav class="navbar">
+        <div class="navbar-flex">
+            <ul class="links-left">
+                <li class="link-item"><a href="../index.html#about-section">About</a></li>
+                <li class="link-item"><a href="../index.html#marine-life">Marine Life</a></li>
+                <li class="link-item"><a href="../index.html#service-section">Services</a></li>
+                <li class="link-item"><a href="announcements.html">Announcements</a></li>
+            </ul>
+            <div class="logo-center">
+                <a href="../index.html#hero-section"><img src="../assets/images/logo.png" alt="logo" class="logo"></a>
+            </div>
+            <ul class="links-right">
+                <li class="link-item"><a href="../index.html#find-section">Find Us</a></li>
+                <li class="link-item navbar-search-item">
+                    <form id="navbar-search-form" autocomplete="off">
+                        <span class="search-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </span>
+                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search site">
+                        <button type="button" id="navbar-search-clear" aria-label="Clear search">&times;</button>
+                        <button id="navbar-search-go" type="submit" tabindex="-1">Search</button>
+                    </form>
+                </li>
+                <li class="link-item user-btn-item">
+                    <button id="user-btn" title="Log in" class="user-btn-inline">
+                        <span class="user-btn-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg></span>
+                        <span class="user-btn-label">Login</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="service-shell">
+        <!-- Hero Section -->
+        <section class="service-hero">
+            <h1>🏝️ Establishments in Mabini</h1>
+            <p>Find the perfect stay for your Mabini adventure—from budget-friendly hostels to luxury dive establishments with premium amenities.</p>
+        </section>
+
+        <!-- Overview Card -->
+        <div class="overview-card">
+            <h2>Where to Stay</h2>
+            <p>Mabini offers beachfront establishments, eco-lodges, family inns, and dive-focused stays. Many properties include direct reef access, in-house dive shops, and sea-view rooms.</p>
+            <h3 style="margin-top: 16px; color: var(--midnight); font-size: 16px;">Why Mabini?</h3>
+            <p>Dive capital vibes with quick boat rides to reefs, sunset views, and friendly local hospitality. Choose based on budget, dive proximity, and amenities.</p>
+            <h3 style="margin-top: 16px; color: var(--midnight); font-size: 16px;">Best For</h3>
+            <p>Divers, snorkelers, families, eco-travelers, and weekenders looking for oceanfront relaxation.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="section-head">
+            <h2>Find Your Perfect Establishment</h2>
+            <p>Filter by style to match your budget and preferences.</p>
+        </div>
+        <div class="filter-tabs" id="resort-filters">
+            <button class="filter-tab active" data-filter="all">All</button>
+            <button class="filter-tab" data-filter="budget">💸 Budget</button>
+            <button class="filter-tab" data-filter="family">👨‍👩‍👧 Family</button>
+            <button class="filter-tab" data-filter="dive">🤿 Dive Establishment</button>
+            <button class="filter-tab" data-filter="luxury">✨ Luxury</button>
+        </div>
+
+        <!-- Resort Cards -->
+        <div class="resort-grid" id="resort-list">
+            <div class="resort-card" data-category="luxury" data-name="Anilao Awari Bay">
+                <img src="../assets/images/awari.png" alt="Anilao Awari Bay" class="resort-image">
+                <div class="resort-content">
+                    <h3 class="resort-name">Anilao Awari Bay</h3>
+                    <p class="resort-desc">A beachfront establishment known for relaxing views, infinity pool, and easy access to snorkeling and diving areas. Popular for both tourists and beginners.</p>
+                    <div class="resort-meta">
+                        <span class="resort-badge">₱7,500+/night</span><span class="resort-badge">Private Boat</span><span class="resort-badge">Spa</span>
+                    </div>
+                    <div class="amenities">
+                        <span class="amenity">Infinity Pool</span><span class="amenity">On-site Dive Shop</span><span class="amenity">Restaurant</span>
+                    </div>
+                    <div class="resort-cta"><a href="#">View Establishment</a></div>
+                </div>
+            </div>
+
+            <div class="resort-card" data-category="dive" data-name="Buceo Anilao Beach & Dive Resort">
+                <img src="../assets/images/buceo.png" alt="Buceo Anilao Beach & Dive Resort" class="resort-image">
+                <div class="resort-content">
+                    <h3 class="resort-name">Buceo Anilao Beach & Dive Resort</h3>
+                    <p class="resort-desc">A well-known diving establishment with direct reef access. Offers snorkeling, scuba diving, and beachfront relaxation. Great for underwater activities.</p>
+                    <div class="resort-meta">
+                        <span class="resort-badge">₱3,800–₱5,200</span><span class="resort-badge">Dive Packages</span><span class="resort-badge">Gear Rental</span>
+                    </div>
+                    <div class="amenities">
+                        <span class="amenity">House Reef</span><span class="amenity">Camera Room</span><span class="amenity">Restaurant</span>
+                    </div>
+                    <div class="resort-cta"><a href="#">View Establishment</a></div>
+                </div>
+            </div>
+
+            <div class="resort-card" data-category="family" data-name="Casa Escondida Anilao Resort & Dive Center">
+                <img src="../assets/images/encondida.png" alt="Casa Escondida Anilao Resort & Dive Center" class="resort-image">
+                <div class="resort-content">
+                    <h3 class="resort-name">Casa Escondida Anilao Resort & Dive Center</h3>
+                    <p class="resort-desc">A peaceful establishment with a private beach area. Known for snorkeling, diving, and quiet ambiance—good for relaxing trips.</p>
+                    <div class="resort-meta">
+                        <span class="resort-badge">₱3,500–₱5,000</span><span class="resort-badge">Beachfront</span><span class="resort-badge">Family Rooms</span>
+                    </div>
+                    <div class="amenities">
+                        <span class="amenity">Pool</span><span class="amenity">Breakfast</span><span class="amenity">Tour Desk</span>
+                    </div>
+                    <div class="resort-cta"><a href="#">View Establishment</a></div>
+                </div>
+            </div>
+
+            <div class="resort-card" data-category="budget" data-name="The Philip Ann Resort">
+                <img src="../assets/images/philip.png" alt="The Philip Ann Resort" class="resort-image">
+                <div class="resort-content">
+                    <h3 class="resort-name">The Philip Ann Resort</h3>
+                    <p class="resort-desc">A modern seafront establishment with sunset views and event spaces. Good for team building, family outings, and group stays.</p>
+                    <div class="resort-meta">
+                        <span class="resort-badge">₱800–₱1,500</span><span class="resort-badge">Backpacker</span><span class="resort-badge">Town Access</span>
+                    </div>
+                    <div class="amenities">
+                        <span class="amenity">Shared Kitchen</span><span class="amenity">WiFi</span><span class="amenity">Lockers</span>
+                    </div>
+                    <div class="resort-cta"><a href="#">View Establishment</a></div>
+                </div>
+            </div>
+
+            <div class="resort-card" data-category="dive" data-name="Vivere Azure">
+                <img src="../assets/images/vivere.png" alt="Vivere Azure" class="resort-image">
+                <div class="resort-content">
+                    <h3 class="resort-name">Vivere Azure</h3>
+                    <p class="resort-desc">A stylish beachfront establishment with infinity pool and modern rooms. Known for scenic ocean views and relaxing atmosphere.</p>
+                    <div class="resort-meta">
+                        <span class="resort-badge">₱3,500–₱5,000</span><span class="resort-badge">On-site Dive Shop</span><span class="resort-badge">Boat Access</span>
+                    </div>
+                    <div class="amenities">
+                        <span class="amenity">Restaurant</span><span class="amenity">Gear Rental</span><span class="amenity">AC Rooms</span>
+                    </div>
+                    <div class="resort-cta"><a href="#">View Establishment</a></div>
+                </div>
+            </div>
+
+            <div class="resort-card" data-category="family" data-name="Sea Spring Resort">
+                <img src="../assets/images/seaspring.png" alt="Sea Spring Resort" class="resort-image">
+                <div class="resort-content">
+                    <h3 class="resort-name">Sea Spring Resort</h3>
+                    <p class="resort-desc">A budget-friendly establishment with pools and beach access. Suitable for family outings and quick getaways.</p>
+                    <div class="resort-meta">
+                        <span class="resort-badge">₱4,000–₱5,500</span><span class="resort-badge">Breakfast</span><span class="resort-badge">Tours</span>
+                    </div>
+                    <div class="amenities">
+                        <span class="amenity">Sea View</span><span class="amenity">WiFi</span><span class="amenity">Pool</span>
+                    </div>
+                    <div class="resort-cta"><a href="#">View Establishment</a></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Tips -->
+        <div class="section-head">
+            <h2>Booking Tips</h2>
+            <p>Plan around seasons, amenities, and dive access.</p>
+        </div>
+
+        <div class="timeline-steps">
+            <div class="step">
+                <div class="step-icon">1️⃣</div>
+                <div class="step-content">
+                    <h3>Pick Your Season</h3>
+                    <p>Peak (Dec–Mar) needs early booking; Shoulder (Apr–May, Nov) balances weather and price; Off-season (Jun–Oct) has discounts but rougher seas.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">2️⃣</div>
+                <div class="step-content">
+                    <h3>Check Dive Access</h3>
+                    <p>Choose establishments with on-site dive shops or quick boat rides. Ask about gear rental, rinse areas, and night dive options.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">3️⃣</div>
+                <div class="step-content">
+                    <h3>Confirm Essentials</h3>
+                    <p>Verify WiFi, AC, hot water, breakfast, and transport. Family stays benefit from pools and larger rooms.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">4️⃣</div>
+                <div class="step-content">
+                    <h3>Read Recent Reviews</h3>
+                    <p>Check updated guest feedback on cleanliness, service, and water access. Prioritize recent comments.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-icon">5️⃣</div>
+                <div class="step-content">
+                    <h3>Reserve Early</h3>
+                    <p>Popular weekends and holidays fill fast. Reserve with clear cancellation terms.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Amenities Guide -->
+        <div class="tips-box">
+            <h3>Common Amenities</h3>
+            <ul class="tips-list">
+                <li>On-site or partner dive shop with rental gear</li>
+                <li>Boat access to nearby reefs and house reef entries</li>
+                <li>WiFi, AC, hot showers, and breakfast options</li>
+                <li>Restaurants, bars, and sunset lounges</li>
+                <li>Pools or beach access for downtime</li>
+                <li>Spa or massage services for post-dive recovery</li>
+                <li>Airport/van transfers and tour desks</li>
+                <li>Camera rinse stations for underwater photographers</li>
+            </ul>
+        </div>
+
+        <!-- Call-to-Action -->
+        <div class="cta-section">
+            <h2>Ready to Book Your Stay?</h2>
+            <p>Choose your perfect resort and pair it with world-class diving and snorkeling in Mabini.</p>
+            <a href="../index.html#find-section" class="cta-btn">Find Resorts & Packages</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Dive in Mabini. All rights reserved. | <a href="../index.html" style="color: var(--gold); text-decoration: none;">Home</a></p>
+    </footer>
+
+    <script>
+        // Simple filter + map links for resorts
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = Array.from(document.querySelectorAll('#resort-filters .filter-tab'));
+            const cards = Array.from(document.querySelectorAll('#resort-list .resort-card'));
+
+            const applyFilter = (filter) => {
+                cards.forEach(card => {
+                    const match = filter === 'all' || card.dataset.category === filter;
+                    card.style.display = match ? '' : 'none';
+                });
+            };
+
+            const mapUrl = (name) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Mabini Batangas')}`;
+
+            cards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', () => {
+                    const name = card.dataset.name || 'Mabini resort';
+                    window.open(mapUrl(name), '_blank');
+                });
+            });
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    applyFilter(tab.dataset.filter);
+                });
+            });
+
+            applyFilter('all');
+        });
+    </script>
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

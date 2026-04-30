@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements & Events | Dive in Mabini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/service-template.css" />
+    <style>
+        :root {
+            --midnight: #002037;
+            --deep-blue: #003d5c;
+            --marine: #005580;
+            --gold: #e6c200;
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #0d1b2a;
+            --muted: #5a6a80;
+            --border: #dfe6ee;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-shell {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 20px 80px;
+            width: 100%;
+            box-sizing: border-box;
+            flex: 1 0 auto;
+        }
+
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        /* Featured announcement */
+        .featured-card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+            display: grid;
+            gap: 12px;
+            margin-top: 24px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .featured-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .featured-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(230, 194, 0, 0.18);
+            color: var(--midnight);
+            font-size: 22px;
+        }
+
+        .featured-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .featured-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #eef3f9;
+            color: var(--midnight);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .pill.gold { background: rgba(230, 194, 0, 0.14); color: var(--midnight); }
+        .pill.midnight { background: rgba(0, 32, 55, 0.12); color: var(--midnight); }
+        .pill.success { background: rgba(0, 170, 105, 0.12); color: #006b4b; }
+
+        .featured-body { line-height: 1.6; color: var(--muted); }
+
+        /* Filters & layout */
+        .controls-grid {
+            margin: 32px 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-grid > div:first-child {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-grid > div:last-child {
+            width: 100%;
+            display: grid;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .controls-grid.is-user-view > div:last-child {
+            grid-template-columns: minmax(0, 780px);
+            justify-content: center;
+        }
+
+        .controls-grid.is-user-view .calendar-card {
+            width: min(780px, 100%);
+            justify-self: center;
+        }
+
+        .controls-grid.is-admin-view > div:last-child {
+            grid-template-columns: 1fr 360px;
+        }
+
+        .filters-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .filter-tab {
+            border: 1px solid var(--border);
+            background: #f3f6fb;
+            color: var(--midnight);
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tab.active {
+            background: var(--midnight);
+            color: white;
+            border-color: var(--midnight);
+        }
+
+        .select-input {
+            min-width: 160px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: white;
+            font-weight: 600;
+            color: var(--midnight);
+        }
+
+        /* Calendar */
+        .calendar-card {
+            background: var(--card);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.06);
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-rows: auto auto minmax(0, 1fr) auto;
+        }
+
+        .calendar-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            border: 1px solid var(--border);
+            background: #f3f6fb;
+            border-radius: 10px;
+            padding: 6px 10px;
+            cursor: pointer;
+            color: var(--midnight);
+            font-weight: 700;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        #calendar-days {
+            min-height: 0;
+            align-content: stretch;
+        }
+
+        .day-name {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .day-cell {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            min-height: 0;
+            height: 100%;
+            padding: 6px;
+            background: white;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .blank-day {
+            border: none;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .day-cell:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .day-cell.today { border-color: var(--marine); }
+        .day-cell.has-event { background: linear-gradient(135deg, rgba(0, 85, 128, 0.06), rgba(230, 194, 0, 0.08)); }
+        .day-cell.selected { border-color: var(--deep-blue); box-shadow: 0 0 0 2px rgba(0, 61, 92, 0.18); }
+        .day-number { font-weight: 700; color: var(--midnight); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); position: absolute; bottom: 6px; right: 6px; }
+
+        /* Day events */
+        .day-events {
+            margin-top: 16px;
+            background: #f8fafc;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .day-events h4 { margin: 0 0 8px 0; font-size: 14px; color: var(--midnight); }
+        .mini-event { display: grid; gap: 4px; padding: 10px; border-radius: 10px; background: white; border: 1px solid var(--border); margin-bottom: 8px; }
+
+        /* Events list */
+        .list-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            display: grid;
+            gap: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .list-stack { 
+            display: grid;
+            gap: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .list-stack > * { width: 100%; box-sizing: border-box; }
+
+        #events-list,
+        #empty-state,
+        #pagination {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Admin add form */
+        .admin-card {
+            margin-top: 0;
+            background: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .page-shell > .admin-card {
+            width: 100%;
+            display: block;
+        }
+
+        .controls-grid > .admin-card,
+        .controls-grid .admin-card {
+            grid-column: auto;
+            width: 100%;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-grid label { display: grid; gap: 6px; font-size: 14px; color: var(--midnight); }
+        .form-grid input, .form-grid select, .form-grid textarea {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+        }
+
+        .form-row label {
+            display: grid;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--midnight);
+        }
+
+        .form-row {
+            width: 100%;
+            grid-column: 1 / -1;
+        }
+
+        .form-row textarea {
+            width: 100%;
+            min-height: 96px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.4;
+            background: white;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .form-actions { margin-top: 12px; display: flex; gap: 12px; align-items: center; width: 100%; }
+        .btn-primary { background: var(--midnight); color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .muted { color: var(--muted); font-size: 13px; }
+
+        .list-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: 14px; }
+
+        .date-badge {
+            background: rgba(0, 32, 55, 0.08);
+            color: var(--midnight);
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .title-row > div {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .list-meta > span { min-width: 0; overflow-wrap: break-word; }
+
+        .event-title { margin: 0; font-size: 18px; color: var(--midnight); overflow-wrap: break-word; }
+        .event-desc { color: var(--muted); margin: 0; line-height: 1.6; overflow-wrap: break-word; }
+
+        .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+        .chip { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); font-weight: 600; font-size: 12px; color: var(--midnight); background: #f7f9fc; }
+
+        .status.upcoming { color: #006b4b; background: rgba(0, 170, 105, 0.12); }
+        .status.ongoing { color: #8a4fff; background: rgba(138, 79, 255, 0.12); }
+        .status.past { color: #9b1c1c; background: rgba(155, 28, 28, 0.12); }
+
+        .btn-link {
+            background: transparent;
+            border: none;
+            color: var(--marine);
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* Empty state */
+        .empty {
+            text-align: center;
+            padding: 60px;
+            background: var(--card);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        /* Pagination */
+        .pagination { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+        .page-btn { border: 1px solid var(--border); background: white; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+        .page-btn.active { background: var(--midnight); color: white; border-color: var(--midnight); }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            .controls-grid { grid-template-columns: 1fr; }
+            .controls-grid > div:last-child {
+                max-width: none;
+                justify-self: stretch;
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .page-shell { padding: 110px 14px 60px; }
+            .filters-card { flex-direction: column; align-items: stretch; }
+            .calendar-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Unified Navbar (matches index.html) -->
+    <nav class="navbar">
+        <div class="navbar-flex">
+            <!-- Left Column: Navigation Links -->
+            <ul class="links-left">
+                <li class="link-item"><a href="../index.html#about-section">About</a></li>
+                <li class="link-item"><a href="../index.html#marine-life">Marine Life</a></li>
+                <li class="link-item"><a href="../index.html#service-section">Services</a></li>
+                <li class="link-item"><a href="announcements.html">Announcements</a></li>
+            </ul>
+
+            <!-- Center Column: Logo -->
+            <div class="logo-center">
+                <a href="../index.html#hero-section"><img src="../assets/images/logo.png" alt="logo" class="logo"></a>
+            </div>
+
+            <!-- Right Column: Navigation Links + Search + Login -->
+            <ul class="links-right">
+                <li class="link-item"><a href="../index.html#find-section">Find Us</a></li>
+                <li class="link-item navbar-search-item">
+                    <form id="navbar-search-form" autocomplete="off">
+                        <span class="search-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </span>
+                        <input id="navbar-search-input" type="text" placeholder="Search..." aria-label="Search site">
+                        <button type="button" id="navbar-search-clear" aria-label="Clear search">&times;</button>
+                        <button id="navbar-search-go" type="submit" tabindex="-1">Search</button>
+                    </form>
+                </li>
+                <li class="link-item user-btn-item">
+                    <button id="user-btn" title="Log in" class="user-btn-inline">
+                        <span class="user-btn-avatar">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+                        </span>
+                        <span class="user-btn-label">Login</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="service-hero">
+        <h1>📢 Announcements & Events</h1>
+        <p>Track local advisories, LGU-led programs, and tourism events in Mabini. Built for residents, divers, establishment owners, and visitors.</p>
+    </section>
+
+    <div class="page-shell">
+
+        <section class="featured-card" id="featured-card">
+            <div class="featured-top">
+                <span class="featured-icon" aria-hidden="true">📢</span>
+                <div>
+                    <div class="pill gold" id="featured-type">Featured</div>
+                    <p class="featured-title" id="featured-title">Loading featured announcement...</p>
+                </div>
+            </div>
+            <div class="featured-meta" id="featured-meta"></div>
+            <p class="featured-body" id="featured-body"></p>
+        </section>
+
+        <div class="controls-grid">
+            <div>
+                <div class="filters-card">
+                    <button class="filter-tab active" data-status="upcoming">Upcoming</button>
+                    <button class="filter-tab" data-status="ongoing">Ongoing</button>
+                    <button class="filter-tab" data-status="past">Past</button>
+                    <select id="categoryFilter" class="select-input" aria-label="Filter by category">
+                        <option value="all">All categories</option>
+                        <option value="festival">Festival</option>
+                        <option value="diving">Free Diving</option>
+                        <option value="advisory">Advisory</option>
+                        <option value="training">Training</option>
+                        <option value="culture">Culture</option>
+                        <option value="lgu">LGU Program</option>
+                    </select>
+                </div>
+
+                <div id="events-list" class="list-stack"></div>
+                <div id="pagination" class="pagination"></div>
+                <div id="empty-state" class="empty" style="display:none;">
+                    <h3>No events found</h3>
+                    <p>Adjust your filters or check back later. Newly approved posts will appear here automatically.</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="admin-card">
+                    <div style="display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <strong>Create New Announcement/Event</strong>
+                    </div>
+                    <form id="add-event-form" style="margin-top:12px; display:grid; gap:12px;">
+                        <div class="form-grid">
+                            <label>Title<input type="text" id="add-title" required></label>
+                            <label>Category
+                                <select id="add-category" required>
+                                    <option value="festival">Festival</option>
+                                    <option value="diving">Free Diving</option>
+                                    <option value="advisory" selected>Advisory</option>
+                                    <option value="training">Training</option>
+                                    <option value="culture">Culture</option>
+                                    <option value="lgu">LGU Program</option>
+                                </select>
+                            </label>
+                            <label>Type
+                                <select id="add-type" required>
+                                    <option value="advisory" selected>Advisory</option>
+                                    <option value="festival">Festival</option>
+                                    <option value="competition">Competition</option>
+                                    <option value="religious">Religious</option>
+                                    <option value="training">Training</option>
+                                </select>
+                            </label>
+                            <label>Start Date<input type="date" id="add-start" required></label>
+                            <label>End Date<input type="date" id="add-end"></label>
+                            <label>Time (text)<input type="text" id="add-time" placeholder="e.g. 8:00 AM - 3:00 PM"></label>
+                            <label>Location<input type="text" id="add-location" required></label>
+                            <label>Featured?
+                                <select id="add-featured">
+                                    <option value="false" selected>No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <label>Description<textarea id="add-description" rows="4" required></textarea></label>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-primary" type="submit" id="add-submit">Save event</button>
+                            <span class="muted" id="add-status"></span>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="calendar-card">
+                    <div class="calendar-head">
+                        <h3 id="calendarLabel" style="margin:0;">Month</h3>
+                        <div class="calendar-nav">
+                            <button class="nav-btn" id="prevMonth" aria-label="Previous month">‹</button>
+                            <button class="nav-btn" id="nextMonth" aria-label="Next month">›</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="day-name">Sun</div><div class="day-name">Mon</div><div class="day-name">Tue</div><div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div><div class="day-name">Sat</div>
+                    </div>
+                    <div class="calendar-grid" id="calendar-days"></div>
+                    <div class="day-events" id="day-events" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const db = firebase.firestore();
+
+            const fallbackEvents = [
+                {
+                    id: 'evt-001',
+                    title: 'Coastal Clean-Up Weekend',
+                    description: 'Barangay-led shoreline clean-up with divers and volunteers. Bring reusable gloves and water containers.',
+                    startDate: '2025-11-22T08:00:00',
+                    endDate: '2025-11-22T11:30:00',
+                    time: '8:00 AM - 11:30 AM',
+                    location: 'Anilao Pier',
+                    category: 'lgu',
+                    type: 'advisory',
+                    isFeatured: true
+                },
+                {
+                    id: 'evt-002',
+                    title: 'Araw ng Batangas',
+                    description: 'Parade, cultural performances, and local food stalls celebrating the founding of Batangas.',
+                    startDate: '2025-12-18T06:00:00',
+                    endDate: '2025-12-18T18:00:00',
+                    time: '6:00 AM - 6:00 PM',
+                    location: 'Mabini Town Plaza',
+                    category: 'festival',
+                    type: 'festival'
+                },
+                {
+                    id: 'evt-003',
+                    title: 'New Year Dive Celebration',
+                    description: 'Group dives and shoreline countdown. Coordinate with partner dive shops for slots.',
+                    startDate: '2025-12-31T14:00:00',
+                    endDate: '2026-01-01T01:00:00',
+                    time: '2:00 PM - 1:00 AM',
+                    location: 'Various Dive Sites',
+                    category: 'diving',
+                    type: 'festival'
+                },
+                {
+                    id: 'evt-004',
+                    title: 'Underwater Photography Contest',
+                    description: 'One-day shootout with marine life briefing and award night. Pre-register with LGU Tourism.',
+                    startDate: '2026-01-20T08:00:00',
+                    endDate: '2026-01-20T18:00:00',
+                    time: '8:00 AM - 6:00 PM',
+                    location: 'Anilao Dive Sites',
+                    category: 'diving',
+                    type: 'competition'
+                },
+                {
+                    id: 'evt-005',
+                    title: 'Marine Wildlife Advisory',
+                    description: 'Temporary no-anchor zone while marine biologists tag juvenile whale sharks.',
+                    startDate: '2025-11-10T00:00:00',
+                    endDate: '2025-11-17T23:59:00',
+                    time: 'Full day advisory',
+                    location: 'Ligpo Island West',
+                    category: 'advisory',
+                    type: 'advisory'
+                },
+                {
+                    id: 'evt-006',
+                    title: 'LGU Dive Safety Refresher',
+                    description: 'Establishment safety officers refresher on protocols, oxygen kits, and tourist briefing standards.',
+                    startDate: '2026-02-08T09:00:00',
+                    endDate: '2026-02-08T12:00:00',
+                    time: '9:00 AM - 12:00 PM',
+                    location: 'Mabini Tourism Office',
+                    category: 'training',
+                    type: 'training'
+                },
+                {
+                    id: 'evt-007',
+                    title: 'Town Fiesta Novena & Procession',
+                    description: 'Nine-day novena leading to the town procession. Expect rerouted traffic near the plaza.',
+                    startDate: '2026-03-10T17:00:00',
+                    endDate: '2026-03-18T21:00:00',
+                    time: '5:00 PM - 9:00 PM',
+                    location: 'Mabini Town Proper',
+                    category: 'culture',
+                    type: 'religious'
+                },
+                {
+                    id: 'evt-008',
+                    title: 'Barangay Health Mission',
+                    description: 'Free consultations and vaccines for senior citizens and fisherfolk families.',
+                    startDate: '2026-01-08T08:00:00',
+                    endDate: '2026-01-08T15:00:00',
+                    time: '8:00 AM - 3:00 PM',
+                    location: 'Barangay Solo Covered Court',
+                    category: 'lgu',
+                    type: 'advisory'
+                },
+                {
+                    id: 'evt-009',
+                    title: 'Water Safety Advisory',
+                    description: 'Temporary swimming restriction while LGU tests water quality. Diving allowed with DM supervision.',
+                    startDate: '2025-12-05T00:00:00',
+                    endDate: '2025-12-09T23:59:00',
+                    time: 'All day advisory',
+                    location: 'Masasa Beachfront',
+                    category: 'advisory',
+                    type: 'advisory'
+                },
+                {
+                    id: 'evt-010',
+                    title: 'Tourism Permit Renewal Clinic',
+                    description: 'One-stop window for establishment and dive shop permit renewals. Bring previous permit and barangay clearance.',
+                    startDate: '2026-01-15T09:00:00',
+                    endDate: '2026-01-15T16:00:00',
+                    time: '9:00 AM - 4:00 PM',
+                    location: 'Mabini Municipal Hall Lobby',
+                    category: 'lgu',
+                    type: 'advisory'
+                }
+            ];
+
+            let events = [];
+
+            let statusFilter = 'upcoming';
+            let categoryFilter = 'all';
+            let currentPage = 1;
+            const pageSize = 5;
+            let currentMonth = new Date();
+            let selectedDate = null;
+
+            const listEl = document.getElementById('events-list');
+            const emptyEl = document.getElementById('empty-state');
+            const paginationEl = document.getElementById('pagination');
+            const featuredTitle = document.getElementById('featured-title');
+            const featuredBody = document.getElementById('featured-body');
+            const featuredMeta = document.getElementById('featured-meta');
+            const featuredType = document.getElementById('featured-type');
+            const featuredCard = document.getElementById('featured-card');
+            const controlsGrid = document.querySelector('.controls-grid');
+            const calendarLabel = document.getElementById('calendarLabel');
+            const calendarDays = document.getElementById('calendar-days');
+            const dayEvents = document.getElementById('day-events');
+            const addForm = document.getElementById('add-event-form');
+            const addStatus = document.getElementById('add-status');
+            const addSubmit = document.getElementById('add-submit');
+            const adminCard = document.querySelector('.admin-card');
+
+            const formatDate = (date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            const categoryLabels = {
+                festival: 'Festival',
+                diving: 'Free Diving',
+                advisory: 'Advisory',
+                training: 'Training',
+                culture: 'Culture',
+                lgu: 'LGU Program'
+            };
+            const getCategoryLabel = (value) => categoryLabels[value] || value;
+            const parseDate = (value) => {
+                if (!value) return null;
+                if (value instanceof Date) return new Date(value.getTime());
+                if (typeof value.toDate === 'function') return value.toDate();
+                return new Date(value);
+            };
+            const toLocalDateKey = (value) => {
+                const date = value instanceof Date ? value : parseDate(value);
+                if (!date || Number.isNaN(date.getTime())) return '';
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+            const fromDateKey = (dateKey) => {
+                const [year, month, day] = dateKey.split('-').map(Number);
+                return new Date(year, month - 1, day);
+            };
+
+            const isAdminUser = async (user) => {
+                if (!user) return false;
+
+                try {
+                    const token = await user.getIdTokenResult();
+                    const claims = token.claims || {};
+                    const role = typeof claims.role === 'string' ? claims.role.toLowerCase() : '';
+                    return Boolean(claims.admin) || role === 'admin';
+                } catch (err) {
+                    console.error('Failed to read admin claims', err);
+                    return false;
+                }
+            };
+
+            const getStatus = (event) => {
+                const now = new Date();
+                const start = parseDate(event.startDate);
+                const end = event.endDate ? parseDate(event.endDate) : parseDate(event.startDate);
+                const endOfEnd = new Date(end);
+                endOfEnd.setHours(23, 59, 59, 999);
+                if (now < start) return 'upcoming';
+                if (now > endOfEnd) return 'past';
+                return 'ongoing';
+            };
+
+            const formatDateRange = (event) => {
+                const start = parseDate(event.startDate);
+                const end = event.endDate ? parseDate(event.endDate) : start;
+                const startStr = start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                const endStr = end.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                if (startStr === endStr) return startStr;
+                return `${startStr} – ${endStr}`;
+            };
+
+            const isFinishedEvent = (event, referenceDate = new Date()) => {
+                const end = parseDate(event.endDate || event.startDate);
+                if (!end || Number.isNaN(end.getTime())) return false;
+                const endOfDay = new Date(end);
+                endOfDay.setHours(23, 59, 59, 999);
+                return referenceDate > endOfDay;
+            };
+
+            const autoUnfeatureFinishedEvents = async (eventDocs) => {
+                if (!Array.isArray(eventDocs) || !eventDocs.length) return new Set();
+
+                const staleFeaturedIds = eventDocs
+                    .filter((item) => item && item.data && item.data.isFeatured && isFinishedEvent(item.data))
+                    .map((item) => item.id);
+
+                if (!staleFeaturedIds.length) return new Set();
+
+                const batch = db.batch();
+                staleFeaturedIds.forEach((id) => {
+                    const docRef = db.collection('events').doc(id);
+                    batch.update(docRef, {
+                        isFeatured: false,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+
+                try {
+                    await batch.commit();
+                } catch (error) {
+                    console.warn('Could not auto-unfeature finished events.', error);
+                    return new Set();
+                }
+
+                return new Set(staleFeaturedIds);
+            };
+
+            const withStatus = () => events.map((evt) => ({ ...evt, status: getStatus(evt) }));
+
+            const loadEvents = async () => {
+                addStatus.textContent = '';
+                try {
+                    const snap = await db.collection('events').orderBy('startDate', 'asc').get();
+                    if (!snap.empty) {
+                        const eventDocs = snap.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+                        const autoUnfeaturedIds = await autoUnfeatureFinishedEvents(eventDocs);
+                        events = eventDocs.map((eventDoc) => ({
+                            id: eventDoc.id,
+                            ...eventDoc.data,
+                            isFeatured: autoUnfeaturedIds.has(eventDoc.id) ? false : Boolean(eventDoc.data.isFeatured)
+                        }));
+                    } else {
+                        events = fallbackEvents;
+                    }
+                } catch (err) {
+                    console.error('Failed to load events from Firestore, using fallback.', err);
+                    addStatus.textContent = 'Using fallback data (Firestore unavailable).';
+                    events = fallbackEvents;
+                }
+                renderFeatured();
+                renderList();
+                renderCalendar();
+            };
+
+            const filterEvents = () => {
+                const base = withStatus();
+                return base
+                    .filter((evt) => statusFilter ? evt.status === statusFilter : true)
+                    .filter((evt) => (categoryFilter === 'all' ? true : evt.category === categoryFilter))
+                    .sort((a, b) => parseDate(a.startDate) - parseDate(b.startDate));
+            };
+
+            const renderFeatured = () => {
+                const candidates = withStatus();
+                let featured = candidates.find((e) => e.isFeatured && e.status !== 'past');
+                if (!featured) {
+                    featured = candidates.find((e) => e.status === 'ongoing') || candidates.find((e) => e.status === 'upcoming');
+                }
+                if (!featured) {
+                    if (featuredCard) {
+                        featuredCard.style.display = 'none';
+                    }
+                    return;
+                }
+
+                if (featuredCard) {
+                    featuredCard.style.display = 'grid';
+                }
+
+                featuredTitle.textContent = featured.title;
+                featuredBody.textContent = featured.description;
+                featuredType.textContent = featured.type ? featured.type.toUpperCase() : 'FEATURED';
+                featuredMeta.innerHTML = `
+                    <span class="pill midnight">${formatDateRange(featured)}</span>
+                    <span class="pill">${featured.time || 'Time to be announced'}</span>
+                    <span class="pill">📍 ${featured.location}</span>
+                    <span class="pill success">${featured.status.toUpperCase()}</span>
+                `;
+            };
+
+            const renderPagination = (total) => {
+                const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                currentPage = Math.min(currentPage, totalPages);
+                const buttons = [];
+                for (let p = 1; p <= totalPages; p += 1) {
+                    buttons.push(`<button class="page-btn ${p === currentPage ? 'active' : ''}" data-page="${p}">${p}</button>`);
+                }
+                paginationEl.innerHTML = buttons.join('');
+            };
+
+            const renderList = () => {
+                const rows = filterEvents();
+                if (!rows.length) {
+                    listEl.innerHTML = '';
+                    paginationEl.innerHTML = '';
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+                emptyEl.style.display = 'none';
+
+                const start = (currentPage - 1) * pageSize;
+                const page = rows.slice(start, start + pageSize);
+                listEl.innerHTML = page.map((evt) => `
+                    <article class="list-card">
+                        <div class="title-row">
+                            <div>
+                                <div class="list-meta">
+                                    <span class="date-badge">${formatDateRange(evt)}</span>
+                                    <span>${evt.time || 'Schedule TBA'}</span>
+                                    <span>📍 ${evt.location}</span>
+                                </div>
+                                <h3 class="event-title">${evt.title}</h3>
+                                <p class="event-desc">${evt.description}</p>
+                                <div class="chips">
+                                    <span class="chip status ${evt.status}">${evt.status.toUpperCase()}</span>
+                                    <span class="chip">${getCategoryLabel(evt.category)}</span>
+                                    <span class="chip">${evt.type}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `).join('');
+
+                renderPagination(rows.length);
+            };
+
+            const renderDayEvents = (dateISO, pool) => {
+                const matches = pool.filter((evt) => {
+                    const startISO = toLocalDateKey(evt.startDate);
+                    const endISO = evt.endDate ? toLocalDateKey(evt.endDate) : startISO;
+                    return dateISO >= startISO && dateISO <= endISO;
+                });
+
+                if (!matches.length) {
+                    dayEvents.style.display = 'none';
+                    return;
+                }
+
+                const readableDate = fromDateKey(dateISO).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+                dayEvents.innerHTML = `
+                    <h4>Events on ${readableDate}</h4>
+                    ${matches.map((evt) => `
+                        <div class="mini-event">
+                            <strong>${evt.title}</strong>
+                            <span>${evt.time || 'Schedule TBA'}</span>
+                            <span>📍 ${evt.location}</span>
+                        </div>
+                    `).join('')}
+                `;
+                dayEvents.style.display = 'block';
+            };
+
+            const renderCalendar = () => {
+                const pool = withStatus();
+                const year = currentMonth.getFullYear();
+                const month = currentMonth.getMonth();
+                const first = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0).getDate();
+                const startPad = first.getDay();
+                const weekRows = Math.ceil((startPad + lastDay) / 7);
+
+                calendarLabel.textContent = first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                calendarDays.innerHTML = '';
+                calendarDays.style.gridTemplateRows = `repeat(${weekRows}, minmax(0, 1fr))`;
+
+                for (let i = 0; i < startPad; i += 1) {
+                    calendarDays.innerHTML += '<div class="blank-day" aria-hidden="true"></div>';
+                }
+
+                for (let day = 1; day <= lastDay; day += 1) {
+                    const cellDate = new Date(year, month, day);
+                    const dateISO = toLocalDateKey(cellDate);
+                    const hasEvent = pool.some((evt) => {
+                        const startISO = toLocalDateKey(evt.startDate);
+                        const endISO = evt.endDate ? toLocalDateKey(evt.endDate) : startISO;
+                        return dateISO >= startISO && dateISO <= endISO;
+                    });
+                    const isToday = new Date().toDateString() === cellDate.toDateString();
+                    const isSelected = selectedDate === dateISO;
+
+                    calendarDays.innerHTML += `
+                        <div class="day-cell ${hasEvent ? 'has-event' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" data-date="${dateISO}">
+                            <div class="day-number">${day}</div>
+                            ${hasEvent ? '<span class="dot"></span>' : ''}
+                        </div>
+                    `;
+                }
+
+                const totalCells = startPad + lastDay;
+                const trailingPad = (7 - (totalCells % 7)) % 7;
+                for (let i = 0; i < trailingPad; i += 1) {
+                    calendarDays.innerHTML += '<div class="blank-day" aria-hidden="true"></div>';
+                }
+
+                if (selectedDate) renderDayEvents(selectedDate, pool);
+            };
+
+            document.querySelectorAll('.filter-tab').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab').forEach((el) => el.classList.remove('active'));
+                    btn.classList.add('active');
+                    statusFilter = btn.dataset.status;
+                    currentPage = 1;
+                    renderList();
+                });
+            });
+
+            document.getElementById('categoryFilter').addEventListener('change', (e) => {
+                categoryFilter = e.target.value;
+                currentPage = 1;
+                renderList();
+            });
+
+            paginationEl.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.matches('.page-btn')) {
+                    currentPage = Number(target.dataset.page);
+                    renderList();
+                }
+            });
+
+            calendarDays.addEventListener('click', (e) => {
+                const cell = e.target.closest('.day-cell');
+                if (!cell) return;
+                selectedDate = cell.dataset.date;
+                renderCalendar();
+            });
+
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+                renderCalendar();
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+                renderCalendar();
+            });
+
+            if (addForm) {
+                addForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    addStatus.textContent = '';
+                    addSubmit.disabled = true;
+                    try {
+                        const title = document.getElementById('add-title').value.trim();
+                        const description = document.getElementById('add-description').value.trim();
+                        const start = document.getElementById('add-start').value;
+                        const end = document.getElementById('add-end').value;
+                        const time = document.getElementById('add-time').value.trim();
+                        const location = document.getElementById('add-location').value.trim();
+                        const category = document.getElementById('add-category').value;
+                        const type = document.getElementById('add-type').value;
+                        const isFeatured = document.getElementById('add-featured').value === 'true';
+
+                        if (!title || !description || !start || !location) {
+                            addStatus.textContent = 'Title, description, start date, and location are required.';
+                            addSubmit.disabled = false;
+                            return;
+                        }
+
+                        const startDate = `${start}T00:00:00`;
+                        const endDate = end ? `${end}T23:59:00` : startDate;
+                        const payload = {
+                            title,
+                            description,
+                            startDate,
+                            endDate,
+                            time: time || 'Schedule TBA',
+                            location,
+                            category,
+                            type,
+                            isFeatured,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+
+                        await db.collection('events').add(payload);
+                        addStatus.textContent = 'Saved to Firestore.';
+                        addForm.reset();
+                        await loadEvents();
+                    } catch (err) {
+                        console.error('Add event failed', err);
+                        addStatus.textContent = 'Failed to save. Check console.';
+                    } finally {
+                        addSubmit.disabled = false;
+                    }
+                });
+            }
+
+            if (adminCard) {
+                adminCard.style.display = 'none';
+                if (controlsGrid) {
+                    controlsGrid.classList.add('is-user-view');
+                }
+                firebase.auth().onAuthStateChanged(async (user) => {
+                    if (!user) {
+                        adminCard.style.display = 'none';
+                        if (controlsGrid) {
+                            controlsGrid.classList.remove('is-admin-view');
+                            controlsGrid.classList.add('is-user-view');
+                        }
+                        addStatus.textContent = 'Admin login required to add events.';
+                        return;
+                    }
+                    try {
+                        const isAdmin = await isAdminUser(user);
+                        if (isAdmin) {
+                            adminCard.style.display = 'block';
+                            if (controlsGrid) {
+                                controlsGrid.classList.remove('is-user-view');
+                                controlsGrid.classList.add('is-admin-view');
+                            }
+                            addStatus.textContent = '';
+                        } else {
+                            adminCard.style.display = 'none';
+                            if (controlsGrid) {
+                                controlsGrid.classList.remove('is-admin-view');
+                                controlsGrid.classList.add('is-user-view');
+                            }
+                            addStatus.textContent = 'Your account does not have admin access to create announcements.';
+                        }
+                    } catch (err) {
+                        console.error('Auth check failed', err);
+                        adminCard.style.display = 'none';
+                        if (controlsGrid) {
+                            controlsGrid.classList.remove('is-admin-view');
+                            controlsGrid.classList.add('is-user-view');
+                        }
+                        addStatus.textContent = 'Could not verify admin access.';
+                    }
+                });
+            }
+
+            loadEvents();
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section footer-logo-section">
+                <img src="../assets/images/logo.png" alt="Dive in Mabini Logo" class="footer-logo">
+                <h3>Dive in Mabini</h3>
+                <p class="footer-description">Discover the underwater paradise of Mabini, Batangas.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="../index.html#about-section">About Us</a></li>
+                    <li><a href="../index.html#marine-life">Marine Life</a></li>
+                    <li><a href="../index.html#service-section">Services</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <div class="contact-info">
+                    <p>📧 info@divemabini.com</p>
+                    <p>📞 +63 912 345 6789</p>
+                    <p>📍 Mabini, Batangas, Philippines</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="copyright">© 2025 Dive in Mabini. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="../assets/js/firebase-config.js"></script>
+    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>
+
