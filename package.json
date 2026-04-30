@@ -1,5 +1,9 @@
 {
+  "name": "mabini-tourism",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
+    "start": "node scripts/ai-itinerary-api.js",
     "backfill:user-profiles": "node scripts/backfill-user-profiles.js"
   },
   "dependencies": {
