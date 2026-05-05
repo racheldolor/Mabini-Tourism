@@ -497,16 +497,6 @@ p{
     border-color: #e2e8f0;
 }
 
-.auth-btn.facebook {
-    background: linear-gradient(90deg, #1877f2, #0d62d1);
-    color: #fff;
-    border: none;
-}
-
-.auth-btn.facebook:hover {
-    box-shadow: 0 10px 30px rgba(24, 119, 242, 0.35);
-}
-
 .auth-assurance {
     margin: 0;
     font-size: 13px;
