@@ -26,13 +26,8 @@ if (firebase.analytics) {
   }
 }
 
-// Set up Google and Facebook Auth providers
+// Set up Google Auth provider
 const googleProvider = new firebase.auth.GoogleAuthProvider();
-const facebookProvider = new firebase.auth.FacebookAuthProvider();
-facebookProvider.setCustomParameters({
-  'display': 'popup'
-});
 
 // Export providers for use in main.js
 window.googleProvider = googleProvider;
-window.facebookProvider = facebookProvider;

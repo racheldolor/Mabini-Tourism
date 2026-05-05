@@ -398,9 +398,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (!window.googleProvider && fb.auth && fb.auth.GoogleAuthProvider) {
                 window.googleProvider = new fb.auth.GoogleAuthProvider();
             }
-            if (!window.facebookProvider && fb.auth && fb.auth.FacebookAuthProvider) {
-                window.facebookProvider = new fb.auth.FacebookAuthProvider();
-            }
         }
     }
     ensureProviders();
@@ -422,9 +419,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     <button id="auth-google-btn" class="auth-btn google" type="button">
                         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" aria-hidden="true"> Google
                     </button>
-                    <button id="auth-facebook-btn" class="auth-btn facebook" type="button">
-                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook" aria-hidden="true"> Facebook
-                    </button>
                 </div>
                 <p class="auth-assurance">We only use your email to personalize your experience. We never post without permission.</p>
             </div>
@@ -436,16 +430,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     const authDialog = authModal ? authModal.querySelector('.auth-dialog') : null;
     const authClose = document.getElementById('auth-close');
     const googleBtn = document.getElementById('auth-google-btn');
-    const facebookBtn = document.getElementById('auth-facebook-btn');
 
     function getFirebase() {
         return getFirebaseInstance();
     }
     function getGoogleProvider() {
         return window.googleProvider || (typeof googleProvider !== 'undefined' ? googleProvider : null);
-    }
-    function getFacebookProvider() {
-        return window.facebookProvider || (typeof facebookProvider !== 'undefined' ? facebookProvider : null);
     }
 
     function openAuth() {
@@ -516,28 +506,21 @@ document.addEventListener('DOMContentLoaded', async function() {
             const fb = getFirebase();
             const gp = getGoogleProvider();
             if (fb && gp) {
-                fb.auth().signInWithPopup(gp).catch(err => showAuthError(err, 'Google'));
+                fb.auth().signInWithPopup(gp)
+                    .then(() => closeAuth())
+                    .catch(err => showAuthError(err, 'Google'));
             } else {
                 alert('Google login is not available.');
             }
         });
     }
-    if (facebookBtn) {
-        facebookBtn.addEventListener('click', function() {
-            const fb = getFirebase();
-            const fp = getFacebookProvider();
-            if (fb && fp) {
-                fb.auth().signInWithPopup(fp).catch(err => showAuthError(err, 'Facebook'));
-            } else {
-                alert('Facebook login is not available.');
-            }
-        });
-    }
-
     syncNavbarUserState(getFirebase()?.auth?.().currentUser || null);
 
     firebase.auth().onAuthStateChanged(user => {
         syncNavbarUserState(user);
+        if (user) {
+            closeAuth();
+        }
     });
 
     // Escape key closes modal
