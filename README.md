@@ -30,7 +30,8 @@ npm install
 node scripts/ai-itinerary-api.js
 ```
 
-The server listens on `http://localhost:3001`. The frontend already posts to `/generate-itinerary`.
+The server listens on `http://localhost:3001` for local testing. The frontend posts to `/generate-itinerary` by default.
+When deploying to Vercel, set `window.__API_BASE__` in `index.html` to your Vercel URL (for example `https://your-project.vercel.app`) so the frontend calls the deployed backend.
 
 ### 4) Use the feature
 
@@ -41,8 +42,9 @@ The server listens on `http://localhost:3001`. The frontend already posts to `/g
 
 - If you see `GEMINI_API_KEY is missing`, ensure your `.env` file exists and contains a valid key.
 - If you see a `403` from Gemini, verify your key restrictions and model access in Google AI Studio.
-- Firewalls or ad-blockers can block `localhost` calls; allow `http://localhost:3001`.
-- Adjust the `PORT` in `.env` if 3001 is taken; the frontend URL can remain the same if you use a proxy, otherwise change the fetch URL in `assets/js/main.js`.
+ - Firewalls or ad-blockers can block `localhost` calls; allow `http://localhost:3001` during local testing.
+ - When deployed, calls go to your configured `window.__API_BASE__` (set in `index.html`).
+ - Adjust the `PORT` in `.env` if 3001 is taken; for deployed setups update `window.__API_BASE__` instead of editing `assets/js/main.js`.
 
 ## Admin announcements
 

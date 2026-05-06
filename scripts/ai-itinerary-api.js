@@ -337,5 +337,5 @@ app.get('/api/config', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`AI Itinerary API (Gemini) running on port ${PORT}`));
 
-console.log('If your frontend runs on port 5500 and backend on 3001, use http://localhost:3001/generate-itinerary for API calls.');
-console.log('If you deploy, update the fetch URL in main.js to match your backend address.');
+console.log('If your frontend runs on port 5500 and backend on 3001, use http://localhost:3001/generate-itinerary for local testing.');
+console.log("When deployed on Vercel, set window.__API_BASE__ to your Vercel URL (e.g. 'https://your-project.vercel.app') so the frontend calls the deployed backend.");

@@ -224,7 +224,9 @@ function getFirebaseInstance() {
 }
 
 function getApiPath(pathname) {
-    return pathname;
+    const base = (window.__API_BASE__ || '').replace(/\/$/, '');
+    if (!base) return pathname;
+    return base + (pathname.startsWith('/') ? pathname : '/' + pathname);
 }
 
 function getNavbarUserDisplayName(user) {
