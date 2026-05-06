@@ -187,7 +187,7 @@ function buildLocalItinerary({ budget, groupSize, experience, activities, tripLe
   return { itinerary: itineraryParts.join('\n'), source: 'local-fallback', notice: note };
 }
 
-app.post('/generate-itinerary', async (req, res) => {
+app.post(['/generate-itinerary', '/api/generate-itinerary'], async (req, res) => {
   const {
     budget = 'Mid-range',
     groupSize = 2,
@@ -263,7 +263,7 @@ Keep it concise but actionable.`;
 });
 
 // Simple Gemini-powered chat endpoint
-app.post('/chat', async (req, res) => {
+app.post(['/chat', '/api/chat'], async (req, res) => {
   const { message = '' } = req.body || {};
 
   if (!message.trim()) {
@@ -337,5 +337,5 @@ app.get('/api/config', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`AI Itinerary API (Gemini) running on port ${PORT}`));
 
-console.log('If your frontend runs on port 5500 and backend on 3001, use http://localhost:3001/generate-itinerary for local testing.');
+console.log('If your frontend runs on port 5500 and backend on 3001, use http://localhost:3001/api/generate-itinerary for local testing.');
 console.log("When deployed on Vercel, set window.__API_BASE__ to your Vercel URL (e.g. 'https://your-project.vercel.app') so the frontend calls the deployed backend.");

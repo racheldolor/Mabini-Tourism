@@ -1085,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     // Call Node.js backend for AI itinerary
                     console.log('Sending request to backend:', { budget, groupSize, experience, activities, tripLength });
-                    const response = await fetch(getApiPath('/generate-itinerary'), {
+                    const response = await fetch(getApiPath('/api/generate-itinerary'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ budget, groupSize, experience, activities, tripLength })
@@ -1274,7 +1274,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setLoading(true);
 
         try {
-            const response = await fetch(getApiPath('/chat'), {
+            const response = await fetch(getApiPath('/api/chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message })

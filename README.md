@@ -30,7 +30,7 @@ npm install
 node scripts/ai-itinerary-api.js
 ```
 
-The server listens on `http://localhost:3001` for local testing. The frontend posts to `/generate-itinerary` by default.
+The server listens on `http://localhost:3001` for local testing. The frontend posts to `/api/generate-itinerary` by default.
 When deploying to Vercel, set `window.__API_BASE__` in `index.html` to your Vercel URL (for example `https://your-project.vercel.app`) so the frontend calls the deployed backend.
 
 ### 4) Use the feature
