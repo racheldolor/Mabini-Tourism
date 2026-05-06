@@ -160,6 +160,7 @@
             align-items: center;
             width: 100%;
             box-sizing: border-box;
+            margin-bottom: 16px;
         }
 
         .filter-tab {
@@ -406,6 +407,13 @@
 
         .event-title { margin: 0; font-size: 18px; color: var(--midnight); overflow-wrap: break-word; }
         .event-desc { color: var(--muted); margin: 0; line-height: 1.6; overflow-wrap: break-word; }
+
+        .event-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .btn-edit, .btn-delete { padding: 6px 10px; border-radius: 8px; border: none; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s ease; }
+        .btn-edit { background: rgba(0, 85, 128, 0.12); color: var(--marine); }
+        .btn-edit:hover { background: var(--marine); color: white; }
+        .btn-delete { background: rgba(155, 28, 28, 0.12); color: #9b1c1c; }
+        .btn-delete:hover { background: #9b1c1c; color: white; }
 
         .chips { display: flex; gap: 8px; flex-wrap: wrap; }
         .chip { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); font-weight: 600; font-size: 12px; color: var(--midnight); background: #f7f9fc; }
@@ -733,6 +741,7 @@
             const pageSize = 5;
             let currentMonth = new Date();
             let selectedDate = null;
+            let currentUserIsAdmin = false;
 
             const listEl = document.getElementById('events-list');
             const emptyEl = document.getElementById('empty-state');
@@ -936,7 +945,7 @@
                 const start = (currentPage - 1) * pageSize;
                 const page = rows.slice(start, start + pageSize);
                 listEl.innerHTML = page.map((evt) => `
-                    <article class="list-card">
+                    <article class="list-card" data-event-id="${evt.id}">
                         <div class="title-row">
                             <div>
                                 <div class="list-meta">
@@ -951,6 +960,7 @@
                                     <span class="chip">${getCategoryLabel(evt.category)}</span>
                                     <span class="chip">${evt.type}</span>
                                 </div>
+                                ${currentUserIsAdmin ? `<div class="event-actions"><button class="btn-edit" data-event-id="${evt.id}">Edit</button><button class="btn-delete" data-event-id="${evt.id}">Delete</button></div>` : ''}
                             </div>
                         </div>
                     </article>
@@ -1054,6 +1064,38 @@
                 }
             });
 
+            listEl.addEventListener('click', async (e) => {
+                if (e.target.matches('.btn-delete')) {
+                    const eventId = e.target.dataset.eventId;
+                    if (confirm('Are you sure you want to delete this event?')) {
+                        try {
+                            await db.collection('events').doc(eventId).delete();
+                            await loadEvents();
+                        } catch (err) {
+                            console.error('Failed to delete event', err);
+                            alert('Failed to delete event. Check console.');
+                        }
+                    }
+                } else if (e.target.matches('.btn-edit')) {
+                    const eventId = e.target.dataset.eventId;
+                    const evt = events.find(e => e.id === eventId);
+                    if (evt) {
+                        document.getElementById('add-title').value = evt.title;
+                        document.getElementById('add-category').value = evt.category;
+                        document.getElementById('add-type').value = evt.type;
+                        document.getElementById('add-start').value = toLocalDateKey(evt.startDate);
+                        document.getElementById('add-end').value = evt.endDate ? toLocalDateKey(evt.endDate) : '';
+                        document.getElementById('add-time').value = evt.time || '';
+                        document.getElementById('add-location').value = evt.location;
+                        document.getElementById('add-featured').value = evt.isFeatured ? 'true' : 'false';
+                        document.getElementById('add-description').value = evt.description;
+                        document.getElementById('add-submit').dataset.editId = eventId;
+                        document.getElementById('add-submit').textContent = 'Update event';
+                        document.querySelector('.admin-card').scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+
             calendarDays.addEventListener('click', (e) => {
                 const cell = e.target.closest('.day-cell');
                 if (!cell) return;
@@ -1086,6 +1128,7 @@
                         const category = document.getElementById('add-category').value;
                         const type = document.getElementById('add-type').value;
                         const isFeatured = document.getElementById('add-featured').value === 'true';
+                        const editId = addSubmit.dataset.editId;
 
                         if (!title || !description || !start || !location) {
                             addStatus.textContent = 'Title, description, start date, and location are required.';
@@ -1105,12 +1148,19 @@
                             category,
                             type,
                             isFeatured,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         };
 
-                        await db.collection('events').add(payload);
-                        addStatus.textContent = 'Saved to Firestore.';
+                        if (editId) {
+                            await db.collection('events').doc(editId).update(payload);
+                            addStatus.textContent = 'Event updated.';
+                            delete addSubmit.dataset.editId;
+                            addSubmit.textContent = 'Save event';
+                        } else {
+                            payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                            await db.collection('events').add(payload);
+                            addStatus.textContent = 'Saved to Firestore.';
+                        }
                         addForm.reset();
                         await loadEvents();
                     } catch (err) {
@@ -1139,6 +1189,7 @@
                     }
                     try {
                         const isAdmin = await isAdminUser(user);
+                        currentUserIsAdmin = isAdmin;
                         if (isAdmin) {
                             adminCard.style.display = 'block';
                             if (controlsGrid) {
@@ -1146,6 +1197,7 @@
                                 controlsGrid.classList.add('is-admin-view');
                             }
                             addStatus.textContent = '';
+                            renderList();
                         } else {
                             adminCard.style.display = 'none';
                             if (controlsGrid) {
