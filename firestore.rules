@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isUserProfileKeysAllowed() {
+      return request.resource.data.keys().hasOnly([
+        'uid',
+        'displayName',
+        'email',
+        'photoURL',
+        'updatedAt',
+        'createdAt'
+      ]);
+    }
+
+    function isItineraryKeysAllowed() {
+      return request.resource.data.keys().hasOnly([
+        'budget',
+        'groupSize',
+        'experience',
+        'tripLength',
+        'activities',
+        'aiResult',
+        'source',
+        'model',
+        'version',
+        'createdAt',
+        'updatedAt',
+        'userId',
+        'userEmail'
+      ]);
+    }
+
+    function isValidUserProfileCreate() {
+      return isUserProfileKeysAllowed()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 100
+        && (!('email' in request.resource.data) || request.resource.data.email == request.auth.token.email)
+        && (!('photoURL' in request.resource.data) || request.resource.data.photoURL is string);
+    }
+
+    function isValidUserProfileUpdate() {
+      return isUserProfileKeysAllowed()
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 100
+        && (!('email' in request.resource.data) || request.resource.data.email == resource.data.email || request.resource.data.email == request.auth.token.email)
+        && (!('photoURL' in request.resource.data) || request.resource.data.photoURL is string);
+    }
+
+    function isValidItineraryCreate() {
+      return isItineraryKeysAllowed()
+        && request.resource.data.userId == request.auth.uid
+        && (!('userEmail' in request.resource.data) || request.resource.data.userEmail == request.auth.token.email)
+        && request.resource.data.activities is list;
+    }
+
+    function isOwnerItinerary() {
+      return signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow create: if isOwner(userId) && isValidUserProfileCreate();
+      allow read: if isAdmin() || isOwner(userId);
+      allow update: if isAdmin() || (isOwner(userId) && isValidUserProfileUpdate());
+      allow delete: if isAdmin() || isOwner(userId);
+
+      match /itineraries/{itineraryId} {
+        allow create: if isOwner(userId) && isItineraryKeysAllowed() && request.resource.data.userId == request.auth.uid;
+        allow read, update, delete: if isAdmin() || isOwner(userId);
+      }
+    }
+
+    match /itineraries/{itineraryId} {
+      allow create: if signedIn() && isValidItineraryCreate();
+      allow read: if isAdmin() || isOwnerItinerary();
+      allow update: if isAdmin() || (isOwnerItinerary() && request.resource.data.userId == resource.data.userId && isItineraryKeysAllowed());
+      allow delete: if isAdmin() || isOwnerItinerary();
+    }
+
+    match /service-card-edits/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /service-section-edits/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

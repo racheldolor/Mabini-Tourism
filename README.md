@@ -53,3 +53,36 @@ If you use a custom domain or preview URL, keep `window.__API_BASE__` in `index.
 - Add `ADMIN_UIDS` and/or `ADMIN_EMAILS` in `.env` as comma-separated values, then run `node scripts/set-admin-claim.js` to assign `admin: true` and `role: 'admin'`.
 - Backward compatibility is supported: `ADMIN_UID` and `ADMIN_EMAIL` still work.
 - The admin user signs in through the same login portal as everyone else, but the announcements composer only appears for users with the admin claim.
+
+Quick: set admin claims locally (Windows PowerShell)
+
+ - Ensure `firebase-admin` and `dotenv` are installed:
+
+```powershell
+npm install
+```
+
+ - Put your service account path and admin UIDs/emails in `.env` (no surrounding quotes):
+
+```powershell
+FIREBASE_SERVICE_ACCOUNT_PATH=C:\Users\Chen\Documents\tourism-mabini-firebase-adminsdk-fbsvc-6932563493.json
+ADMIN_UID=WFok6gNoPjPuG8TTVNrqRYTmIy33,yf614GUQ2PZO0Jj7q2AhYuchS3n2
+ADMIN_EMAIL=22-43307@g.batstate-u.edu.ph,18-56479@g.batstate-u.edu.ph
+```
+
+ - Run the helper npm script which loads `.env` and assigns admin claims:
+
+```powershell
+npm run set-admin
+```
+
+ - Or run directly with explicit args:
+
+```powershell
+node scripts/set-admin-claim.js --uid="WFok6gNoPjPuG8TTVNrqRYTmIy33,yf614GUQ2PZO0Jj7q2AhYuchS3n2" --serviceAccount="C:\Users\Chen\Documents\tourism-mabini-firebase-adminsdk-fbsvc-6932563493.json"
+```
+
+Notes:
+- The script accepts comma-separated UIDs in `--uid` or `ADMIN_UID` and resolves `ADMIN_EMAIL` to UIDs automatically.
+- The script revokes refresh tokens after updating claims so users must sign in again to pick up the new claim.
+- Never commit your service account JSON or `.env` to source control.

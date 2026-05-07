@@ -1,90 +1,110 @@
-// Run with: node set-admin-claim.js
-// Requires Firebase Admin SDK credentials:
-// 1) Set GOOGLE_APPLICATION_CREDENTIALS to your service account JSON path, or
-// 2) Have gcloud ADC set up (gcloud auth application-default login).
+#!/usr/bin/env node
+// scripts/set-admin-claim.js
+// Usage:
+//   npm run set-admin
+//   node scripts/set-admin-claim.js --serviceAccount="C:\path\to\service-account.json"
+//   node scripts/set-admin-claim.js --uid="uid1,uid2" --remove
 
-const path = require('path');
 const fs = require('fs');
-require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
+const path = require('path');
+const dotenv = require('dotenv');
 const admin = require('firebase-admin');
 
-const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.FIREBASE_SERVICE_ACCOUNT_PATH || '';
-const useApplicationDefault = String(process.env.USE_APPLICATION_DEFAULT || '').toLowerCase() === 'true';
-const explicitProjectId = process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT || '';
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
-const buildFirebaseAdminConfig = () => {
-  if (credentialsPath) {
-    const resolvedCredentialsPath = path.resolve(credentialsPath);
-    if (!fs.existsSync(resolvedCredentialsPath)) {
-      throw new Error(`GOOGLE_APPLICATION_CREDENTIALS does not exist: ${resolvedCredentialsPath}`);
-    }
+function parseArgs() {
+  const args = {};
+  for (const item of process.argv.slice(2)) {
+    if (item.startsWith('--uid=')) args.uid = item.slice('--uid='.length);
+    if (item.startsWith('--serviceAccount=')) args.serviceAccount = item.slice('--serviceAccount='.length);
+    if (item === '--remove') args.remove = true;
+  }
+  return args;
+}
 
-    const serviceAccount = JSON.parse(fs.readFileSync(resolvedCredentialsPath, 'utf8'));
-    return {
+function splitCsv(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function stripQuotes(value) {
+  return String(value || '').replace(/^"|"$/g, '');
+}
+
+async function main() {
+  const args = parseArgs();
+  const explicitProjectId = process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT || '';
+  const serviceAccountPathRaw = args.serviceAccount || process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.FIREBASE_SERVICE_ACCOUNT_PATH || '';
+  const serviceAccountPath = stripQuotes(serviceAccountPathRaw);
+
+  if (!serviceAccountPath) {
+    throw new Error('Set FIREBASE_SERVICE_ACCOUNT_PATH or pass --serviceAccount=...');
+  }
+
+  const resolvedCredentialsPath = path.resolve(serviceAccountPath);
+  if (!fs.existsSync(resolvedCredentialsPath)) {
+    throw new Error(`Service account JSON does not exist: ${resolvedCredentialsPath}`);
+  }
+
+  const serviceAccount = JSON.parse(fs.readFileSync(resolvedCredentialsPath, 'utf8'));
+
+  try {
+    admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       projectId: explicitProjectId || serviceAccount.project_id,
-    };
+    });
+  } catch (err) {
+    // Ignore if already initialized in this process.
   }
 
-  if (!useApplicationDefault) {
-    throw new Error(
-      'No Firebase admin credential source found. Set GOOGLE_APPLICATION_CREDENTIALS or FIREBASE_SERVICE_ACCOUNT_PATH in your .env. ' +
-      'If you intentionally want ADC/gcloud auth, set USE_APPLICATION_DEFAULT=true.'
-    );
+  const targetUids = [
+    ...splitCsv(args.uid),
+    ...splitCsv(process.env.ADMIN_UIDS),
+    ...splitCsv(process.env.ADMIN_UID),
+  ];
+
+  const targetEmails = [
+    ...splitCsv(process.env.ADMIN_EMAILS),
+    ...splitCsv(process.env.ADMIN_EMAIL),
+  ];
+
+  if (targetUids.length === 0 && targetEmails.length === 0) {
+    throw new Error('Set ADMIN_UID/ADMIN_EMAIL in .env or pass --uid=...');
   }
 
-  return {
-    credential: admin.credential.applicationDefault(),
-    projectId: explicitProjectId || undefined,
-  };
-};
+  const resolvedUsersByUid = new Map();
 
-admin.initializeApp(buildFirebaseAdminConfig());
+  for (const uid of targetUids) {
+    const userRecord = await admin.auth().getUser(uid);
+    resolvedUsersByUid.set(userRecord.uid, userRecord);
+  }
 
-const splitCsv = (value) => String(value || '')
-  .split(',')
-  .map((item) => item.trim())
-  .filter(Boolean);
+  for (const email of targetEmails) {
+    const userRecord = await admin.auth().getUserByEmail(email);
+    resolvedUsersByUid.set(userRecord.uid, userRecord);
+  }
 
-const targetUids = [
-  ...splitCsv(process.env.ADMIN_UIDS),
-  ...splitCsv(process.env.ADMIN_UID),
-];
-
-const targetEmails = [
-  ...splitCsv(process.env.ADMIN_EMAILS),
-  ...splitCsv(process.env.ADMIN_EMAIL),
-];
-
-(async () => {
-  try {
-    if (!targetUids.length && !targetEmails.length) {
-      throw new Error('Set ADMIN_UIDS/ADMIN_EMAILS (or ADMIN_UID/ADMIN_EMAIL) in .env before running this script.');
-    }
-
-    const resolvedUsersByUid = new Map();
-
-    for (const uid of targetUids) {
-      const userRecord = await admin.auth().getUser(uid);
-      resolvedUsersByUid.set(userRecord.uid, userRecord);
-    }
-
-    for (const email of targetEmails) {
-      const userRecord = await admin.auth().getUserByEmail(email);
-      resolvedUsersByUid.set(userRecord.uid, userRecord);
-    }
-
-    for (const userRecord of resolvedUsersByUid.values()) {
+  for (const userRecord of resolvedUsersByUid.values()) {
+    if (args.remove) {
+      await admin.auth().setCustomUserClaims(userRecord.uid, null);
+      console.log('Removed admin claim for UID:', userRecord.uid);
+    } else {
       await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true, role: 'admin' });
       console.log('Admin claim set for UID:', userRecord.uid);
-      if (userRecord.email) {
-        console.log('Admin email:', userRecord.email);
-      }
     }
 
-    console.log('Have the user sign out/in to refresh the token.');
-  } catch (err) {
-    console.error('Failed to set admin claim:', err);
-    process.exitCode = 1;
+    await admin.auth().revokeRefreshTokens(userRecord.uid);
+    if (userRecord.email) {
+      console.log('Admin email:', userRecord.email);
+    }
   }
-})();
+
+  console.log('Have the user sign out and sign back in to refresh the token.');
+}
+
+main().catch((err) => {
+  console.error('Failed to set admin claim:', err.message || err);
+  process.exitCode = 1;
+});

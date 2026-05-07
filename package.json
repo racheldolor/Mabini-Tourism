@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node scripts/ai-itinerary-api.js",
-    "backfill:user-profiles": "node scripts/backfill-user-profiles.js"
+    "backfill:user-profiles": "node scripts/backfill-user-profiles.js",
+    "set-admin": "node -r dotenv/config scripts/set-admin-claim.js"
   },
   "dependencies": {
     "axios": "^1.13.2",
