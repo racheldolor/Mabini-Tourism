@@ -82,6 +82,25 @@
         </main>
     </header>
 
+    <button id="hero-bg-btn" class="hero-bg-btn" type="button">Change hero background</button>
+
+    <div class="hero-bg-modal" id="hero-bg-modal" aria-hidden="true">
+        <div class="hero-bg-card" role="dialog" aria-modal="true" aria-labelledby="hero-bg-title">
+            <h3 class="hero-bg-title" id="hero-bg-title">Update hero background</h3>
+            <p class="hero-bg-subtitle">Upload up to 5 PNG or JPG images for the hero slider.</p>
+            <label class="hero-bg-label">Choose images
+                <input type="file" id="hero-bg-input" accept=".png,.jpg,.jpeg,image/png,image/jpeg" multiple>
+            </label>
+            <div class="hero-bg-list" id="hero-bg-list"></div>
+            <span class="hero-bg-status" id="hero-bg-status"></span>
+            <div class="hero-bg-actions">
+                <button class="hero-bg-btn-secondary" type="button" id="hero-bg-clear">Reset to default</button>
+                <button class="hero-bg-btn-secondary" type="button" id="hero-bg-close">Close</button>
+                <button class="hero-bg-btn-primary" type="button" id="hero-bg-save" disabled>Save</button>
+            </div>
+        </div>
+    </div>
+
     <div id="home-flash-announcement" class="home-flash-announcement" aria-live="polite" aria-hidden="true" style="display:none;">
         <a id="home-flash-announcement-link" class="home-flash-announcement__link" href="pages/announcements.html?status=upcoming">
             <span class="home-flash-announcement__label">New upcoming event</span>

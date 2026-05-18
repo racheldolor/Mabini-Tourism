@@ -144,7 +144,8 @@ function renderItineraryHistoryList(listElement, emptyElement, items) {
 }
 
 //background image slider
-const sliderImage = ["assets/images/bg.jpg", "assets/images/5.jpg", "assets/images/1.jpg", "assets/images/gulugod.png", "assets/images/2.jpg", "assets/images/4.jpg", "assets/images/6.jpg"];
+const defaultSliderImages = ["assets/images/bg.jpg", "assets/images/5.jpg", "assets/images/1.jpg", "assets/images/gulugod.png", "assets/images/2.jpg", "assets/images/4.jpg", "assets/images/6.jpg"];
+let sliderImage = [...defaultSliderImages];
 let slider = document.querySelector('.background-image');
 let sliderGridItems = [...document.querySelectorAll('.grid-item')];
 let currentImage = 0;
@@ -174,6 +175,296 @@ const changeSliderImage = () => {
         }, index*100)
     })
 }
+
+document.addEventListener('DOMContentLoaded', async function() {
+    if (!slider || !document.getElementById('hero-bg-btn')) return;
+
+    const heroBgBtn = document.getElementById('hero-bg-btn');
+    const heroBgModal = document.getElementById('hero-bg-modal');
+    const heroBgInput = document.getElementById('hero-bg-input');
+    const heroBgList = document.getElementById('hero-bg-list');
+    const heroBgStatus = document.getElementById('hero-bg-status');
+    const heroBgClose = document.getElementById('hero-bg-close');
+    const heroBgSave = document.getElementById('hero-bg-save');
+    const heroBgClear = document.getElementById('hero-bg-clear');
+    const heroSliderCacheKey = 'homeHeroSliderImages';
+    const heroSliderDocId = 'homeHeroSlider';
+    let pendingHeroImages = [];
+    let pendingHeroFiles = [];
+    let pendingHeroThumbs = [];
+    let isHeroAdmin = false;
+
+    const openHeroModal = () => {
+        if (!heroBgModal) return;
+        heroBgModal.classList.add('is-open');
+        heroBgModal.setAttribute('aria-hidden', 'false');
+    };
+
+    const closeHeroModal = () => {
+        if (!heroBgModal) return;
+        heroBgModal.classList.remove('is-open');
+        heroBgModal.setAttribute('aria-hidden', 'true');
+    };
+
+    const setHeroStatus = (message) => {
+        if (heroBgStatus) {
+            heroBgStatus.textContent = message || '';
+        }
+    };
+
+    const updateHeroList = (files, thumbs = []) => {
+        if (!heroBgList) return;
+        if (!files || !files.length) {
+            heroBgList.innerHTML = '';
+            return;
+        }
+        heroBgList.innerHTML = files.map((file, index) => `
+            <div class="hero-bg-item">
+                <div class="hero-bg-item-meta">
+                    ${thumbs[index] ? `<img class="hero-bg-item-preview" src="${thumbs[index]}" alt="${file.name}">` : ''}
+                    <span class="hero-bg-item-name">${file.name}</span>
+                </div>
+                <button class="hero-bg-item-remove" type="button" data-hero-remove="${index}">Remove</button>
+            </div>
+        `).join('');
+    };
+
+    const resetPendingHeroFiles = () => {
+        pendingHeroImages = [];
+        pendingHeroFiles = [];
+        pendingHeroThumbs = [];
+        updateHeroList([]);
+        if (heroBgInput) heroBgInput.value = '';
+        heroBgSave.disabled = true;
+    };
+
+    const removePendingHeroImage = (index) => {
+        if (index < 0 || index >= pendingHeroFiles.length) return;
+        pendingHeroFiles.splice(index, 1);
+        pendingHeroImages.splice(index, 1);
+        pendingHeroThumbs.splice(index, 1);
+        updateHeroList(pendingHeroFiles, pendingHeroThumbs);
+        heroBgSave.disabled = pendingHeroImages.length === 0;
+        setHeroStatus(pendingHeroImages.length ? 'Ready to save.' : '');
+    };
+
+    const applyHeroSliderImages = (images) => {
+        if (!Array.isArray(images) || !images.length) return;
+        sliderImage = [...images];
+        currentImage = 0;
+        slider.src = sliderImage[0];
+    };
+
+    const compressImageToDataUrl = (file, maxDimension = 1600, maxBytes = 180 * 1024) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+                const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
+                const targetWidth = Math.round(img.width * scale);
+                const targetHeight = Math.round(img.height * scale);
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    reject(new Error('Canvas is not available.'));
+                    return;
+                }
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                let quality = 0.85;
+                let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                while (dataUrl.length > maxBytes * 1.37 && quality > 0.45) {
+                    quality -= 0.08;
+                    dataUrl = canvas.toDataURL('image/jpeg', quality);
+                }
+
+                if (dataUrl.length > maxBytes * 1.37) {
+                    reject(new Error('Image is too large after compression.'));
+                    return;
+                }
+
+                resolve(dataUrl);
+            };
+            img.onerror = () => reject(new Error('Image decode failed.'));
+            img.src = String(reader.result || '');
+        };
+        reader.onerror = () => reject(new Error('File read failed.'));
+        reader.readAsDataURL(file);
+    });
+
+    const loadHeroSliderImages = async () => {
+        const cached = localStorage.getItem(heroSliderCacheKey);
+        if (cached) {
+            try {
+                const cachedImages = JSON.parse(cached);
+                applyHeroSliderImages(cachedImages);
+            } catch (err) {
+                console.warn('Hero slider cache invalid.', err);
+            }
+        }
+
+        try {
+            await loadFirebaseIfNeeded();
+            const fb = getFirebaseInstance();
+            if (!fb || !fb.firestore) return;
+            const doc = await fb.firestore().collection('siteSettings').doc(heroSliderDocId).get();
+            if (doc.exists && doc.data() && Array.isArray(doc.data().images) && doc.data().images.length) {
+                applyHeroSliderImages(doc.data().images);
+                localStorage.setItem(heroSliderCacheKey, JSON.stringify(doc.data().images));
+            }
+        } catch (error) {
+            console.warn('Failed to load hero slider images.', error);
+        }
+    };
+
+    const updateHeroAdminState = async (user) => {
+        if (!heroBgBtn) return;
+        if (!user) {
+            isHeroAdmin = false;
+            heroBgBtn.style.display = 'none';
+            return;
+        }
+        try {
+            const token = await user.getIdTokenResult();
+            const claims = token && token.claims ? token.claims : {};
+            const role = typeof claims.role === 'string' ? claims.role.toLowerCase() : '';
+            isHeroAdmin = Boolean(claims.admin) || role === 'admin';
+            heroBgBtn.style.display = isHeroAdmin ? 'inline-flex' : 'none';
+        } catch (error) {
+            console.warn('Unable to resolve hero admin status.', error);
+            isHeroAdmin = false;
+            heroBgBtn.style.display = 'none';
+        }
+    };
+
+    heroBgBtn.addEventListener('click', openHeroModal);
+    if (heroBgClose) {
+        heroBgClose.addEventListener('click', closeHeroModal);
+    }
+    if (heroBgModal) {
+        heroBgModal.addEventListener('click', (event) => {
+            if (event.target === heroBgModal) closeHeroModal();
+        });
+    }
+
+    if (heroBgList) {
+        heroBgList.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) return;
+            const index = Number(target.dataset.heroRemove);
+            if (Number.isNaN(index)) return;
+            removePendingHeroImage(index);
+        });
+    }
+
+    if (heroBgInput) {
+        heroBgInput.addEventListener('change', async (event) => {
+            setHeroStatus('');
+            if (!isHeroAdmin) {
+                setHeroStatus('Admin login required to change the background.');
+                heroBgInput.value = '';
+                return;
+            }
+            const files = Array.from(event.target.files || []);
+            if (!files.length) return;
+            if (pendingHeroFiles.length + files.length > 5) {
+                setHeroStatus('You can upload up to 5 images only.');
+                heroBgInput.value = '';
+                return;
+            }
+
+            heroBgSave.disabled = true;
+            setHeroStatus('Optimizing images...');
+
+            try {
+                const images = await Promise.all(files.map((file) => compressImageToDataUrl(file)));
+                const combinedImages = pendingHeroImages.concat(images);
+                const totalBytes = combinedImages.reduce((sum, image) => sum + image.length, 0);
+                if (totalBytes > 900 * 1024) {
+                    throw new Error('Images are too large to save.');
+                }
+                pendingHeroImages = combinedImages;
+                pendingHeroFiles = pendingHeroFiles.concat(files);
+                pendingHeroThumbs = pendingHeroThumbs.concat(images);
+                updateHeroList(pendingHeroFiles, pendingHeroThumbs);
+                setHeroStatus('Ready to save.');
+                heroBgSave.disabled = false;
+            } catch (error) {
+                console.error('Hero image processing failed', error);
+                setHeroStatus('Images are too large after compression. Try smaller files.');
+                resetPendingHeroFiles();
+            }
+        });
+    }
+
+    if (heroBgSave) {
+        heroBgSave.addEventListener('click', async () => {
+            if (!isHeroAdmin) {
+                setHeroStatus('Admin login required to change the background.');
+                return;
+            }
+            if (!pendingHeroImages.length) {
+                setHeroStatus('Please select up to 5 images first.');
+                return;
+            }
+            heroBgSave.disabled = true;
+            setHeroStatus('Saving slider images...');
+            try {
+                await loadFirebaseIfNeeded();
+                const fb = getFirebaseInstance();
+                if (!fb || !fb.firestore) throw new Error('Firestore unavailable.');
+                await fb.firestore().collection('siteSettings').doc(heroSliderDocId).set({
+                    images: pendingHeroImages,
+                    updatedAt: fb.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                localStorage.setItem(heroSliderCacheKey, JSON.stringify(pendingHeroImages));
+                applyHeroSliderImages(pendingHeroImages);
+                resetPendingHeroFiles();
+                setHeroStatus('Hero slider updated.');
+            } catch (error) {
+                console.error('Failed to save hero slider images', error);
+                setHeroStatus('Failed to save images.');
+            }
+        });
+    }
+
+    if (heroBgClear) {
+        heroBgClear.addEventListener('click', async () => {
+            if (!isHeroAdmin) {
+                setHeroStatus('Admin login required to change the background.');
+                return;
+            }
+            try {
+                await loadFirebaseIfNeeded();
+                const fb = getFirebaseInstance();
+                if (fb && fb.firestore) {
+                    await fb.firestore().collection('siteSettings').doc(heroSliderDocId).set({
+                        images: [],
+                        updatedAt: fb.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+                localStorage.removeItem(heroSliderCacheKey);
+                applyHeroSliderImages(defaultSliderImages);
+                setHeroStatus('Reset to default images.');
+                resetPendingHeroFiles();
+            } catch (error) {
+                console.error('Failed to reset hero slider', error);
+                setHeroStatus('Failed to reset images.');
+            }
+        });
+    }
+
+    await loadHeroSliderImages();
+
+    await loadFirebaseIfNeeded().catch((err) => console.warn('Firebase load failed', err));
+    const fb = getFirebaseInstance();
+    if (fb && fb.auth) {
+        updateHeroAdminState(fb.auth().currentUser);
+        fb.auth().onAuthStateChanged((user) => updateHeroAdminState(user));
+    }
+});
 
 //navbar
 
