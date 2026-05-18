@@ -2159,30 +2159,32 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.body.style.overflow = ''; // Restore scrolling
     }
     
-    // Add click event to each tour card
-    tourCards.forEach(card => {
-        card.addEventListener('click', function() {
-            const marineType = this.getAttribute('data-marine');
-            openModal(marineType);
+    if (marineModal && marineModalClose && tourCards.length) {
+        // Add click event to each tour card
+        tourCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const marineType = this.getAttribute('data-marine');
+                openModal(marineType);
+            });
         });
-    });
-    
-    // Close modal when clicking the close button
-    marineModalClose.addEventListener('click', closeModal);
-    
-    // Close modal when clicking the backdrop
-    marineModal.addEventListener('click', function(e) {
-        if (e.target === this || e.target.classList.contains('marine-modal-backdrop')) {
-            closeModal();
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && marineModal.classList.contains('active')) {
-            closeModal();
-        }
-    });
+        
+        // Close modal when clicking the close button
+        marineModalClose.addEventListener('click', closeModal);
+        
+        // Close modal when clicking the backdrop
+        marineModal.addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('marine-modal-backdrop')) {
+                closeModal();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && marineModal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    }
 });
 
 if (!window.__mabiniServiceCardEditorLoaded) {

@@ -21,6 +21,12 @@
             --text: #0d1b2a;
             --muted: #5a6a80;
             --border: #dfe6ee;
+            --bg-image: none;
+        }
+
+        html,
+        body {
+            min-height: 100%;
         }
 
         body {
@@ -32,6 +38,19 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        body.bg-alt {
+            background: #e6ebf2;
+        }
+
+        html.has-bg-image,
+        body.has-bg-image {
+            background-image: linear-gradient(rgba(245, 247, 251, 0.5), rgba(245, 247, 251, 0.5)), var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
         .page-shell {
@@ -460,6 +479,74 @@
             .filters-card { flex-direction: column; align-items: stretch; }
             .calendar-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
         }
+
+        .floating-bg-btn {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 999;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 16px;
+            background: var(--midnight);
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+            cursor: pointer;
+            display: none;
+        }
+
+        .floating-bg-btn:hover {
+            background: var(--deep-blue);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 18, 30, 0.48);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-backdrop.is-open {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+            width: min(520px, 100%);
+            padding: 20px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 18px;
+            color: var(--midnight);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: #eef3f9;
+            color: var(--midnight);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -509,6 +596,23 @@
         <h1>📢 Announcements & Events</h1>
         <p>Track local advisories, LGU-led programs, and tourism events in Mabini. Built for residents, divers, establishment owners, and visitors.</p>
     </section>
+
+    <button id="bg-toggle-btn" class="floating-bg-btn" type="button">Change background</button>
+
+    <div class="modal-backdrop" id="bg-modal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bg-modal-title">
+            <h3 class="modal-title" id="bg-modal-title">Set page background</h3>
+            <p class="muted">Upload a PNG or JPG image to use as the page background.</p>
+            <label>Choose image
+                <input type="file" id="bg-file-input" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+            </label>
+            <span class="muted" id="bg-upload-status"></span>
+            <div class="modal-actions">
+                <button class="btn-secondary" type="button" id="bg-clear-btn">Clear</button>
+                <button class="btn-secondary" type="button" id="bg-close-btn">Close</button>
+            </div>
+        </div>
+    </div>
 
     <div class="page-shell">
 
@@ -759,6 +863,12 @@
             const addStatus = document.getElementById('add-status');
             const addSubmit = document.getElementById('add-submit');
             const adminCard = document.querySelector('.admin-card');
+            const bgToggleBtn = document.getElementById('bg-toggle-btn');
+            const bgModal = document.getElementById('bg-modal');
+            const bgCloseBtn = document.getElementById('bg-close-btn');
+            const bgClearBtn = document.getElementById('bg-clear-btn');
+            const bgFileInput = document.getElementById('bg-file-input');
+            const bgUploadStatus = document.getElementById('bg-upload-status');
 
             const formatDate = (date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
             const categoryLabels = {
@@ -800,6 +910,65 @@
                 } catch (err) {
                     console.error('Failed to read admin claims', err);
                     return false;
+                }
+            };
+
+            const backgroundCacheKey = 'announcementsBackgroundImage';
+
+            const applyBackgroundImage = (imageUrl) => {
+                if (!imageUrl) return;
+                document.documentElement.style.setProperty('--bg-image', `url('${imageUrl}')`);
+                document.documentElement.classList.add('has-bg-image');
+                document.body.classList.add('has-bg-image');
+            };
+
+            const compressImageToDataUrl = (file, maxDimension = 1920, maxBytes = 900 * 1024) => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
+                        const targetWidth = Math.round(img.width * scale);
+                        const targetHeight = Math.round(img.height * scale);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = targetWidth;
+                        canvas.height = targetHeight;
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) {
+                            reject(new Error('Canvas is not available.'));
+                            return;
+                        }
+                        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                        let quality = 0.85;
+                        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        while (dataUrl.length > maxBytes * 1.37 && quality > 0.5) {
+                            quality -= 0.07;
+                            dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        }
+
+                        resolve(dataUrl);
+                    };
+                    img.onerror = () => reject(new Error('Image decode failed.'));
+                    img.src = String(reader.result || '');
+                };
+                reader.onerror = () => reject(new Error('File read failed.'));
+                reader.readAsDataURL(file);
+            });
+
+            const loadSavedBackground = async () => {
+                const cachedImage = localStorage.getItem(backgroundCacheKey);
+                if (cachedImage) {
+                    applyBackgroundImage(cachedImage);
+                }
+                try {
+                    const doc = await db.collection('siteSettings').doc('announcementsBackground').get();
+                    if (doc.exists && doc.data() && doc.data().imageData) {
+                        applyBackgroundImage(doc.data().imageData);
+                        localStorage.setItem(backgroundCacheKey, doc.data().imageData);
+                    }
+                } catch (err) {
+                    console.error('Failed to load saved background', err);
                 }
             };
 
@@ -1180,6 +1349,9 @@
                 firebase.auth().onAuthStateChanged(async (user) => {
                     if (!user) {
                         adminCard.style.display = 'none';
+                        if (bgToggleBtn) {
+                            bgToggleBtn.style.display = 'none';
+                        }
                         if (controlsGrid) {
                             controlsGrid.classList.remove('is-admin-view');
                             controlsGrid.classList.add('is-user-view');
@@ -1192,6 +1364,9 @@
                         currentUserIsAdmin = isAdmin;
                         if (isAdmin) {
                             adminCard.style.display = 'block';
+                            if (bgToggleBtn) {
+                                bgToggleBtn.style.display = 'inline-flex';
+                            }
                             if (controlsGrid) {
                                 controlsGrid.classList.remove('is-user-view');
                                 controlsGrid.classList.add('is-admin-view');
@@ -1200,6 +1375,9 @@
                             renderList();
                         } else {
                             adminCard.style.display = 'none';
+                            if (bgToggleBtn) {
+                                bgToggleBtn.style.display = 'none';
+                            }
                             if (controlsGrid) {
                                 controlsGrid.classList.remove('is-admin-view');
                                 controlsGrid.classList.add('is-user-view');
@@ -1209,6 +1387,9 @@
                     } catch (err) {
                         console.error('Auth check failed', err);
                         adminCard.style.display = 'none';
+                        if (bgToggleBtn) {
+                            bgToggleBtn.style.display = 'none';
+                        }
                         if (controlsGrid) {
                             controlsGrid.classList.remove('is-admin-view');
                             controlsGrid.classList.add('is-user-view');
@@ -1218,6 +1399,110 @@
                 });
             }
 
+            const openBgModal = () => {
+                if (!bgModal) return;
+                bgModal.classList.add('is-open');
+                bgModal.setAttribute('aria-hidden', 'false');
+            };
+
+            const closeBgModal = () => {
+                if (!bgModal) return;
+                bgModal.classList.remove('is-open');
+                bgModal.setAttribute('aria-hidden', 'true');
+            };
+
+            if (bgToggleBtn) {
+                bgToggleBtn.addEventListener('click', openBgModal);
+            }
+
+            if (bgCloseBtn) {
+                bgCloseBtn.addEventListener('click', closeBgModal);
+            }
+
+            if (bgModal) {
+                bgModal.addEventListener('click', (e) => {
+                    if (e.target === bgModal) closeBgModal();
+                });
+            }
+
+            if (bgFileInput) {
+                bgFileInput.addEventListener('change', (e) => {
+                    if (bgUploadStatus) {
+                        bgUploadStatus.textContent = '';
+                    }
+                    if (!currentUserIsAdmin) {
+                        if (bgUploadStatus) {
+                            bgUploadStatus.textContent = 'Admin login required to change the background.';
+                        }
+                        bgFileInput.value = '';
+                        return;
+                    }
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    const fileName = (file.name || '').toLowerCase();
+                    const isPng = file.type === 'image/png' || fileName.endsWith('.png');
+                    const isJpg = file.type === 'image/jpeg' || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
+                    if (!isPng && !isJpg) {
+                        if (bgUploadStatus) {
+                            bgUploadStatus.textContent = 'Only PNG or JPG files are supported.';
+                        }
+                        bgFileInput.value = '';
+                        return;
+                    }
+                    if (bgUploadStatus) {
+                        bgUploadStatus.textContent = 'Optimizing image...';
+                    }
+
+                    compressImageToDataUrl(file).then(async (imageData) => {
+                        applyBackgroundImage(imageData);
+                        localStorage.setItem(backgroundCacheKey, imageData);
+                        if (bgUploadStatus) {
+                            bgUploadStatus.textContent = 'Saving background...';
+                        }
+                        await db.collection('siteSettings').doc('announcementsBackground').set({
+                            imageData,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                        if (bgUploadStatus) {
+                            bgUploadStatus.textContent = 'Background saved.';
+                        }
+                    }).catch((err) => {
+                        console.error('Failed to save background', err);
+                        if (bgUploadStatus) {
+                            bgUploadStatus.textContent = 'Failed to save background.';
+                        }
+                    });
+                });
+            }
+
+            if (bgClearBtn) {
+                bgClearBtn.addEventListener('click', () => {
+                    if (!currentUserIsAdmin) {
+                        if (bgUploadStatus) {
+                            bgUploadStatus.textContent = 'Admin login required to change the background.';
+                        }
+                        return;
+                    }
+                    document.documentElement.style.setProperty('--bg-image', 'none');
+                    document.documentElement.classList.remove('has-bg-image');
+                    document.body.classList.remove('has-bg-image');
+                    localStorage.removeItem(backgroundCacheKey);
+                    if (bgFileInput) {
+                        bgFileInput.value = '';
+                    }
+                    if (bgUploadStatus) {
+                        bgUploadStatus.textContent = '';
+                    }
+                    db.collection('siteSettings').doc('announcementsBackground').set({
+                        imageData: '',
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true }).catch((err) => {
+                        console.error('Failed to clear background', err);
+                    });
+                });
+            }
+
+            loadSavedBackground();
             loadEvents();
         });
     </script>
